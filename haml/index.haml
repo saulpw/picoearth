@@ -9,13 +9,43 @@
   
   %body
     
-    %h1 
-      Humans: 
-      %span#human-count 0
-    %button#mate-button Mate
+    .row
+      .large-6.columns
 
-    %h2 Technology
-    %button#lust-upgrade More lust
+        / Stats
+        %h3
+          Year:
+          %span#year 1000
+
+        %div
+          Population: 
+          %span#human-count 0
+
+        %div
+          Birth rate:
+          %span#birthrate 0
+
+        %div
+          Death rate:
+          %span#deathrate 0
+
+      .large-6.columns
+
+        / Technology tree
+        %h2 Technology
+        %button#lust-upgrade Promote Lust
+        %button#lust-downgrade Ban Lust
+
+    .row
+      .large-4.columns
+
+      .large-4.columns
+        / User interaction area
+        %button#mate-button Mate
+
+      .large-4.columns
+
+
 
     %script(src="assets/js/vendor/jquery.js")
     %script(src="assets/js/foundation.min.js")

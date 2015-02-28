@@ -8,13 +8,41 @@
     <script src='assets/js/vendor/modernizr.js'></script>
   </head>
   <body>
-    <h1>
-      Humans:
-      <span id='human-count'>0</span>
-    </h1>
-    <button id='mate-button'>Mate</button>
-    <h2>Technology</h2>
-    <button id='lust-upgrade'>More lust</button>
+    <div class='row'>
+      <div class='large-6 columns'>
+        <!-- Stats -->
+        <h3>
+          Year:
+          <span id='year'>1000</span>
+        </h3>
+        <div>
+          Population:
+          <span id='human-count'>0</span>
+        </div>
+        <div>
+          Birth rate:
+          <span id='birthrate'>0</span>
+        </div>
+        <div>
+          Death rate:
+          <span id='deathrate'>0</span>
+        </div>
+      </div>
+      <div class='large-6 columns'>
+        <!-- Technology tree -->
+        <h2>Technology</h2>
+        <button id='lust-upgrade'>Promote Lust</button>
+        <button id='lust-downgrade'>Ban Lust</button>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='large-4 columns'></div>
+      <div class='large-4 columns'>
+        <!-- User interaction area -->
+        <button id='mate-button'>Mate</button>
+      </div>
+      <div class='large-4 columns'></div>
+    </div>
     <script src='assets/js/vendor/jquery.js'></script>
     <script src='assets/js/foundation.min.js'></script>
     <script src='assets/js/picoearth.js'></script>

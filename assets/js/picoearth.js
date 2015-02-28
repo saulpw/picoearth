@@ -1,36 +1,117 @@
-// Basic variable declaration - keep track of how many of each
-// item we currently own, and how much the new ones should cost.
-var numHumans = 0;
-var numLust = 0;
-var lustCost = 10;
+// ----------------------------------------------------------------------------
+// Keep track of basic stats
+// ----------------------------------------------------------------------------
 
-// Increase numHumans every time mate-button is clicked
+var population = 0;
+var year = 1800;
+var birthrate = 2;
+var deathrate = 1;
+
+// ----------------------------------------------------------------------------
+// Keep track of upgrade cost
+// ----------------------------------------------------------------------------
+
+var lustCost = 10;
+var lustUpgraded = false;
+
+// ----------------------------------------------------------------------------
+// Game internal states
+// ----------------------------------------------------------------------------
+
+var gameUpdateInterval = 10; // ms
+
+// ----------------------------------------------------------------------------
+// User interactions
+// ----------------------------------------------------------------------------
+
+// Increase population every time mate-button is clicked
 $('#mate-button').on('click', function () {
-    numHumans++;
+    population++;
 });
 
 // Lust upgrades
-$('#lust-upgrade').on('click', function () {    
-    numLust++;
-
-    // Deduct cost
-    numHumans -= lustCost;
-    
-    // Increase cost for the next one, using Math.ceil() to round up
-    lustCost = Math.ceil(lustCost * 1.1);
+$('#lust-upgrade').on('click', function () {
+    lustUpgraded = true;  
+    birthrate++;
 });
 
-// Run UI update code every 10ms
+$('#lust-downgrade').on('click', function() {
+    lustUpgraded = false;
+    birthrate--;
+});
+
+// ----------------------------------------------------------------------------
+// Run UI update code every x ms
+// ----------------------------------------------------------------------------
+
 window.setInterval(function () {
-    // Lust add 1 per second (1/100 every 10ms)
-    numHumans += (numLust * 1 / 100);
 
-    // Update the text showing how many humans we have, using Math.floor() to round down
-    $('#human-count').text(Math.floor(numHumans));
+    // incr amount for every 1ms
+    var incr = (1/1000) * gameUpdateInterval;
+    
+    updateYear(incr);
+    updatepopulation(incr * (birthrate - deathrate) );
 
-    // Update the lust cost with its price
-    $('#lust-upgrade').text('Get more lust - ' + lustCost);
+    updateUIStats();
+    updateUITechTree();
 
-    // Enable/disable the lust buttons based on our numHumans
-    $('#lust-upgrade').prop('disabled', lustCost > numHumans);
-}, 10);
+}, gameUpdateInterval);
+
+// ----------------------------------------------------------------------------
+// Update functions
+// ----------------------------------------------------------------------------
+
+function updateYear(incr)
+{
+    year += incr;
+}
+
+function updatepopulation(incr)
+{
+    population += incr;
+}
+
+function updateBirthrate()
+{
+
+}
+
+function updateDeathrate()
+{
+
+}
+
+function updateUIStats() {
+    $('#human-count').text(populationString());
+    $('#year').text(yearString());
+    $('#birthrate').text(birthrateString());
+    $('#deathrate').text(deathrateString());
+}
+
+function updateUITechTree()
+{
+    // Enable/disable the lust buttons based on our population
+    $('#lust-upgrade').prop('disabled', lustCost > population);    
+    $('#lust-downgrade').prop('disabled', lustCost > population);    
+}
+
+// ----------------------------------------------------------------------------
+// String representations
+// ----------------------------------------------------------------------------
+
+function birthrateString() {
+    return Math.ceil(birthrate) + 'k/year';
+}
+
+function deathrateString() {
+    return Math.ceil(deathrate) + 'k/year';
+}
+
+function populationString() {
+    // show how many humans we have, using Math.floor() to round down
+    return Math.floor(population) + 'k';
+}
+
+function yearString() {
+    return Math.floor(year);
+}
