@@ -14,6 +14,9 @@ var deathrate = 1;
 var lustCost = 10;
 var lustUpgraded = false;
 
+var pollutionCost = 100;
+var pollutionUpgraded = false;
+
 // ----------------------------------------------------------------------------
 // Game internal states
 // ----------------------------------------------------------------------------
@@ -38,6 +41,16 @@ $('#lust-upgrade').on('click', function () {
 $('#lust-downgrade').on('click', function() {
     lustUpgraded = false;
     birthrate--;
+});
+
+$('#pollution-upgrade').on('click', function () {
+    pollutionUpgraded = true;
+    deathrate++;
+});
+
+$('#pollution-downgrade').on('click', function() {
+    pollutionUpgraded = false;
+    deathrate--;
 });
 
 // ----------------------------------------------------------------------------
@@ -68,7 +81,9 @@ function updateYear(incr)
 
 function updatepopulation(incr)
 {
-    population += incr;
+    if (population + incr > 0) {
+        population += incr;
+    }
 }
 
 function updateBirthrate()
@@ -92,7 +107,11 @@ function updateUITechTree()
 {
     // Enable/disable the lust buttons based on our population
     $('#lust-upgrade').prop('disabled', lustCost > population);    
-    $('#lust-downgrade').prop('disabled', lustCost > population);    
+    $('#lust-downgrade').prop('disabled', lustCost > population || birthrate < 1);    
+
+    // Enable/disable the pollution buttons based on our population
+    $('#pollution-upgrade').prop('disabled', pollutionCost > population);
+    $('#pollution-downgrade').prop('disabled', pollutionCost > population || deathrate < 1);    
 }
 
 // ----------------------------------------------------------------------------

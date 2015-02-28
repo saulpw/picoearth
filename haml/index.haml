@@ -29,23 +29,25 @@
           Death rate:
           %span#deathrate 0
 
+        / User interaction area
+        %button#mate-button Mate
+
       .large-6.columns
 
         / Technology tree
         %h2 Technology
-        %button#lust-upgrade Promote Lust
-        %button#lust-downgrade Ban Lust
 
-    .row
-      .large-4.columns
+        .row
+          .large-6.columns
+            %button#lust-upgrade Promote Lust
+          .large-6.columns
+            %button#lust-downgrade Ban Lust
 
-      .large-4.columns
-        / User interaction area
-        %button#mate-button Mate
-
-      .large-4.columns
-
-
+        .row
+          .large-6.columns
+            %button#pollution-upgrade Promote Pollution
+          .large-6.columns
+            %button#pollution-downgrade Ban Pollution
 
     %script(src="assets/js/vendor/jquery.js")
     %script(src="assets/js/foundation.min.js")
