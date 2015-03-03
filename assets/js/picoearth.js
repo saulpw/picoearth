@@ -17,14 +17,21 @@ var techTree = {
         "update" : updateLustFn,
         "promote" : promoteLustFn,
         "ban" : banLustFn,
-        "adoption": 0
+        "adoption": 20
         },
+    "fire" : {
+        "unlocked": false,
+        "update" : updateFireFn,
+        "promote" : promoteFireFn,
+        "ban" : banFireFn,
+        "adoption": 20
+        },        
     "clothing" : {
         "unlocked": false,
         "update" : updateClothingFn,
         "promote" : promoteClothingFn,
         "ban" : banClothingFn,
-        "adoption": 0
+        "adoption": 20
         }        
     };
 
@@ -63,7 +70,7 @@ function updateStats()
     var incr = (1/1000) * gameUpdateInterval;
 
     computeYear(incr);
-    computePopulation(incr * (birthrate - deathrate) );
+    computePopulation(incr);
     updateUIStats();
 }
 
@@ -74,8 +81,10 @@ function computeYear(incr)
 
 function computePopulation(incr)
 {
+    var newHumans = (birthrate - deathrate) * population * incr;
+
     if (population + incr > 0) {
-        population += incr;
+        population += newHumans;
     }
 }
 
@@ -100,21 +109,21 @@ function updateTechTree()
 
 function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
 {
-    var percentAdopted = techTree[tech]["adoption"];
+    var percentAdopted = adoptionString(tech);
 
     if (shouldUnlock) {
         $('#techTree').append(' \
             <div class="row"> \
-                <div class="large-8 columns"> \
+                <div class="large-8 columns right"> \
                     <ul class="button-group round"> \
-                        <li><button id="' + tech +'-promote"> Promote ' + tech + '</button> \
+                        <li><button class="tiny" id="' + tech +'-promote"> Promote ' + tech + '</button> \
                         </li> \
-                        <li><button id="' + tech +'-ban"> Ban ' + tech + '</button> \
+                        <li><button class="tiny" id="' + tech +'-ban"> Ban ' + tech + '</button> \
                         </li> \
                     </ul> \
                 </div> \
-                <div class="large-1 columns"> \
-                    <p><span id="' + tech +'-adoption"> ' + percentAdopted + '</span>%</p> \
+                <div class="large-3 columns"> \
+                    <p><span id="' + tech +'-adoption"> ' + percentAdopted + '</span>% adopted</p> \
                 </div> \
             </div> \
             ');
@@ -145,8 +154,10 @@ function updateLustFn(tech)
         shouldUnlock = true;    
     }
 
-    var promoteEnabled =  population > popThres;
-    var banEnabled = population > popThres && birthrate > 0;
+    var promoteEnabled =  population > popThres &&
+                            techTree[tech]["adoption"] < 100;;
+    var banEnabled = population > popThres && 
+                            techTree[tech]["adoption"] > 0;;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 }
@@ -154,26 +165,26 @@ function updateLustFn(tech)
 function promoteLustFn()
 {
     if (birthrate < 1000) {
-        birthrate++;    
+        birthrate += .001;    
     }
     
-    techTree["lust"]["adoption"] = birthrate / 1000 * 100;
+    techTree["lust"]["adoption"]++;
 }
 
 function banLustFn()
 {
     if (birthrate > 0) {
-        birthrate--;    
+        birthrate -= .001;    
     }
     
-    techTree["lust"]["adoption"] = birthrate / 1000 * 100;
+    techTree["lust"]["adoption"]--;
 }
 
 // ------
-// Clothing
+// Fire
 // ------
 
-function updateClothingFn(tech)
+function updateFireFn(tech)
 {
     const popThres = 100;
 
@@ -183,8 +194,51 @@ function updateClothingFn(tech)
         shouldUnlock = true;
     }
 
-    var promoteEnabled =  population > popThres;
-    var banEnabled = population > popThres && birthrate > 0;
+    var promoteEnabled =  population > popThres && 
+                            techTree[tech]["adoption"] < 100;;
+    var banEnabled = population > popThres &&
+                        techTree[tech]["adoption"] > 0;
+
+    return [shouldUnlock, promoteEnabled, banEnabled];
+
+}
+
+function promoteFireFn()
+{
+    if (deathrate > 0) {
+        deathrate -= .001;    
+    }
+    
+    techTree["fire"]["adoption"]++;
+}
+
+function banFireFn()
+{
+    if (deathrate < 1000) {
+        deathrate += .001;    
+    }
+    
+    techTree["fire"]["adoption"]--;
+}
+
+// ------
+// Clothing
+// ------
+
+function updateClothingFn(tech)
+{
+    const popThres = 500;
+
+    var shouldUnlock = false;
+    if (techTree[tech]["unlocked"] == false && population > popThres) {
+        techTree[tech]["unlocked"] = true;
+        shouldUnlock = true;
+    }
+
+    var promoteEnabled =  population > popThres && 
+                            techTree[tech]["adoption"] < 100;
+    var banEnabled = population > popThres && 
+                        techTree[tech]["adoption"] > 0;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 
@@ -192,33 +246,32 @@ function updateClothingFn(tech)
 
 function promoteClothingFn()
 {
-    if (birthrate < 1000) {
-        birthrate++;    
+    if (deathrate > 0) {
+        deathrate -= .001;    
     }
     
-    techTree["clothing"]["adoption"] = birthrate / 1000 * 100;
+    techTree["clothing"]["adoption"]++;
 }
 
 function banClothingFn()
 {
-    if (birthrate > 0) {
-        birthrate--;    
+    if (deathrate < 1000) {
+        deathrate += .001;    
     }
     
-    techTree["clothing"]["adoption"] = birthrate / 1000 * 100;
+    techTree["clothing"]["adoption"]--;
 }
-
 
 // ----------------------------------------------------------------------------
 // String representations
 // ----------------------------------------------------------------------------
 
 function birthrateString() {
-    return Math.ceil(birthrate) + ' per thousand';
+    return birthrate.toFixed(2) + ' per thousand';
 }
 
 function deathrateString() {
-    return Math.ceil(deathrate) + ' per thousand';
+    return deathrate.toFixed(2) + ' per thousand';
 }
 
 function populationString() {
@@ -234,4 +287,9 @@ function yearString() {
         toString += 'AD'
     }
     return toString;
+}
+
+function adoptionString(tech) {
+    var adoption = techTree[tech]["adoption"];
+    return Math.ceil(adoption);
 }
