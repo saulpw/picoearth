@@ -17,65 +17,15 @@
           Year:
           %span#year 1000
 
-        %div
-          Population: 
-          %span#human-count 0
+        - stats = {"population" => "Population",
+                  "birthrate" => "Annual birth rate",
+                  "deathrate" => "Annual death rate"}
 
-        %div
-          Birth rate:
-          %span#birthrate 0
+        - stats.each do |stat, name|
+          %div
+            #{name}:
+            %span(id="#{stat}") 0
 
-        %div
-          Death rate:
-          %span#deathrate 0
-
-        %div
-          Water:
-          %span#water 0
-
-        %div
-          Water production:
-          %span#water-production 0
-
-        %div
-          Water consumption:
-          %span#water-consumption 0
-
-        %div
-          Food:
-          %span#food 0
-
-        %div
-          Food production:
-          %span#food-production 0
-
-        %div
-          Food consumption:
-          %span#food-consumption 0
-
-        %div
-          Energy:
-          %span#energy 0
-
-        %div
-          Energy production:
-          %span#energy-production 0
-
-        %div 
-          Energy consumption:
-          %span#energy-consumption 0
-
-        %div
-          CO2:
-          %span#co2 0
-
-        %div
-          Global temperature:
-          %span#temperature 0 C
-
-        %div
-          Person-Year of abject suffering:
-          %span#PYAS 1-10 PYAS
 
         / User interaction area
         %button#mate-button Mate
@@ -83,19 +33,11 @@
       .large-6.columns
 
         / Technology tree
-        %h2 Technology
+        %h2#techTree Technology
 
-        .row
-          .large-6.columns
-            %button#lust-upgrade Promote Lust
-          .large-6.columns
-            %button#lust-downgrade Ban Lust
-
-        .row
-          .large-6.columns
-            %button#pollution-upgrade Promote Pollution
-          .large-6.columns
-            %button#pollution-downgrade Ban Pollution
+    /
+    / Load scripts
+    /
 
     %script(src="assets/js/vendor/jquery.js")
     %script(src="assets/js/foundation.min.js")
