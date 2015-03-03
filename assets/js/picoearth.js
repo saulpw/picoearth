@@ -4,8 +4,8 @@
 
 var population = 2;
 var year = -10000;
-var birthrate = 0;
-var deathrate = 0;
+var birthrate = 0.01;
+var deathrate = 0.01;
 
 // ----------------------------------------------------------------------------
 // Tech tree
@@ -17,6 +17,13 @@ var techTree = {
         "update" : updateLustFn,
         "promote" : promoteLustFn,
         "ban" : banLustFn,
+        "adoption": 50
+        },
+    "gathering" : {
+        "unlocked": false,
+        "update" : updateGatheringFn,
+        "promote" : promoteGatheringFn,
+        "ban" : banGatheringFn,
         "adoption": 20
         },
     "fire" : {
@@ -181,6 +188,46 @@ function banLustFn()
 }
 
 // ------
+// Gathering
+// ------
+
+function updateGatheringFn(tech)
+{
+    const popThres = 20;
+
+    var shouldUnlock = false;
+    if (techTree[tech]["unlocked"] == false && population > popThres) {
+        techTree[tech]["unlocked"] = true;
+        shouldUnlock = true;    
+    }
+
+    var promoteEnabled =  population > popThres &&
+                            techTree[tech]["adoption"] < 100;;
+    var banEnabled = population > popThres && 
+                            techTree[tech]["adoption"] > 0;;
+
+    return [shouldUnlock, promoteEnabled, banEnabled];
+}
+
+function promoteGatheringFn()
+{
+    if (deathrate > 0) {
+        deathrate -= .001;    
+    }
+    
+    techTree["gathering"]["adoption"]++;
+}
+
+function banGatheringFn()
+{
+    if (deathrate < 1000) {
+        deathrate += .001;    
+    }
+    
+    techTree["gathering"]["adoption"]--;
+}
+
+// ------
 // Fire
 // ------
 
@@ -206,7 +253,7 @@ function updateFireFn(tech)
 function promoteFireFn()
 {
     if (deathrate > 0) {
-        deathrate -= .001;    
+        deathrate -= .01;    
     }
     
     techTree["fire"]["adoption"]++;
@@ -215,7 +262,7 @@ function promoteFireFn()
 function banFireFn()
 {
     if (deathrate < 1000) {
-        deathrate += .001;    
+        deathrate += .01;    
     }
     
     techTree["fire"]["adoption"]--;
@@ -247,7 +294,7 @@ function updateClothingFn(tech)
 function promoteClothingFn()
 {
     if (deathrate > 0) {
-        deathrate -= .001;    
+        deathrate -= .005;    
     }
     
     techTree["clothing"]["adoption"]++;
@@ -256,7 +303,7 @@ function promoteClothingFn()
 function banClothingFn()
 {
     if (deathrate < 1000) {
-        deathrate += .001;    
+        deathrate += .005;    
     }
     
     techTree["clothing"]["adoption"]--;
@@ -291,5 +338,5 @@ function yearString() {
 
 function adoptionString(tech) {
     var adoption = techTree[tech]["adoption"];
-    return Math.ceil(adoption);
+    return Math.round(adoption);
 }
