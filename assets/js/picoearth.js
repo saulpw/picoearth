@@ -118,6 +118,8 @@ function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
                 </div> \
             </div> \
             ');
+
+        $('#log').prepend('<div>' + tech + ' is unlocked at year ' + yearString() + '.</div>' );
     
         $('#' + tech + '-promote').on('click', techTree[tech]["promote"]);    
         $('#' + tech + '-ban').on('click', techTree[tech]["ban"]);    
