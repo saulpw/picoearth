@@ -18,7 +18,14 @@ var techTree = {
         "promote" : promoteLustFn,
         "ban" : banLustFn,
         "adoption": 0
-        }
+        },
+    "clothing" : {
+        "unlocked": false,
+        "update" : updateClothingFn,
+        "promote" : promoteClothingFn,
+        "ban" : banClothingFn,
+        "adoption": 0
+        }        
     };
 
 // ----------------------------------------------------------------------------
@@ -91,19 +98,55 @@ function updateTechTree()
     }
 }
 
+function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
+{
+    var percentAdopted = techTree[tech]["adoption"];
+
+    if (shouldUnlock) {
+        $('#techTree').append(' \
+            <div class="row"> \
+                <div class="large-8 columns"> \
+                    <ul class="button-group round"> \
+                        <li><button id="' + tech +'-promote"> Promote ' + tech + '</button> \
+                        </li> \
+                        <li><button id="' + tech +'-ban"> Ban ' + tech + '</button> \
+                        </li> \
+                    </ul> \
+                </div> \
+                <div class="large-1 columns"> \
+                    <p><span id="' + tech +'-adoption"> ' + percentAdopted + '</span>%</p> \
+                </div> \
+            </div> \
+            ');
+    
+        $('#' + tech + '-promote').on('click', techTree[tech]["promote"]);    
+        $('#' + tech + '-ban').on('click', techTree[tech]["ban"]);    
+    }
+
+    $('#' + tech + '-adoption').text(percentAdopted.toFixed(1));
+    $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
+    $('#' + tech + '-ban').prop('disabled', !banEnabled);    
+
+}
+
+// ------
+// Lust
+// ------
+
 function updateLustFn(tech)
 {
-    var lustShouldUnlock = false;
-    if (techTree[tech]["unlocked"]) {
-        lustShouldUnlock = false;
-    } else {
-        techTree[tech]["unlocked"] = true;
-        lustShouldUnlock = true;
-    }
-    var lustPromoteEnabled =  population > 10;
-    var lustBanEnabled = population > 10 && birthrate > 0;
+    const popThres = 10;
 
-    return [lustShouldUnlock, lustPromoteEnabled, lustBanEnabled];
+    var shouldUnlock = false;
+    if (techTree[tech]["unlocked"] == false && population > popThres) {
+        techTree[tech]["unlocked"] = true;
+        shouldUnlock = true;    
+    }
+
+    var promoteEnabled =  population > popThres;
+    var banEnabled = population > popThres && birthrate > 0;
+
+    return [shouldUnlock, promoteEnabled, banEnabled];
 }
 
 function promoteLustFn()
@@ -124,34 +167,45 @@ function banLustFn()
     techTree["lust"]["adoption"] = birthrate / 1000 * 100;
 }
 
-function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
-{
-    var percentAdopted = techTree[tech]["adoption"];
+// ------
+// Clothing
+// ------
 
-    if (shouldUnlock) {
-        $('#techTree').append(' \
-            <div class="row"> \
-                <div class="large-4 columns"> \
-                    <button id="' + tech +'-promote"> Promote ' + tech + '</button> \
-                </div> \
-                <div class="large-4 columns"> \
-                    <button id="' + tech +'-ban"> Ban ' + tech + '</button> \
-                </div> \
-                <div class="large-4 columns"> \
-                    <span id="' + tech +'-adoption"> ' + percentAdopted + '</span>% \
-                </div> \
-            </div> \
-            ');
-    
-        $('#' + tech + '-promote').on('click', techTree[tech]["promote"]);    
-        $('#' + tech + '-ban').on('click', techTree[tech]["ban"]);    
+function updateClothingFn(tech)
+{
+    const popThres = 100;
+
+    var shouldUnlock = false;
+    if (techTree[tech]["unlocked"] == false && population > popThres) {
+        techTree[tech]["unlocked"] = true;
+        shouldUnlock = true;
     }
 
-    $('#' + tech + '-adoption').text(percentAdopted.toFixed(1));
-    $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
-    $('#' + tech + '-ban').prop('disabled', !banEnabled);    
+    var promoteEnabled =  population > popThres;
+    var banEnabled = population > popThres && birthrate > 0;
+
+    return [shouldUnlock, promoteEnabled, banEnabled];
 
 }
+
+function promoteClothingFn()
+{
+    if (birthrate < 1000) {
+        birthrate++;    
+    }
+    
+    techTree["clothing"]["adoption"] = birthrate / 1000 * 100;
+}
+
+function banClothingFn()
+{
+    if (birthrate > 0) {
+        birthrate--;    
+    }
+    
+    techTree["clothing"]["adoption"] = birthrate / 1000 * 100;
+}
+
 
 // ----------------------------------------------------------------------------
 // String representations
