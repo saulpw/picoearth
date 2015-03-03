@@ -2,20 +2,24 @@
 // Keep track of basic stats
 // ----------------------------------------------------------------------------
 
-var population = 0;
-var year = 1800;
-var birthrate = 2;
-var deathrate = 1;
+var population = 2;
+var year = -10000;
+var birthrate = 0;
+var deathrate = 0;
 
 // ----------------------------------------------------------------------------
-// Keep track of upgrade cost
+// Tech tree
 // ----------------------------------------------------------------------------
 
-var lustCost = 10;
-var lustUpgraded = false;
-
-var pollutionCost = 100;
-var pollutionUpgraded = false;
+var techTree = {
+    "lust" : {
+        "unlocked": false,
+        "update" : updateLustFn,
+        "promote" : promoteLustFn,
+        "ban" : banLustFn,
+        "adoption": 0
+        }
+    };
 
 // ----------------------------------------------------------------------------
 // Game internal states
@@ -27,30 +31,8 @@ var gameUpdateInterval = 10; // ms
 // User interactions
 // ----------------------------------------------------------------------------
 
-// Increase population every time mate-button is clicked
 $('#mate-button').on('click', function () {
     population++;
-});
-
-// Lust upgrades
-$('#lust-upgrade').on('click', function () {
-    lustUpgraded = true;  
-    birthrate++;
-});
-
-$('#lust-downgrade').on('click', function() {
-    lustUpgraded = false;
-    birthrate--;
-});
-
-$('#pollution-upgrade').on('click', function () {
-    pollutionUpgraded = true;
-    deathrate++;
-});
-
-$('#pollution-downgrade').on('click', function() {
-    pollutionUpgraded = false;
-    deathrate--;
 });
 
 // ----------------------------------------------------------------------------
@@ -59,59 +41,116 @@ $('#pollution-downgrade').on('click', function() {
 
 window.setInterval(function () {
 
-    // incr amount for every 1ms
-    var incr = (1/1000) * gameUpdateInterval;
-    
-    updateYear(incr);
-    updatepopulation(incr * (birthrate - deathrate) );
-
-    updateUIStats();
-    updateUITechTree();
+    updateStats();    
+    updateTechTree();
 
 }, gameUpdateInterval);
 
 // ----------------------------------------------------------------------------
-// Update functions
+// Update stats functions
 // ----------------------------------------------------------------------------
 
-function updateYear(incr)
+function updateStats()
+{
+    // incr amount for every 1ms
+    var incr = (1/1000) * gameUpdateInterval;
+
+    computeYear(incr);
+    computePopulation(incr * (birthrate - deathrate) );
+    updateUIStats();
+}
+
+function computeYear(incr)
 {
     year += incr;
 }
 
-function updatepopulation(incr)
+function computePopulation(incr)
 {
     if (population + incr > 0) {
         population += incr;
     }
 }
 
-function updateBirthrate()
-{
-
-}
-
-function updateDeathrate()
-{
-
-}
-
 function updateUIStats() {
-    $('#human-count').text(populationString());
+    $('#population').text(populationString());
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
 }
 
-function updateUITechTree()
-{
-    // Enable/disable the lust buttons based on our population
-    $('#lust-upgrade').prop('disabled', lustCost > population);    
-    $('#lust-downgrade').prop('disabled', lustCost > population || birthrate < 1);    
+// ----------------------------------------------------------------------------
+// Update tech tree
+// ----------------------------------------------------------------------------
 
-    // Enable/disable the pollution buttons based on our population
-    $('#pollution-upgrade').prop('disabled', pollutionCost > population);
-    $('#pollution-downgrade').prop('disabled', pollutionCost > population || deathrate < 1);    
+function updateTechTree()
+{
+    for (var tech in techTree) {
+        var update = techTree[tech]["update"](tech);
+        updateUITechTree(tech, update[0], update[1], update[2]);
+    }
+}
+
+function updateLustFn(tech)
+{
+    var lustShouldUnlock = false;
+    if (techTree[tech]["unlocked"]) {
+        lustShouldUnlock = false;
+    } else {
+        techTree[tech]["unlocked"] = true;
+        lustShouldUnlock = true;
+    }
+    var lustPromoteEnabled =  population > 10;
+    var lustBanEnabled = population > 10 && birthrate > 0;
+
+    return [lustShouldUnlock, lustPromoteEnabled, lustBanEnabled];
+}
+
+function promoteLustFn()
+{
+    if (birthrate < 1000) {
+        birthrate++;    
+    }
+    
+    techTree["lust"]["adoption"] = birthrate / 1000 * 100;
+}
+
+function banLustFn()
+{
+    if (birthrate > 0) {
+        birthrate--;    
+    }
+    
+    techTree["lust"]["adoption"] = birthrate / 1000 * 100;
+}
+
+function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
+{
+    var percentAdopted = techTree[tech]["adoption"];
+
+    if (shouldUnlock) {
+        $('#techTree').append(' \
+            <div class="row"> \
+                <div class="large-4 columns"> \
+                    <button id="' + tech +'-promote"> Promote ' + tech + '</button> \
+                </div> \
+                <div class="large-4 columns"> \
+                    <button id="' + tech +'-ban"> Ban ' + tech + '</button> \
+                </div> \
+                <div class="large-4 columns"> \
+                    <span id="' + tech +'-adoption"> ' + percentAdopted + '</span>% \
+                </div> \
+            </div> \
+            ');
+    
+        $('#' + tech + '-promote').on('click', techTree[tech]["promote"]);    
+        $('#' + tech + '-ban').on('click', techTree[tech]["ban"]);    
+    }
+
+    $('#' + tech + '-adoption').text(percentAdopted.toFixed(1));
+    $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
+    $('#' + tech + '-ban').prop('disabled', !banEnabled);    
+
 }
 
 // ----------------------------------------------------------------------------
@@ -119,18 +158,24 @@ function updateUITechTree()
 // ----------------------------------------------------------------------------
 
 function birthrateString() {
-    return Math.ceil(birthrate) + 'k/year';
+    return Math.ceil(birthrate) + ' per thousand';
 }
 
 function deathrateString() {
-    return Math.ceil(deathrate) + 'k/year';
+    return Math.ceil(deathrate) + ' per thousand';
 }
 
 function populationString() {
     // show how many humans we have, using Math.floor() to round down
-    return Math.floor(population) + 'k';
+    return Math.floor(population);
 }
 
 function yearString() {
-    return Math.floor(year);
+    var toString = Math.floor(year);
+    if (year < 1000) {
+        toString = -toString + 'BC';
+    } else {
+        toString += 'AD'
+    }
+    return toString;
 }
