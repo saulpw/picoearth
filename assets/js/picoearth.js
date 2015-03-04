@@ -161,10 +161,8 @@ function updateLustFn(tech)
         shouldUnlock = true;    
     }
 
-    var promoteEnabled =  population > popThres &&
-                            techTree[tech]["adoption"] < 100;;
-    var banEnabled = population > popThres && 
-                            techTree[tech]["adoption"] > 0;;
+    var promoteEnabled =  techTree[tech]["adoption"] < 100;;
+    var banEnabled = techTree[tech]["adoption"] > 0;;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 }
@@ -201,10 +199,8 @@ function updateGatheringFn(tech)
         shouldUnlock = true;    
     }
 
-    var promoteEnabled =  population > popThres &&
-                            techTree[tech]["adoption"] < 100;;
-    var banEnabled = population > popThres && 
-                            techTree[tech]["adoption"] > 0;;
+    var promoteEnabled =  techTree[tech]["adoption"] < 100;;
+    var banEnabled = techTree[tech]["adoption"] > 0;;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 }
@@ -241,10 +237,8 @@ function updateFireFn(tech)
         shouldUnlock = true;
     }
 
-    var promoteEnabled =  population > popThres && 
-                            techTree[tech]["adoption"] < 100;;
-    var banEnabled = population > popThres &&
-                        techTree[tech]["adoption"] > 0;
+    var promoteEnabled =  techTree[tech]["adoption"] < 100;;
+    var banEnabled = techTree[tech]["adoption"] > 0;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 
@@ -282,10 +276,8 @@ function updateClothingFn(tech)
         shouldUnlock = true;
     }
 
-    var promoteEnabled =  population > popThres && 
-                            techTree[tech]["adoption"] < 100;
-    var banEnabled = population > popThres && 
-                        techTree[tech]["adoption"] > 0;
+    var promoteEnabled = techTree[tech]["adoption"] < 100;
+    var banEnabled = techTree[tech]["adoption"] > 0;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 
