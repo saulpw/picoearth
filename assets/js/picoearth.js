@@ -12,13 +12,6 @@ var deathrate = 0.01;
 // ----------------------------------------------------------------------------
 
 var techTree = {
-    "lust" : {
-        "unlocked": false,
-        "update" : updateLustFn,
-        "promote" : promoteLustFn,
-        "ban" : banLustFn,
-        "adoption": 50
-        },
     "gathering" : {
         "unlocked": false,
         "update" : updateGatheringFn,
@@ -148,50 +141,12 @@ function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
 }
 
 // ------
-// Lust
-// ------
-
-function updateLustFn(tech)
-{
-    const popThres = 10;
-
-    var shouldUnlock = false;
-    if (techTree[tech]["unlocked"] == false && population > popThres) {
-        techTree[tech]["unlocked"] = true;
-        shouldUnlock = true;    
-    }
-
-    var promoteEnabled =  techTree[tech]["adoption"] < 100;;
-    var banEnabled = techTree[tech]["adoption"] > 0;;
-
-    return [shouldUnlock, promoteEnabled, banEnabled];
-}
-
-function promoteLustFn()
-{
-    if (birthrate < 1000) {
-        birthrate += .001;    
-    }
-    
-    techTree["lust"]["adoption"]++;
-}
-
-function banLustFn()
-{
-    if (birthrate > 0) {
-        birthrate -= .001;    
-    }
-    
-    techTree["lust"]["adoption"]--;
-}
-
-// ------
 // Gathering
 // ------
 
 function updateGatheringFn(tech)
 {
-    const popThres = 20;
+    const popThres = 10;
 
     var shouldUnlock = false;
     if (techTree[tech]["unlocked"] == false && population > popThres) {
