@@ -4,8 +4,8 @@
 
 var population = 2;
 var year = -10000;
-var birthrate = 0.01;
-var deathrate = 0.01;
+var birthrate = 1;
+var deathrate = 1; // @todo: capture this as infant mortality + lifespan
 
 // ----------------------------------------------------------------------------
 // Tech tree
@@ -81,7 +81,7 @@ function computeYear(incr)
 
 function computePopulation(incr)
 {
-    var newHumans = (birthrate - deathrate) * population * incr;
+    var newHumans = ((birthrate - deathrate) / 1000) * population * incr;
 
     if (population + incr > 0) {
         population += newHumans;
@@ -163,7 +163,7 @@ function updateGatheringFn(tech)
 function promoteGatheringFn()
 {
     if (deathrate > 0) {
-        deathrate -= .001;    
+        deathrate -= .01;    
     }
     
     techTree["gathering"]["adoption"]++;
@@ -172,7 +172,7 @@ function promoteGatheringFn()
 function banGatheringFn()
 {
     if (deathrate < 1000) {
-        deathrate += .001;    
+        deathrate += .01;    
     }
     
     techTree["gathering"]["adoption"]--;
@@ -202,7 +202,7 @@ function updateFireFn(tech)
 function promoteFireFn()
 {
     if (deathrate > 0) {
-        deathrate -= .01;    
+        deathrate -= .02;    
     }
     
     techTree["fire"]["adoption"]++;
@@ -211,7 +211,7 @@ function promoteFireFn()
 function banFireFn()
 {
     if (deathrate < 1000) {
-        deathrate += .01;    
+        deathrate += .02;    
     }
     
     techTree["fire"]["adoption"]--;
@@ -241,7 +241,7 @@ function updateClothingFn(tech)
 function promoteClothingFn()
 {
     if (deathrate > 0) {
-        deathrate -= .005;    
+        deathrate -= .05;    
     }
     
     techTree["clothing"]["adoption"]++;
@@ -250,7 +250,7 @@ function promoteClothingFn()
 function banClothingFn()
 {
     if (deathrate < 1000) {
-        deathrate += .005;    
+        deathrate += .05;    
     }
     
     techTree["clothing"]["adoption"]--;
