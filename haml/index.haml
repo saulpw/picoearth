@@ -4,45 +4,69 @@
     %meta(charset="utf-8")
     %meta(name="viewport" content="width=device-width, initial-scale=1.0")
     %title Picoearth
+    %link(rel="stylesheet" href="assets/css/font-awesome.min.css")
     %link(rel="stylesheet" href="assets/css/foundation.css")
+    %link(href='http://fonts.googleapis.com/css?family=Share+Tech' rel='stylesheet' type='text/css')
     %script(src="assets/js/vendor/modernizr.js")
-  
+
   %body
     
+    #top-nav
     .row
-      .large-4.columns
+      .large-4.columns.large-collapse(data-equalizer-watch)
 
-        .panel
+        #stats-panel.panel
           / Stats
           %h3
             Year:
             %span#year 1000
 
-          - stats = {"population" => "Population",
-                    "birthrate" => "Annual birth rate",
-                    "deathrate" => "Annual death rate"}
+          - stats = {"population" => ["Population", "child"],
+                    "birthrate" => ["Annual birth rate", ""],
+                    "deathrate" => ["Annual death rate", ""]}
 
-          - stats.each do |stat, name|
+          - stats.each do |stat, name_icon|
+            - name = name_icon[0]
+            - icon = name_icon[1]
             %div
               #{name}:
-              %span(id="#{stat}") 0
-
-        / User interaction area
-        %button.success#mate-button Mate
+              %span(id="#{stat}") 
+                0
+              %i.fa(class="fa-#{icon}")
 
         / Log events
-        #log
+        %ul#log-accordion.accordion(data-accordion)
+          %li.accordion-navigation
+            %a#log-banner(href="#log") 
+              Log
+              %i.fa.fa-arrow-up.right
+            #log.content.active
           
+      .large-4.columns.large-collapse(data-equalizer-watch)
+        
+        / User interaction area
+        %button#mate-button 
+          %i.fa.fa-venus-mars
+          Mate
 
-      .large-8.columns
+        / Earth image
+        %img(src="assets/img/seasonal_earth.gif")
 
-        / Technology tree
-        %h2#techTree Technology
+        / Alert box area
+        #alert-area
+
+      / Technology tree
+      .large-4.columns.large-collapse(data-equalizer-watch)
+
+        .panel#tech-tree
+                    
+          %h2 Technology
+
 
     /
     / Load scripts
     /
-
+    %link(rel="stylesheet" href="assets/css/picoearth.css")
     %script(src="assets/js/vendor/jquery.js")
     %script(src="assets/js/foundation.min.js")
     %script(src="assets/js/picoearth.js")

@@ -10,9 +10,10 @@
     <script src='assets/js/vendor/modernizr.js'></script>
   </head>
   <body>
+    <div id='top-nav'></div>
     <div class='row'>
-      <div class='large-4 columns'>
-        <div class='panel'>
+      <div class='large-4 columns large-collapse' data-equalizer-watch>
+        <div class='panel' id='stats-panel'>
           <!-- Stats -->
           <h3>
             Year:
@@ -20,25 +21,53 @@
           </h3>
           <div>
             Population:
-            <span id='population'>0</span>
+            <span id='population'>
+              0
+            </span>
+            <i class='fa fa-child'></i>
           </div>
           <div>
             Annual birth rate:
-            <span id='birthrate'>0</span>
+            <span id='birthrate'>
+              0
+            </span>
+            <i class='fa fa-'></i>
           </div>
           <div>
             Annual death rate:
-            <span id='deathrate'>0</span>
+            <span id='deathrate'>
+              0
+            </span>
+            <i class='fa fa-'></i>
           </div>
         </div>
-        <!-- User interaction area -->
-        <button class='success' id='mate-button'>Mate</button>
         <!-- Log events -->
-        <div id='log'></div>
+        <ul class='accordion' data-accordion id='log-accordion'>
+          <li class='accordion-navigation'>
+            <a href='#log' id='log-banner'>
+              Log
+              <i class='fa fa-arrow-up right'></i>
+            </a>
+            <div class='content active' id='log'></div>
+          </li>
+        </ul>
       </div>
-      <div class='large-8 columns'>
-        <!-- Technology tree -->
-        <h2 id='techTree'>Technology</h2>
+      <div class='large-4 columns large-collapse' data-equalizer-watch>
+        <!-- User interaction area -->
+        <button id='mate-button'>
+          <i class='fa fa-venus-mars'></i>
+          Mate
+        </button>
+        <!-- Earth image -->
+        <img src='assets/img/seasonal_earth.gif'>
+        <!-- Alert box area -->
+        <div id='alert-area'></div>
+      </div>
+      <!-- Technology tree -->
+      <div class='large-4 columns large-collapse' data-equalizer-watch>
+        <div class='panel' id='tech-tree'>
+          <h2>Technology</h2>
+        </div>
       </div>
     </div>
     <!--  -->
