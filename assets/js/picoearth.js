@@ -2,10 +2,15 @@
 // Keep track of basic stats
 // ----------------------------------------------------------------------------
 
-var population = 2;
-var year = -10000;
-var birthrate = 1;
-var deathrate = 1; // @todo: capture this as infant mortality + lifespan
+const DEATHRATE_MAX = BIRTHRATE_MAX = 1000;
+const DEATHRATE_MIN = BIRTHRATE_MIN = 0;
+const A_HUNDRED_PERCENT = 100;
+const ZERO_PERCENT = 0;
+
+var g_population = 2;
+var g_year = -10000;
+var g_birthrate = 2;
+var g_deathrate = 2; // @todo: capture this as infant mortality + lifespan
 
 // ----------------------------------------------------------------------------
 // Tech tree
@@ -46,7 +51,8 @@ var gameUpdateInterval = 10; // ms
 // ----------------------------------------------------------------------------
 
 $('#mate-button').on('click', function () {
-    population++;
+    g_population++;
+    bounceButton($('#mate-button'));
 });
 
 $('#log-accordion').on('toggled', function (event, accordion) {
@@ -94,15 +100,15 @@ function updateStats()
 
 function computeYear(incr)
 {
-    year += incr;
+    g_year += incr;
 }
 
 function computePopulation(incr)
 {
-    var newHumans = ((birthrate - deathrate) / 1000) * population * incr;
+    var newHumans = ((g_birthrate - g_deathrate) / 1000) * g_population * incr;
 
-    if (population + incr > 0) {
-        population += newHumans;
+    if (g_population + incr > 0) {
+        g_population += newHumans;
     }
 }
 
@@ -163,7 +169,7 @@ function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
 
 function increaseAdoptionRate(tech)
 {
-    if (g_techTree[tech]["adoption"] < 100) {
+    if (g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT) {
         g_techTree[tech]["adoption"]++;
         return true;
     } 
@@ -172,7 +178,7 @@ function increaseAdoptionRate(tech)
 
 function decreaseAdoptionRate(tech)
 {
-    if (g_techTree[tech]["adoption"] > 0) {
+    if (g_techTree[tech]["adoption"] > ZERO_PERCENT) {
         g_techTree[tech]["adoption"]--;
         return true;
     }
@@ -188,29 +194,31 @@ function updateForagingFn(tech)
     const popThres = 5;
 
     var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && population > popThres) {
+    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
         g_techTree[tech]["unlocked"] = true;
         shouldUnlock = true;    
     }
 
-    var promoteEnabled =  g_techTree[tech]["adoption"] < 100;;
-    var banEnabled = g_techTree[tech]["adoption"] > 0;;
+    var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
+    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 }
 
 function promoteForagingFn()
-{
-    if (deathrate > 0 && increaseAdoptionRate("foraging")) {
-        deathrate -= .01;    
+{    
+    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("foraging")) {
+        g_deathrate -= .01;
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }
     
 }
 
 function banForagingFn()
 {
-    if (deathrate < 1000 && decreaseAdoptionRate("foraging")) {
-        deathrate += .01;    
+    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("foraging")) {
+        g_deathrate += .01;    
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }
 }
 
@@ -223,13 +231,13 @@ function updateFireFn(tech)
     const popThres = 10;
 
     var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && population > popThres) {
+    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
         g_techTree[tech]["unlocked"] = true;
         shouldUnlock = true;
     }
 
-    var promoteEnabled =  g_techTree[tech]["adoption"] < 100;;
-    var banEnabled = g_techTree[tech]["adoption"] > 0;
+    var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;;
+    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 
@@ -237,15 +245,17 @@ function updateFireFn(tech)
 
 function promoteFireFn()
 {
-    if (deathrate > 0 && increaseAdoptionRate("fire")) {
-        deathrate -= .02;    
+    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("fire")) {
+        g_deathrate -= 0.02;    
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }    
 }
 
 function banFireFn()
 {
-    if (deathrate < 1000 && decreaseAdoptionRate("fire")) {
-        deathrate += .02;    
+    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("fire")) {
+        g_deathrate += 0.02;    
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }    
 }
 
@@ -258,13 +268,13 @@ function updateClothingFn(tech)
     const popThres = 20;
 
     var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && population > popThres) {
+    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
         g_techTree[tech]["unlocked"] = true;
         shouldUnlock = true;
     }
 
-    var promoteEnabled = g_techTree[tech]["adoption"] < 100;
-    var banEnabled = g_techTree[tech]["adoption"] > 0;
+    var promoteEnabled = g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
+    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
 
     return [shouldUnlock, promoteEnabled, banEnabled];
 
@@ -272,15 +282,17 @@ function updateClothingFn(tech)
 
 function promoteClothingFn()
 {
-    if (deathrate > 0 && increaseAdoptionRate("clothing")) {
-        deathrate -= .05;    
+    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("clothing")) {
+        g_deathrate -= 0.05;    
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }        
 }
 
 function banClothingFn()
 {
-    if (deathrate < 1000 && decreaseAdoptionRate("clothing")) {
-        deathrate += .05;    
+    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("clothing")) {
+        g_deathrate += 0.05;
+        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     }        
 }
 
@@ -289,21 +301,21 @@ function banClothingFn()
 // ----------------------------------------------------------------------------
 
 function birthrateString() {
-    return birthrate.toFixed(2).toString().replace('-','') + ' per thousand';
+    return g_birthrate.toFixed(2).toString().replace('-','') + ' per thousand';
 }
 
 function deathrateString() {
-    return deathrate.toFixed(2).toString().replace('-','') + ' per thousand';
+    return g_deathrate.toFixed(2).toString().replace('-','') + ' per thousand';
 }
 
 function populationString() {
     // show how many humans we have, using Math.floor() to round down
-    return Math.floor(population);
+    return Math.floor(g_population);
 }
 
 function yearString() {
-    var toString = Math.floor(year);
-    if (year < 1000) {
+    var toString = Math.floor(g_year);
+    if (g_year < 1000) {
         toString = -toString + 'BC';
     } else {
         toString += 'AD'
@@ -348,6 +360,7 @@ function logging(eMsg, popup)
 // ----------------------------------------------------------------------------
 // Button functions
 // ----------------------------------------------------------------------------
+
 function addTechButtons(tech)
 {
     var interval;
@@ -372,3 +385,16 @@ function addTechButtons(tech)
         clearInterval(interval);
     });
 }
+
+function bounceButton(button)
+{
+    button.effect("bounce", {distance: 10}, 1 );
+}
+
+// ----------------------------------------------------------------------------
+// Math functions
+// ----------------------------------------------------------------------------
+
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
+};
