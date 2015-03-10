@@ -19,25 +19,112 @@ var g_deathrate = 2; // @todo: capture this as infant mortality + lifespan
 var g_techTree = {
     "foraging" : {
         "unlocked": false,
-        "update" : updateForagingFn,
-        "promote" : promoteForagingFn,
-        "ban" : banForagingFn,
+        "require": {
+            "population": 5,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.01
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .01
+        },
+        "adoption": 20
+        },
+    "shelters" : {
+        "unlocked": false,
+        "require": {
+            "population": 10,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.02
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .02
+        },
         "adoption": 20
         },
     "fire" : {
         "unlocked": false,
-        "update" : updateFireFn,
-        "promote" : promoteFireFn,
-        "ban" : banFireFn,
+        "require": {
+            "population": 20,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.05
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .05
+        },
         "adoption": 20
         },        
+    "cooking" : {
+        "unlocked": false,
+        "require": {
+            "population": 30,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.05
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .05
+        },
+        "adoption": 20
+        },
     "clothing" : {
         "unlocked": false,
-        "update" : updateClothingFn,
-        "promote" : promoteClothingFn,
-        "ban" : banClothingFn,
+        "require": {
+            "population": 50,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.06
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .06
+        },
         "adoption": 20
-        }        
+        },
+    "farming" : {
+        "unlocked": false,
+        "require": {
+            "population": 100,
+            "year": -10000,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 1,
+            "deathrate": -.05
+        },
+        "ban" : {
+            "birthrate": -1,
+            "deathrate": .05
+        },
+        "adoption": 20
+        }                
     };
 
 // ----------------------------------------------------------------------------
@@ -126,174 +213,130 @@ function updateUIStats() {
 function updateTechTree()
 {
     for (var tech in g_techTree) {
-        var update = g_techTree[tech]["update"](tech);
-        updateUITechTree(tech, update[0], update[1], update[2]);
+
+        if (shouldUnlockTech(tech)) {
+            addTech(tech);
+        }
+        updateTech(tech);
     }
 }
 
-function updateUITechTree(tech, shouldUnlock, promoteEnabled, banEnabled)
+function addTech(tech)
 {
     var percentAdopted = adoptionString(tech);
 
-    if (shouldUnlock) {
-        $('#tech-tree').append(' \
-            <div class="row tech-row"> \
-                <div class="large-8 columns right tech-row"> \
-                    <ul class="button-group round"> \
-                        <li><button class="tiny tech-button success" id="' + tech +'-promote"> Pro ' + tech + '</button> \
-                        </li> \
-                        <li><button class="tiny tech-button alert" id="' + tech +'-ban"> Ban ' + tech + '</button> \
-                        </li> \
-                    </ul> \
-                </div> \
-                <div class="large-4 columns tech-row"> \
-                    <div class="percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
-                </div> \
+    $('#tech-tree').append(' \
+        <div class="row tech-row"> \
+            <div class="large-8 columns right tech-row"> \
+                <ul class="button-group round"> \
+                    <li><button class="tiny tech-button success" id="' + tech +'-promote"> Pro ' + tech + '</button> \
+                    </li> \
+                    <li><button class="tiny tech-button alert" id="' + tech +'-ban"> Ban ' + tech + '</button> \
+                    </li> \
+                </ul> \
             </div> \
-            ');
+            <div class="large-4 columns tech-row"> \
+                <div class="percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
+            </div> \
+        </div> \
+        ');
 
-        // Log event
-        var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
-        logging(eventMessage, true);
+    // Log event
+    var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
+    logging(eventMessage, true);
 
-        // Add promote/ban buttons
-        addTechButtons(tech);
-    }
-
-    $('#' + tech + '-adoption').css("width", percentAdopted + "%");
-    $('#' + tech + '-adoption').html(percentAdopted + "%");
-    $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
-    $('#' + tech + '-ban').prop('disabled', !banEnabled);    
-
+    // Add promote/ban buttons
+    addTechButtons(tech);
 }
 
-function increaseAdoptionRate(tech)
+function shouldUnlockTech(tech)
 {
-    if (g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT) {
-        g_techTree[tech]["adoption"]++;
-        return true;
-    } 
-    return false;
-}
+    const popThres = g_techTree[tech]["require"]["population"];
+    const yearThres = g_techTree[tech]["require"]["year"];
+    const techThres = g_techTree[tech]["require"]["techs"];
+    const eventThres = g_techTree[tech]["require"]["events"];
 
-function decreaseAdoptionRate(tech)
-{
-    if (g_techTree[tech]["adoption"] > ZERO_PERCENT) {
-        g_techTree[tech]["adoption"]--;
-        return true;
+    if (g_techTree[tech]["unlocked"] == false) {
+
+        if (g_population >= popThres && g_year >= yearThres) {
+            g_techTree[tech]["unlocked"] = true;
+            return true;
+        }
     }
     return false;
 }
 
-// ------
-// Foraging
-// ------
-
-function updateForagingFn(tech)
+function updateTech(tech)
 {
-    const popThres = 5;
+    var percentAdopted = adoptionString(tech);
 
-    var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
-        g_techTree[tech]["unlocked"] = true;
-        shouldUnlock = true;    
+    if (g_techTree[tech]["unlocked"]) {
+
+        var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
+        var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;;
+
+        $('#' + tech + '-adoption').css("width", percentAdopted + "%");
+        $('#' + tech + '-adoption').html(percentAdopted + "%");
+        $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
+        $('#' + tech + '-ban').prop('disabled', !banEnabled);            
     }
 
-    var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
-    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;;
-
-    return [shouldUnlock, promoteEnabled, banEnabled];
 }
 
-function promoteForagingFn()
-{    
-    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("foraging")) {
-        g_deathrate -= .01;
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
+function promoteBanTech(tech, isPromote)
+{
+    if (isPromote) {
+        if (g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT) {
+
+            var brOffset = g_techTree[tech]["promote"]["birthrate"];
+            var drOffset = g_techTree[tech]["promote"]["deathrate"];
+            var shouldUpdateAdoption = false;
+            
+            if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
+                brOffset > 0 && g_birthrate != BIRTHRATE_MAX)
+            {
+                g_birthrate += brOffset;
+                shouldUpdateAdoption = true;
+            }
+            
+            if ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
+                drOffset > 0 && g_deathrate != DEATHRATE_MAX)
+            {
+                g_deathrate += drOffset;
+                shouldUpdateAdoption = true;
+            }
+
+            if (shouldUpdateAdoption) {
+                g_techTree[tech]["adoption"]++;
+            }
+        }
+    } else {
+        if (g_techTree[tech]["adoption"] > ZERO_PERCENT) {
+
+            var brOffset = g_techTree[tech]["ban"]["birthrate"];
+            var drOffset = g_techTree[tech]["ban"]["deathrate"];
+            var shouldUpdateAdoption = false;
+
+            if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
+                brOffset > 0 && g_birthrate != BIRTHRATE_MAX)
+            {
+                g_birthrate += brOffset;
+                shouldUpdateAdoption = true;
+            }
+            if ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
+                drOffset > 0 && g_deathrate != DEATHRATE_MAX)
+            {
+                g_deathrate += drOffset;
+                shouldUpdateAdoption = true;
+            }
+
+            if (shouldUpdateAdoption) {
+                g_techTree[tech]["adoption"]--;
+            }
+        }
     }
-    
-}
-
-function banForagingFn()
-{
-    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("foraging")) {
-        g_deathrate += .01;    
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    }
-}
-
-// ------
-// Fire
-// ------
-
-function updateFireFn(tech)
-{
-    const popThres = 10;
-
-    var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
-        g_techTree[tech]["unlocked"] = true;
-        shouldUnlock = true;
-    }
-
-    var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;;
-    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
-
-    return [shouldUnlock, promoteEnabled, banEnabled];
-
-}
-
-function promoteFireFn()
-{
-    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("fire")) {
-        g_deathrate -= 0.02;    
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    }    
-}
-
-function banFireFn()
-{
-    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("fire")) {
-        g_deathrate += 0.02;    
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    }    
-}
-
-// ------
-// Clothing
-// ------
-
-function updateClothingFn(tech)
-{
-    const popThres = 20;
-
-    var shouldUnlock = false;
-    if (g_techTree[tech]["unlocked"] == false && g_population > popThres) {
-        g_techTree[tech]["unlocked"] = true;
-        shouldUnlock = true;
-    }
-
-    var promoteEnabled = g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
-    var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
-
-    return [shouldUnlock, promoteEnabled, banEnabled];
-
-}
-
-function promoteClothingFn()
-{
-    if (g_deathrate != DEATHRATE_MIN && increaseAdoptionRate("clothing")) {
-        g_deathrate -= 0.05;    
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    }        
-}
-
-function banClothingFn()
-{
-    if (g_deathrate != DEATHRATE_MAX && decreaseAdoptionRate("clothing")) {
-        g_deathrate += 0.05;
-        g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    }        
+    g_birthrate = g_birthrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
+    g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
 }
 
 // ----------------------------------------------------------------------------
@@ -369,7 +412,9 @@ function addTechButtons(tech)
 
     promoteButton.bind('mousedown',function(e) {
         clearInterval(interval);
-        interval = setInterval(g_techTree[tech]["promote"],60); 
+        interval = setInterval(function() {
+            promoteBanTech(tech, true)
+        }, 60); 
     });
 
     promoteButton.bind('mouseup',function(e) {
@@ -378,7 +423,9 @@ function addTechButtons(tech)
 
     banButton.bind('mousedown',function(e) {
         clearInterval(interval);
-        interval = setInterval(g_techTree[tech]["ban"],60); 
+        interval = setInterval(function() {
+            promoteBanTech(tech, false)
+        }, 60); 
     });
 
     banButton.bind('mouseup',function(e) {
