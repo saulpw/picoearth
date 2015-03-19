@@ -6,11 +6,12 @@ const DEATHRATE_MAX = BIRTHRATE_MAX = 1000;
 const DEATHRATE_MIN = BIRTHRATE_MIN = 0;
 const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
+const MATE_INCREASE = 1000;
 
-var g_population = 2;
+var g_population = 1000;
 var g_year = -10000;
-var g_birthrate = 2;
-var g_deathrate = 2; // @todo: capture this as infant mortality + lifespan
+var g_birthrate = 40;
+var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
 
 // ----------------------------------------------------------------------------
 // Tech tree
@@ -20,7 +21,7 @@ var g_techTree = {
     "foraging" : {
         "unlocked": false,
         "require": {
-            "population": 5,
+            "population": 5000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -38,7 +39,7 @@ var g_techTree = {
     "shelters" : {
         "unlocked": false,
         "require": {
-            "population": 10,
+            "population": 10000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -56,7 +57,7 @@ var g_techTree = {
     "fire" : {
         "unlocked": false,
         "require": {
-            "population": 20,
+            "population": 20000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -74,7 +75,7 @@ var g_techTree = {
     "cooking" : {
         "unlocked": false,
         "require": {
-            "population": 30,
+            "population": 30000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -92,7 +93,7 @@ var g_techTree = {
     "clothing" : {
         "unlocked": false,
         "require": {
-            "population": 50,
+            "population": 50000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -110,7 +111,7 @@ var g_techTree = {
     "farming" : {
         "unlocked": false,
         "require": {
-            "population": 100,
+            "population": 100000,
             "year": -10000,
             "techs": [],
             "events": []
@@ -127,6 +128,138 @@ var g_techTree = {
         }                
     };
 
+var g_naturalDisasters = {
+    
+    /*
+    - Ischemic heart disease
+    - Cerebrovascular disease
+    - Lower respiratory infections
+    - Chronic obstructive pulmonary disease
+    - Cancers
+    - Road traffic accidents
+    - Malaria
+    - Tuberculosis
+    - Measles
+    - Influenza
+    - Cholera
+    - Diarrhea
+    - AIDS
+    - Flood
+    - Volcanic eruption
+    - Hurricane
+    - Forest fire
+    - Tsunami
+    - Plague
+    - Famine
+    - Drought
+    - Heat stroke
+    */
+
+    // ---
+    // Natural disasters
+    // ---
+    "CentralChinaFlood": {
+        "message": "A series of flood occurs in China, killing 1000000, in the year 1931.",
+        "conditions": {
+            "year": 1931
+        },
+        "effects": {
+            "death": 1000000
+        }        
+    },
+    "YellowRiverFlood": {
+        "message": "A devastating flood overflows on the Yellow River, China, killing 900000, in the year 1931.",
+        "conditions": {
+            "year": 1887
+        },
+        "effects": {
+            "death": 900000
+        }        
+    },
+    "ShaanxiEarthquake": {
+        "message": "A catastrophic earth hits Shaanxi, during Minh dynasty, killing 830000, in the year 1556.",
+        "conditions": {
+            "year": 1556
+        },
+        "effects": {
+            "death": 830000
+        }        
+    },
+    "TangshanEarthquake": {
+        "message": "An earthquake hits Tangshan, China, killing 242000, in the year 1976.",
+        "conditions": {
+            "year": 1976
+        },
+        "effects": {
+            "death": 242000
+        }
+    },
+    "BholaCyclone": {
+        "message": "A devastating tropical cyclone that struck East Pakistan, killing 500,000, in the year 1970.",
+        "conditions": {
+            "year": 1970
+        },
+        "effects": {
+            "death": 500000
+        }
+    },
+    "IndiaCyclone": {
+        "message": "A tropical cyclone has struck India, killing 300000, in the year 1839.",
+        "conditions": {
+            "year": 1839
+        },
+        "effects": {
+            "death": 300000
+        }        
+    },
+    "CalcuttaCyclone": {
+        "message": "A tropical cyclone has struck Calcutta, killing 300000, in the year 1737.",
+        "conditions": {
+            "year": 1737
+        },
+        "effects": {
+            "death": 300000
+        }
+    },
+    "HaiyuanEarthquake":
+    {
+        "message": "A 7.8 magnitude hit Haiyuan county, China, killing 73,000 people, in the year 1920.",
+        "conditions": {
+            "year": 1920
+        },
+        "effects": {
+            "death": 73000
+        }
+    },
+    "IndianOceanEarthquake": {
+        "message": "An earthquake has struck Indian Ocean, killing 280,000, in the year 2004.",
+        "conditions": {
+            "year": 2004
+        },
+        "effects": {
+            "death": 280000
+        }        
+    },
+    "AntiochEarthquake": {
+        "message": "An earthquake has struck Antioch in the Byzantine Empire, killing ~250,000 people, in the year 526.",
+        "conditions": {
+            "year": 526
+        },
+        "effects": {
+            "death": 250000
+        }        
+    },
+    "test": {
+        "message": "test event",
+        "conditions": {
+            "year": -9999
+        },
+        "effects": {
+            "death": 1
+        }
+    }
+};
+
 // ----------------------------------------------------------------------------
 // Game internal states
 // ----------------------------------------------------------------------------
@@ -138,8 +271,7 @@ var gameUpdateInterval = 10; // ms
 // ----------------------------------------------------------------------------
 
 $('#mate-button').on('click', function () {
-    g_population++;
-    bounceButton($('#mate-button'));
+    g_population += MATE_INCREASE;
 });
 
 $('#log-accordion').on('toggled', function (event, accordion) {
@@ -166,8 +298,9 @@ $(document).ready( function () {
 
 window.setInterval(function () {
 
-    updateStats();    
+    updateStats();
     updateTechTree();
+    checkForWorldEvents();
 
 }, gameUpdateInterval);
 
@@ -280,7 +413,6 @@ function updateTech(tech)
         $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
         $('#' + tech + '-ban').prop('disabled', !banEnabled);            
     }
-
 }
 
 function promoteBanTech(tech, isPromote)
@@ -340,6 +472,42 @@ function promoteBanTech(tech, isPromote)
 }
 
 // ----------------------------------------------------------------------------
+// World events
+// ----------------------------------------------------------------------------
+
+function year()
+{
+    return Math.floor(g_year);
+}
+
+function checkForWorldEvents()
+{
+    // Natural disasters
+    for (var natDis in g_naturalDisasters) {
+        if (g_events[natDis]["conditions"]["year"] == year()) {
+            logging(g_events[natDis]["message"]);
+            g_population -= g_events[natDis]["effects"]["death"];
+
+            // Set condition to a year that has passed to prevent
+            // this event to trigger again
+            g_events[natDis]["conditions"]["year"] = year() - 1;
+        }
+    }
+}
+
+function naturalGrowthRate(year)
+{
+
+// Based on the estimation table here https://www.census.gov/population/international/data/worldpop/table_history.php
+// the polynomial trendline is:
+// Population growth estimation = 2.7x^2 - 60x + 300
+//
+// We're going to generate a natural growth rate using this estimation.
+//
+    return 2.7 * pow(year + 10000, 2) - 60 * year + 300
+}
+
+// ----------------------------------------------------------------------------
 // String representations
 // ----------------------------------------------------------------------------
 
@@ -352,12 +520,42 @@ function deathrateString() {
 }
 
 function populationString() {
-    // show how many humans we have, using Math.floor() to round down
-    return Math.floor(g_population);
+    var pop = Math.floor(g_population)
+    var string = "";
+    
+    // billions
+    if (Math.floor(pop / 1000000000) > 0) 
+    {
+        string = Math.floor(pop / 1000000000) + " billions"
+    }
+    // millions
+    else if (Math.floor(pop / 1000000) > 0)
+    {
+        string = Math.floor(pop / 1000000) + " millions"
+
+    }
+    // thousands
+    else if (Math.floor(pop / 1000) > 0)
+    {
+        string = Math.floor(pop / 1000) + " thousands"
+
+    }
+    // hundreds
+    else if (Math.floor(pop / 100) > 0)
+    {
+        string = Math.floor(pop / 100) + " hundreds"
+
+    }
+    else
+    {
+        string = pop;
+    }
+
+    return string;
 }
 
 function yearString() {
-    var toString = Math.floor(g_year);
+    var toString = year();
     if (g_year < 1000) {
         toString = -toString + 'BC';
     } else {
