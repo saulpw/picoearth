@@ -14,6 +14,11 @@ var g_birthrate = 40;
 var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
 
 // ----------------------------------------------------------------------------
+// Internal game stats
+// ----------------------------------------------------------------------------
+var g_gameSpeed = 1;
+
+// ----------------------------------------------------------------------------
 // Tech tree
 // ----------------------------------------------------------------------------
 
@@ -270,10 +275,15 @@ var gameUpdateInterval = 10; // ms
 // User interactions
 // ----------------------------------------------------------------------------
 
-$('#mate-button').on('click', function () {
-    g_population += MATE_INCREASE;
-});
+// ---
+// Buttons
+// ---
+$('#mate-button').on('click', mate);
+$('#forward-button').on('click', forwardGame);
 
+// ---
+// Log
+// ---
 $('#log-accordion').on('toggled', function (event, accordion) {
     
     // Toggle arrow when expand/close log
@@ -310,8 +320,8 @@ window.setInterval(function () {
 
 function updateStats()
 {
-    // incr amount for every 1ms
-    var incr = (1/1000) * gameUpdateInterval;
+    // incr amount for every *gameSpeed* in ms
+    var incr = (g_gameSpeed/1000) * gameUpdateInterval;
 
     computeYear(incr);
     computePopulation(incr);
@@ -333,6 +343,7 @@ function computePopulation(incr)
 }
 
 function updateUIStats() {
+    $('#game-speed-label').text(gameSpeedString());
     $('#population').text(populationString());
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
@@ -484,13 +495,16 @@ function checkForWorldEvents()
 {
     // Natural disasters
     for (var natDis in g_naturalDisasters) {
-        if (g_events[natDis]["conditions"]["year"] == year()) {
-            logging(g_events[natDis]["message"]);
-            g_population -= g_events[natDis]["effects"]["death"];
+        if (g_naturalDisasters[natDis]["conditions"]["year"] == year()) {
+            logging(g_naturalDisasters[natDis]["message"], true, 'warning');
+            g_population -= g_naturalDisasters[natDis]["effects"]["death"];
+            if (g_population < 0) {
+                g_population = 0;
+            }
 
             // Set condition to a year that has passed to prevent
             // this event to trigger again
-            g_events[natDis]["conditions"]["year"] = year() - 1;
+            g_naturalDisasters[natDis]["conditions"]["year"] = year() - 1;
         }
     }
 }
@@ -569,14 +583,18 @@ function adoptionString(tech) {
     return Math.round(adoption);
 }
 
+function gameSpeedString() {
+    return "X" + g_gameSpeed;
+}
+
 // ----------------------------------------------------------------------------
 // Logging functions
 // ----------------------------------------------------------------------------
 
-function popupAlert(str)
+function popupAlert(str, level)
 {
     $('#alert-area').prepend(' \
-        <div class="alert-box secondary round" data-alert>' +
+        <div class="alert-box secondary round ' + level + '" data-alert>' +
           str +
           '<a href="#" class="close"> &times; </a> \
         </div> \
@@ -587,15 +605,14 @@ function popupAlert(str)
             );
 }
 
-function logging(eMsg, popup)
+function logging(eMsg, popup, level)
 {
     $('#log').prepend('<div>' + eMsg + '</div>' );
     
     popup = typeof popup !== 'undefined' ? popup : false;
     if (popup) {
-        popupAlert(eMsg);        
-    }
-    
+        popupAlert(eMsg, level);        
+    }    
 }
 
 // ----------------------------------------------------------------------------
@@ -636,6 +653,32 @@ function bounceButton(button)
     button.effect("bounce", {distance: 10}, 1 );
 }
 
+function mate()
+{
+    g_population += MATE_INCREASE;
+}
+
+function forwardGame()
+{
+    switch(g_gameSpeed)
+    {
+        case 1:
+            g_gameSpeed = 4;
+            break;
+        case 4:
+            g_gameSpeed = 16;
+            break;
+        case 16:
+            g_gameSpeed = 32;
+            break;
+        case 32:
+            g_gameSpeed = 1;
+            break;
+        default:
+            g_gameSpeed = 1;
+            break;
+    }
+}
 // ----------------------------------------------------------------------------
 // Math functions
 // ----------------------------------------------------------------------------
