@@ -302,6 +302,47 @@ $(document).ready( function () {
     logging("Humans are born in " + yearString() + ".", true);
 });
 
+
+// Setup graph area
+var ctx = $('#graph-area').get(0).getContext("2d");
+var g_graphData = {
+    labels: [yearString()],
+    datasets: [
+        {
+            label: "Population",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: [g_population]
+        },
+        {
+            label: "Birthrate",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: [g_birthrate]
+        },
+        {
+            label: "Deathrate",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: [g_deathrate]
+        }
+
+    ]
+};
+var g_chart = new Chart(ctx).Line(g_graphData, {});;
+
 // ----------------------------------------------------------------------------
 // Run UI update code every x ms
 // ----------------------------------------------------------------------------
@@ -323,21 +364,27 @@ function updateStats()
     // incr amount for every *gameSpeed* in ms
     var incr = (g_gameSpeed/1000) * gameUpdateInterval;
 
-    computeYear(incr);
-    computePopulation(incr);
+    updateYear(incr);
+    updatePopulation(incr);
     updateUIStats();
 }
 
-function computeYear(incr)
+function updateYear(incr)
 {
+    var curYear = year();
     g_year += incr;
+    
+    // Check for new year events   
+    if (curYear != year()) {
+        evNewYear();
+    }
 }
 
-function computePopulation(incr)
+function updatePopulation(incr)
 {
     var newHumans = ((g_birthrate - g_deathrate) / 1000) * g_population * incr;
 
-    if (g_population + incr > 0) {
+    if (g_population + newHumans > 0) {
         g_population += newHumans;
     }
 }
@@ -348,6 +395,14 @@ function updateUIStats() {
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
+}
+
+function evNewYear()
+{
+    if (year() % 100 == 0) {
+        // update graph
+        g_chart.addData([Math.floor(g_population), g_birthrate, g_deathrate], yearString());
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -391,6 +446,9 @@ function addTech(tech)
 
     // Add promote/ban buttons
     addTechButtons(tech);
+
+    // First promote
+    promoteBanTech(tech, true);
 }
 
 function shouldUnlockTech(tech)
@@ -572,8 +630,6 @@ function yearString() {
     var toString = year();
     if (g_year < 1000) {
         toString = -toString + 'BC';
-    } else {
-        toString += 'AD'
     }
     return toString;
 }

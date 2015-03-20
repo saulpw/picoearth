@@ -12,7 +12,7 @@
   <body>
     <div id='top-nav'></div>
     <div class='row'>
-      <div class='large-4 columns large-collapse' data-equalizer-watch>
+      <div class='large-4 columns' data-equalizer-watch>
         <div class='panel' id='stats-panel'>
           <!-- Stats -->
           <h3>
@@ -41,6 +41,8 @@
             <i class='fa fa-'></i>
           </div>
         </div>
+        <!-- Graph area -->
+        <canvas height='400' id='graph-area' width='400'></canvas>
         <!-- Log events -->
         <ul class='accordion' data-accordion id='log-accordion'>
           <li class='accordion-navigation'>
@@ -52,23 +54,29 @@
           </li>
         </ul>
       </div>
-      <div class='large-4 columns large-collapse' data-equalizer-watch>
+      <div class='large-4 columns' data-equalizer-watch>
         <!-- User interaction area -->
-        <button id='forward-button'>
-          <i class='fa fa-forward'></i>
-          <span id='game-speed-label'></span>
-        </button>
-        <button id='mate-button'>
-          <i class='fa fa-venus-mars'></i>
-          Mate
-        </button>
+        <div class='row'>
+          <div class='large-4 columns'>
+            <button class='success round' id='forward-button'>
+              <i class='fa fa-forward'></i>
+              <span id='game-speed-label'></span>
+            </button>
+          </div>
+          <div class='large-8 columns'>
+            <button id='mate-button'>
+              <i class='fa fa-venus-mars'></i>
+              Mate (+1 thousand humans)
+            </button>
+          </div>
+        </div>
         <!-- Earth image -->
         <img src='assets/img/seasonal_earth.gif'>
         <!-- Alert box area -->
         <div id='alert-area'></div>
       </div>
       <!-- Technology tree -->
-      <div class='large-4 columns large-collapse' data-equalizer-watch>
+      <div class='large-4 columns' data-equalizer-watch>
         <div class='panel' id='tech-tree'>
           <h2>Technology</h2>
         </div>
@@ -81,6 +89,7 @@
     <script src='assets/js/vendor/jquery.js'></script>
     <script src='assets/js/vendor/jquery-ui-1.11.3/jquery-ui.min.js'></script>
     <script src='assets/js/foundation.min.js'></script>
+    <script src='assets/js/Chart.min.js'></script>
     <script src='assets/js/picoearth.js'></script>
     <script>
       $(document).foundation();

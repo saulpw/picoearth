@@ -13,7 +13,7 @@
     
     #top-nav
     .row
-      .large-4.columns.large-collapse(data-equalizer-watch)
+      .large-4.columns(data-equalizer-watch)
 
         #stats-panel.panel
           / Stats
@@ -34,6 +34,9 @@
                 0
               %i.fa(class="fa-#{icon}")
 
+        / Graph area
+        %canvas#graph-area(width="400" height="400")
+
         / Log events
         %ul#log-accordion.accordion(data-accordion)
           %li.accordion-navigation
@@ -42,16 +45,20 @@
               %i.fa.fa-arrow-up.right
             #log.content.active
           
-      .large-4.columns.large-collapse(data-equalizer-watch)
+      .large-4.columns(data-equalizer-watch)
         
         / User interaction area
-        %button#forward-button
-          %i.fa.fa-forward
-          %span#game-speed-label
 
-        %button#mate-button 
-          %i.fa.fa-venus-mars
-          Mate
+        .row
+          .large-4.columns
+            %button.success.round#forward-button
+              %i.fa.fa-forward
+              %span#game-speed-label
+
+          .large-8.columns
+            %button#mate-button
+              %i.fa.fa-venus-mars
+              Mate (+1 thousand humans)
 
         / Earth image
         %img(src="assets/img/seasonal_earth.gif")
@@ -60,7 +67,7 @@
         #alert-area
 
       / Technology tree
-      .large-4.columns.large-collapse(data-equalizer-watch)
+      .large-4.columns(data-equalizer-watch)
 
         .panel#tech-tree
                     
@@ -74,6 +81,7 @@
     %script(src="assets/js/vendor/jquery.js")
     %script(src="assets/js/vendor/jquery-ui-1.11.3/jquery-ui.min.js")
     %script(src="assets/js/foundation.min.js")
+    %script(src="assets/js/Chart.min.js")
     %script(src="assets/js/picoearth.js")
     %script
       $(document).foundation();
