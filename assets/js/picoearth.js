@@ -8,9 +8,9 @@ const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
 const MATE_INCREASE = 1000;
 
-var g_population = 1000;
+var g_population = 1000000;
 var g_year = -10000;
-var g_birthrate = 40;
+var g_birthrate = 40.01;
 var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
 
 // ----------------------------------------------------------------------------
@@ -23,143 +23,154 @@ var g_gameSpeed = 1;
 // ----------------------------------------------------------------------------
 
 var g_techTree = {
-    "foraging" : {
+    "Foraging" : {
         "unlocked": false,
         "require": {
-            "population": 5000,
+            "population": 1000000,
             "year": -10000,
             "techs": [],
             "events": []
         },
         "promote" : {
             "birthrate": 0,
-            "deathrate": -.01
+            "deathrate": -.001
         },
         "ban" : {
             "birthrate": 0,
-            "deathrate": .01
+            "deathrate": .001
         },
         "adoption": 20
         },
-    "shelters" : {
+    "Fire" : {
         "unlocked": false,
         "require": {
-            "population": 10000,
+            "population": 1005000,
             "year": -10000,
             "techs": [],
             "events": []
         },
         "promote" : {
             "birthrate": 0,
-            "deathrate": -.02
+            "deathrate": -.005
         },
         "ban" : {
             "birthrate": 0,
-            "deathrate": .02
+            "deathrate": .005
         },
-        "adoption": 20
-        },
-    "fire" : {
-        "unlocked": false,
-        "require": {
-            "population": 20000,
-            "year": -10000,
-            "techs": [],
-            "events": []
-        },
-        "promote" : {
-            "birthrate": 0,
-            "deathrate": -.05
-        },
-        "ban" : {
-            "birthrate": 0,
-            "deathrate": .05
-        },
-        "adoption": 20
+        "adoption": 21
         },        
-    "cooking" : {
+    "Cave-shelters" : {
         "unlocked": false,
         "require": {
-            "population": 30000,
-            "year": -10000,
+            "population": 1015000,
+            "year": -9995,
             "techs": [],
             "events": []
         },
         "promote" : {
             "birthrate": 0,
-            "deathrate": -.05
+            "deathrate": -.002
         },
         "ban" : {
             "birthrate": 0,
-            "deathrate": .05
+            "deathrate": .002
         },
-        "adoption": 20
+        "adoption": 32
         },
-    "clothing" : {
+    "Cave-drawing" : {
         "unlocked": false,
         "require": {
-            "population": 50000,
-            "year": -10000,
+            "population": 1020000,
+            "year": -9990,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": .001,
+            "deathrate": -.001
+        },
+        "ban" : {
+            "birthrate": -.001,
+            "deathrate": .001
+        },
+        "adoption": 12
+        },
+    "Domestication" : {
+        "unlocked": false,
+        "require": {
+            "population": 1030000,
+            "year": -9980,
             "techs": [],
             "events": []
         },
         "promote" : {
             "birthrate": 0,
-            "deathrate": -.06
+            "deathrate": -.001
         },
         "ban" : {
             "birthrate": 0,
-            "deathrate": .06
+            "deathrate": .001
         },
-        "adoption": 20
+        "adoption": 4
         },
-    "farming" : {
+    "Cooking" : {
         "unlocked": false,
         "require": {
-            "population": 100000,
-            "year": -10000,
+            "population": 1020000,
+            "year": -9990,
+            "techs": ["Fire"],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": .001,
+            "deathrate": -.002
+        },
+        "ban" : {
+            "birthrate": -.001,
+            "deathrate": .002
+        },
+        "adoption": 26
+        },
+    "Clothing" : {
+        "unlocked": false,
+        "require": {
+            "population": 1040000,
+            "year": -9890,
             "techs": [],
             "events": []
         },
         "promote" : {
-            "birthrate": 1,
-            "deathrate": -.05
+            "birthrate": 0,
+            "deathrate": -.002
         },
         "ban" : {
-            "birthrate": -1,
-            "deathrate": .05
+            "birthrate": 0,
+            "deathrate": .002
         },
-        "adoption": 20
+        "adoption": 34
+        },
+    "Cultivation" : {
+        "unlocked": false,
+        "require": {
+            "population": 1070000,
+            "year": -9800,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": .002,
+            "deathrate": -.001
+        },
+        "ban" : {
+            "birthrate": -.001,
+            "deathrate": .002
+        },
+        "adoption": 13
         }                
     };
 
 var g_naturalDisasters = {
     
-    /*
-    - Ischemic heart disease
-    - Cerebrovascular disease
-    - Lower respiratory infections
-    - Chronic obstructive pulmonary disease
-    - Cancers
-    - Road traffic accidents
-    - Malaria
-    - Tuberculosis
-    - Measles
-    - Influenza
-    - Cholera
-    - Diarrhea
-    - AIDS
-    - Flood
-    - Volcanic eruption
-    - Hurricane
-    - Forest fire
-    - Tsunami
-    - Plague
-    - Famine
-    - Drought
-    - Heat stroke
-    */
-
     // ---
     // Natural disasters
     // ---
@@ -253,17 +264,17 @@ var g_naturalDisasters = {
         "effects": {
             "death": 250000
         }        
-    },
-    "test": {
-        "message": "test event",
-        "conditions": {
-            "year": -9999
-        },
-        "effects": {
-            "death": 1
-        }
     }
 };
+
+var g_genericWorldEvents = {
+    "GameBegin": {
+        "message": "The humans are born in the year 10000BC.",
+        "conditions": {
+            "year": -10000
+        },
+    }
+}
 
 // ----------------------------------------------------------------------------
 // Game internal states
@@ -280,6 +291,19 @@ var gameUpdateInterval = 10; // ms
 // ---
 $('#mate-button').on('click', mate);
 $('#forward-button').on('click', forwardGame);
+
+// ---
+// Graph area
+// ---
+$('#graph-accordion').on('toggled', function (event, accordion) {
+    
+    // Toggle arrow when expand/close graph
+    if ($('#graph-area').hasClass("active")) {
+        $('#graph-banner').html("Graph <i class='fa fa-arrow-up right'></i>");    
+    } else {
+        $('#graph-banner').html("Graph <i class='fa fa-arrow-down right'></i>");    
+    }    
+});
 
 // ---
 // Log
@@ -299,13 +323,13 @@ $('#log-accordion').on('toggled', function (event, accordion) {
 // ----------------------------------------------------------------------------
 
 $(document).ready( function () {
-    logging("Humans are born in " + yearString() + ".", true);
+    
 });
 
 
 // Setup graph area
-var ctx = $('#graph-area').get(0).getContext("2d");
-var g_graphData = {
+var ctx = $('#graph-population').get(0).getContext("2d");
+var g_popGraphData = {
     labels: [yearString()],
     datasets: [
         {
@@ -317,15 +341,30 @@ var g_graphData = {
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
             data: [g_population]
-        },
+        }
+    ]
+};
+var g_popChart = new Chart(ctx).Line(g_popGraphData, {
+    pointDot : false,
+    bezierCurve : true,
+    datasetStrokeWidth : 1,
+    scaleFontSize: 8,
+    animation: false,
+    scaleShowHorizontalLines: false,
+});
+
+ctx = $('#graph-BRDR').get(0).getContext("2d");
+var g_BRDRGraphData = {
+    labels: [yearString()],
+    datasets: [
         {
             label: "Birthrate",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
+            pointHighlightStroke: "rgba(220,220,220,1)",
             data: [g_birthrate]
         },
         {
@@ -338,10 +377,16 @@ var g_graphData = {
             pointHighlightStroke: "rgba(151,187,205,1)",
             data: [g_deathrate]
         }
-
     ]
 };
-var g_chart = new Chart(ctx).Line(g_graphData, {});;
+var g_BRDRChart = new Chart(ctx).Line(g_BRDRGraphData, {
+    pointDot : false,
+    bezierCurve : true,
+    datasetStrokeWidth : 1,
+    scaleFontSize: 8,
+    animation: false,
+    scaleShowHorizontalLines: false,
+});
 
 // ----------------------------------------------------------------------------
 // Run UI update code every x ms
@@ -349,9 +394,9 @@ var g_chart = new Chart(ctx).Line(g_graphData, {});;
 
 window.setInterval(function () {
 
+    checkForWorldEvents();
     updateStats();
     updateTechTree();
-    checkForWorldEvents();
 
 }, gameUpdateInterval);
 
@@ -397,11 +442,29 @@ function updateUIStats() {
     $('#deathrate').text(deathrateString());
 }
 
+function addDataToGraphs()
+{
+    g_popChart.addData([population()], yearString());
+    g_BRDRChart.addData([g_birthrate, g_deathrate], yearString());    
+}
+
+function removeDataFromGraphs()
+{
+    g_popChart.removeData();
+    g_BRDRChart.removeData();
+}
+
 function evNewYear()
 {
     if (year() % 100 == 0) {
-        // update graph
-        g_chart.addData([Math.floor(g_population), g_birthrate, g_deathrate], yearString());
+
+        // update graphs
+        addDataToGraphs();
+
+        // remove the first points in each data sets        
+        if (year() > -8000) {
+            removeDataFromGraphs();
+        }
     }
 }
 
@@ -423,19 +486,20 @@ function updateTechTree()
 function addTech(tech)
 {
     var percentAdopted = adoptionString(tech);
+    var tooltipString = 'Promote: ' + g_techTree[tech]["promote"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["promote"]["deathrate"] + ' deathrate, Ban: ' + g_techTree[tech]["ban"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["ban"]["deathrate"];
 
     $('#tech-tree').append(' \
         <div class="row tech-row"> \
             <div class="large-8 columns right tech-row"> \
                 <ul class="button-group round"> \
-                    <li><button class="tiny tech-button success" id="' + tech +'-promote"> Pro ' + tech + '</button> \
+                    <li><button class="tiny tech-button success" id="' + tech +'-promote"> + ' + tech + '</button> \
                     </li> \
-                    <li><button class="tiny tech-button alert" id="' + tech +'-ban"> Ban ' + tech + '</button> \
+                    <li><button class="tiny tech-button alert" id="' + tech +'-ban"> - ' + tech + '</button> \
                     </li> \
                 </ul> \
             </div> \
             <div class="large-4 columns tech-row"> \
-                <div class="percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
+                <div data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
             </div> \
         </div> \
         ');
@@ -461,7 +525,17 @@ function shouldUnlockTech(tech)
     if (g_techTree[tech]["unlocked"] == false) {
 
         if (g_population >= popThres && g_year >= yearThres) {
-            g_techTree[tech]["unlocked"] = true;
+
+            // Check for required techs
+            g_techTree[tech]["unlocked"] = true;        
+
+            for (var requiredTech in eventThres) {
+                if (g_techTree[requiredTech]["unlocked"] == false) {
+                    g_techTree[tech]["unlocked"] = false; 
+                    break;       
+                }
+            }                
+
             return true;
         }
     }
@@ -475,7 +549,7 @@ function updateTech(tech)
     if (g_techTree[tech]["unlocked"]) {
 
         var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
-        var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;;
+        var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
 
         $('#' + tech + '-adoption').css("width", percentAdopted + "%");
         $('#' + tech + '-adoption').html(percentAdopted + "%");
@@ -544,13 +618,19 @@ function promoteBanTech(tech, isPromote)
 // World events
 // ----------------------------------------------------------------------------
 
-function year()
-{
-    return Math.floor(g_year);
-}
-
 function checkForWorldEvents()
 {
+    // Generic world events
+    for (var ev in g_genericWorldEvents) {
+        if (g_genericWorldEvents[ev]["conditions"]["year"] == year()) {
+            logging(g_genericWorldEvents[ev]["message"], true, "warning");
+
+            // Set condition to a year that has passed to prevent
+            // this event to trigger again
+            g_genericWorldEvents[ev]["conditions"]["year"] = year() - 1;
+        }
+    }
+
     // Natural disasters
     for (var natDis in g_naturalDisasters) {
         if (g_naturalDisasters[natDis]["conditions"]["year"] == year()) {
@@ -565,18 +645,22 @@ function checkForWorldEvents()
             g_naturalDisasters[natDis]["conditions"]["year"] = year() - 1;
         }
     }
+
+    // Generic events
 }
 
-function naturalGrowthRate(year)
-{
+// ----------------------------------------------------------------------------
+// Getters
+// ----------------------------------------------------------------------------
 
-// Based on the estimation table here https://www.census.gov/population/international/data/worldpop/table_history.php
-// the polynomial trendline is:
-// Population growth estimation = 2.7x^2 - 60x + 300
-//
-// We're going to generate a natural growth rate using this estimation.
-//
-    return 2.7 * pow(year + 10000, 2) - 60 * year + 300
+function year()
+{
+    return Math.floor(g_year);
+}
+
+function population()
+{
+    return Math.floor(g_population);
 }
 
 // ----------------------------------------------------------------------------
@@ -584,38 +668,38 @@ function naturalGrowthRate(year)
 // ----------------------------------------------------------------------------
 
 function birthrateString() {
-    return g_birthrate.toFixed(2).toString().replace('-','') + ' per thousand';
+    return g_birthrate.toFixed(3).toString().replace('-','') + ' per thousand';
 }
 
 function deathrateString() {
-    return g_deathrate.toFixed(2).toString().replace('-','') + ' per thousand';
+    return g_deathrate.toFixed(3).toString().replace('-','') + ' per thousand';
 }
 
 function populationString() {
-    var pop = Math.floor(g_population)
+    var pop = population();
     var string = "";
     
     // billions
     if (Math.floor(pop / 1000000000) > 0) 
     {
-        string = Math.floor(pop / 1000000000) + " billions"
+        string = (pop / 1000000000).toFixed(3) + " billions"
     }
     // millions
     else if (Math.floor(pop / 1000000) > 0)
     {
-        string = Math.floor(pop / 1000000) + " millions"
+        string = (pop / 1000000).toFixed(3) + " millions"
 
     }
     // thousands
     else if (Math.floor(pop / 1000) > 0)
     {
-        string = Math.floor(pop / 1000) + " thousands"
+        string = (pop / 1000).toFixed(3) + " thousands"
 
     }
     // hundreds
     else if (Math.floor(pop / 100) > 0)
     {
-        string = Math.floor(pop / 100) + " hundreds"
+        string = (pop / 100).toFixed(3) + " hundreds"
 
     }
     else
@@ -681,6 +765,7 @@ function addTechButtons(tech)
     var promoteButton = $('#' + tech + '-promote');
     var banButton = $('#' + tech + '-ban');
 
+/* Uncomment to allow press-hold instead
     promoteButton.bind('mousedown',function(e) {
         clearInterval(interval);
         interval = setInterval(function() {
@@ -702,6 +787,14 @@ function addTechButtons(tech)
     banButton.bind('mouseup',function(e) {
         clearInterval(interval);
     });
+*/
+    promoteButton.bind('mousedown', function(e) {
+        promoteBanTech(tech, true);
+    });
+
+    banButton.bind('mousedown', function(e) {
+        promoteBanTech(tech, false);
+    });
 }
 
 function bounceButton(button)
@@ -715,7 +808,7 @@ function mate()
 }
 
 function forwardGame()
-{
+{   
     switch(g_gameSpeed)
     {
         case 1:

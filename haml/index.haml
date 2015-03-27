@@ -34,9 +34,6 @@
                 0
               %i.fa(class="fa-#{icon}")
 
-        / Graph area
-        %canvas#graph-area(width="400" height="400")
-
         / Log events
         %ul#log-accordion.accordion(data-accordion)
           %li.accordion-navigation
@@ -44,7 +41,18 @@
               Log
               %i.fa.fa-arrow-up.right
             #log.content.active
-          
+        
+        %ul#graph-accordion.accordion(data-accordion)
+          %li.accordion-navigation
+            %a#graph-banner(href="#graph-area") 
+              Graph
+              %i.fa.fa-arrow-down.right
+            #graph-area.content
+              
+              / Graph area
+              %canvas#graph-population(width="400" height="350")      
+              %canvas#graph-BRDR(width="400" height="350")
+
       .large-4.columns(data-equalizer-watch)
         
         / User interaction area
