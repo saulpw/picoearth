@@ -6,12 +6,14 @@ const DEATHRATE_MAX = BIRTHRATE_MAX = 1000;
 const DEATHRATE_MIN = BIRTHRATE_MIN = 0;
 const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
+const ZERO = 0;
 const MATE_INCREASE = 1000;
 
 var g_population = 1000000;
 var g_year = -10000;
 var g_birthrate = 40.01;
 var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
+var g_foodSource = 1000000;
 
 // ----------------------------------------------------------------------------
 // Internal game stats
@@ -33,7 +35,8 @@ var g_techTree = {
         },
         "promote" : {
             "birthrate": 0,
-            "deathrate": -.001
+            "deathrate": -.001,
+            "food-source": -1
         },
         "ban" : {
             "birthrate": 0,
@@ -123,7 +126,8 @@ var g_techTree = {
         },
         "promote" : {
             "birthrate": .001,
-            "deathrate": -.002
+            "deathrate": -.002,
+            "food-source": -1
         },
         "ban" : {
             "birthrate": -.001,
@@ -159,7 +163,8 @@ var g_techTree = {
         },
         "promote" : {
             "birthrate": .002,
-            "deathrate": -.001
+            "deathrate": -.001,
+            "food-source": 1
         },
         "ban" : {
             "birthrate": -.001,
@@ -309,6 +314,18 @@ var g_genericWorldEvents = {
         "conditions": {
             "year": -10000
         },
+    },
+    "StoneAge": {
+        "message": "Stone Age begins in the year 10000BC.",
+        "conditions": {
+            "year": -10000
+        }
+    },
+    "BrozeAge": {
+        "message": "Broze Age begins in the year 3000BC.",
+        "conditions": {
+            "year": -3000 // Estimate
+        }
     }
 }
 
@@ -478,6 +495,7 @@ function updateUIStats() {
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
+    $('#food').text(foodString());
 }
 
 function addDataToGraphs()
@@ -576,9 +594,10 @@ function shouldUnlockTech(tech)
 
     if (g_techTree[tech]["unlocked"] == false) {
 
+        // Check if population & year threshold are reached
         if (g_population >= popThres && g_year >= yearThres) {
 
-            // Check for required techs
+            // Check if required techs are all unlocked
             g_techTree[tech]["unlocked"] = true;        
 
             for (var requiredTech in eventThres) {
@@ -586,8 +605,7 @@ function shouldUnlockTech(tech)
                     g_techTree[tech]["unlocked"] = false; 
                     break;       
                 }
-            }                
-
+            }
             return true;
         }
     }
@@ -617,8 +635,10 @@ function promoteBanTech(tech, isPromote)
 
             var brOffset = g_techTree[tech]["promote"]["birthrate"];
             var drOffset = g_techTree[tech]["promote"]["deathrate"];
+            var fsOffset = g_techTree[tech]["promote"]["food-source"];
             var shouldUpdateAdoption = false;
             
+            // Update birthrate
             if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
                 brOffset > 0 && g_birthrate != BIRTHRATE_MAX)
             {
@@ -626,6 +646,7 @@ function promoteBanTech(tech, isPromote)
                 shouldUpdateAdoption = true;
             }
             
+            // Update death rate
             if ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
                 drOffset > 0 && g_deathrate != DEATHRATE_MAX)
             {
@@ -633,6 +654,15 @@ function promoteBanTech(tech, isPromote)
                 shouldUpdateAdoption = true;
             }
 
+            // Update food source
+            if ((fsOffset < 0 && g_foodSource != ZERO) ||
+                fsOffset > 0) 
+            {
+                g_foodSource += fsOffset;
+                shouldUpdateAdoption = true;
+            }
+
+            // update adoption percentage
             if (shouldUpdateAdoption) {
                 g_techTree[tech]["adoption"]++;
             }
@@ -729,37 +759,7 @@ function deathrateString() {
 
 function populationString() {
     var pop = population();
-    var string = "";
-    
-    // billions
-    if (Math.floor(pop / 1000000000) > 0) 
-    {
-        string = (pop / 1000000000).toFixed(3) + " billions"
-    }
-    // millions
-    else if (Math.floor(pop / 1000000) > 0)
-    {
-        string = (pop / 1000000).toFixed(3) + " millions"
-
-    }
-    // thousands
-    else if (Math.floor(pop / 1000) > 0)
-    {
-        string = (pop / 1000).toFixed(3) + " thousands"
-
-    }
-    // hundreds
-    else if (Math.floor(pop / 100) > 0)
-    {
-        string = (pop / 100).toFixed(3) + " hundreds"
-
-    }
-    else
-    {
-        string = pop;
-    }
-
-    return string;
+    return numberStringUnit(pop);
 }
 
 function yearString() {
@@ -788,6 +788,35 @@ function adoptionString(tech) {
 
 function gameSpeedString() {
     return "X" + g_gameSpeed;
+}
+
+function foodString() {
+    return numberStringUnit(g_foodSource);
+}
+
+// Returns number string with 'billions/millions/thousands/hundreds'
+function numberStringUnit(number)
+{
+    var string = "";
+    
+    // billions
+    if (Math.floor(number / 1000000000) > 0) 
+    {
+        string = (number / 1000000000).toFixed(3) + " billions"
+    }
+    // millions
+    else if (Math.floor(number / 1000000) > 0)
+    {
+        string = (number / 1000000).toFixed(3) + " millions"
+
+    }
+    // thousands
+    else 
+    {
+        string = number;
+    }
+
+    return string;
 }
 
 // ----------------------------------------------------------------------------
