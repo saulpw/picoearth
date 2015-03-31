@@ -166,7 +166,43 @@ var g_techTree = {
             "deathrate": .002
         },
         "adoption": 13
-        }                
+        },
+    "Writing" : {
+        "unlocked": false,
+        "require": {
+            "population": 0,
+            "year": -3200,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0.002,
+            "deathrate": -.001
+        },
+        "ban" : {
+            "birthrate": -.002,
+            "deathrate": .001
+        },
+        "adoption": 2
+        },
+    "Stone tools" : {
+        "unlocked": false,
+        "require": {
+            "population": 2000000,
+            "year": -9990,
+            "techs": [],
+            "events": []
+        },
+        "promote" : {
+            "birthrate": 0,
+            "deathrate": -.002
+        },
+        "ban" : {
+            "birthrate": 0,
+            "deathrate": .002
+        },
+        "adoption": 23
+        },                         
     };
 
 var g_naturalDisasters = {
@@ -323,7 +359,9 @@ $('#log-accordion').on('toggled', function (event, accordion) {
 // ----------------------------------------------------------------------------
 
 $(document).ready( function () {
-    
+    for (var tech in g_techTree) {
+        addTechPreview(tech);
+    }
 });
 
 
@@ -483,24 +521,38 @@ function updateTechTree()
     }
 }
 
+function addTechPreview(tech) 
+{
+    $('#tech-tree').append(' \
+        <div class="row tech-row" id="' + tech + '-row"> \
+            <div class="large-8 columns right tech-row"> \
+                <ul class="button-group round"> \
+                    <li><button class="tiny tech-button secondary disabled" id="' + tech +'-promote"> ???? </button> \
+                    </li> \
+                    <li><button class="tiny tech-button secondary disabled" id="' + tech +'-ban"> ???? </button> \
+                    </li> \
+                </ul> \
+            </div> \
+        </div> \
+        ');    
+}
+
 function addTech(tech)
 {
     var percentAdopted = adoptionString(tech);
     var tooltipString = 'Promote: ' + g_techTree[tech]["promote"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["promote"]["deathrate"] + ' deathrate, Ban: ' + g_techTree[tech]["ban"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["ban"]["deathrate"];
 
-    $('#tech-tree').append(' \
-        <div class="row tech-row"> \
-            <div class="large-8 columns right tech-row"> \
-                <ul class="button-group round"> \
-                    <li><button class="tiny tech-button success" id="' + tech +'-promote"> + ' + tech + '</button> \
-                    </li> \
-                    <li><button class="tiny tech-button alert" id="' + tech +'-ban"> - ' + tech + '</button> \
-                    </li> \
-                </ul> \
-            </div> \
-            <div class="large-4 columns tech-row"> \
-                <div data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
-            </div> \
+    $('#' + tech + '-row').html(' \
+        <div class="large-8 columns right tech-row"> \
+            <ul class="button-group round"> \
+                <li><button class="tiny tech-button success" id="' + tech +'-promote"> + ' + tech + '</button> \
+                </li> \
+                <li><button class="tiny tech-button alert" id="' + tech +'-ban"> - ' + tech + '</button> \
+                </li> \
+            </ul> \
+        </div> \
+        <div class="large-4 columns tech-row"> \
+            <div data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
         </div> \
         ');
 
@@ -508,8 +560,8 @@ function addTech(tech)
     var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
     logging(eventMessage, true);
 
-    // Add promote/ban buttons
-    addTechButtons(tech);
+    // bind promote/ban buttons events
+    bindPromoteBanButonEvents(tech);
 
     // First promote
     promoteBanTech(tech, true);
@@ -715,6 +767,17 @@ function yearString() {
     if (g_year < 1000) {
         toString = -toString + 'BC';
     }
+
+    if (year() < -3500) {
+        toString += ' (Prehistoric)';
+    } else if (year() < 500) {
+        toString += ' (Ancient world)';
+    } else if (year() < 1500) {
+        toString += ' (Medieval world)';
+    } else {
+        toString += ' (Modern world)';
+    }
+
     return toString;
 }
 
@@ -759,7 +822,7 @@ function logging(eMsg, popup, level)
 // Button functions
 // ----------------------------------------------------------------------------
 
-function addTechButtons(tech)
+function bindPromoteBanButonEvents(tech)
 {
     var interval;
     var promoteButton = $('#' + tech + '-promote');
