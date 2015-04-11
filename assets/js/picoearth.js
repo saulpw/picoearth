@@ -607,8 +607,13 @@ function addTech(tech)
                 </li> \
             </ul> \
         </div> \
-        <div class="large-4 columns tech-row"> \
-            <div data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left percent-adoption progress"><span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span></div> \
+        <div class="large-1 columns tech-row"> \
+            <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left small-font">' + tech + '</span> \
+        </div> \
+        <div class="large-3 columns tech-row"> \
+            <div class="percent-adoption progress"> \
+                <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
+            </div> \
         </div> \
         ');
 

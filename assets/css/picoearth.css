@@ -45,6 +45,10 @@ body, h1, h2, h3, p, button, div, span, .accordion .accordion-navigation > a {
 	margin: 0px;
 }
 
+.small-font {
+	font-size: 9px;
+}
+
 #top-nav {
 	margin-top: 20px;
 }
