@@ -36,11 +36,13 @@ var g_techTree = {
         "promote" : {
             "birthrate": 0,
             "deathrate": -.001,
-            "food-source": -1
         },
         "ban" : {
             "birthrate": 0,
             "deathrate": .001
+        },
+        "per-year": {
+            "food-source": -.001,
         },
         "adoption": 20
         },
@@ -127,7 +129,6 @@ var g_techTree = {
         "promote" : {
             "birthrate": .001,
             "deathrate": -.002,
-            "food-source": -1
         },
         "ban" : {
             "birthrate": -.001,
@@ -164,7 +165,6 @@ var g_techTree = {
         "promote" : {
             "birthrate": .002,
             "deathrate": -.001,
-            "food-source": 1
         },
         "ban" : {
             "birthrate": -.001,
@@ -444,14 +444,40 @@ var g_BRDRChart = new Chart(ctx).Line(g_BRDRGraphData, {
 });
 
 // ----------------------------------------------------------------------------
-// Run UI update code every x ms
+// Game functions
+// ----------------------------------------------------------------------------
+
+function checkGameOver() {
+    if (g_foodSource == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+var g_shownGameOver = false;
+function showGameOver() {
+    
+    if (g_shownGameOver == false) {
+        alert("Game over");
+        g_shownGameOver = true;
+    }
+
+}
+
+// ----------------------------------------------------------------------------
+// Game loop
 // ----------------------------------------------------------------------------
 
 window.setInterval(function () {
 
-    checkForWorldEvents();
-    updateStats();
-    updateTechTree();
+    if(!checkGameOver()) {
+        checkForWorldEvents();
+        updateStats();
+        updateTechTree();
+    } else {
+        showGameOver();
+    }
 
 }, gameUpdateInterval);
 
@@ -466,6 +492,7 @@ function updateStats()
 
     updateYear(incr);
     updatePopulation(incr);
+    updateFoodSource(incr);
     updateUIStats();
 }
 
@@ -484,8 +511,33 @@ function updatePopulation(incr)
 {
     var newHumans = ((g_birthrate - g_deathrate) / 1000) * g_population * incr;
 
+    // Make sure population doesn't go negative
     if (g_population + newHumans > 0) {
         g_population += newHumans;
+    }
+}
+
+function updateFoodSource(incr)
+{
+    var newFs = 0;
+    for (var tech in g_techTree) {
+        var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
+        var techAdoptionPercentage = getVFK(g_techTree, tech, "adoption");
+        
+        if (typeof fsOffset != 'undefined') {
+
+            // If there's a food source offset, apply it
+            newFs += (fsOffset * (techAdoptionPercentage / 100) * g_population);    
+        }
+    }
+
+    newFs *= incr;
+
+    // Make sure food source doesn't go negative
+    if (g_foodSource + newFs > 0) {
+        g_foodSource += newFs;
+    } else {
+        g_foodSource = 0;
     }
 }
 
@@ -495,7 +547,7 @@ function updateUIStats() {
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
-    $('#food').text(foodString());
+    $('#food').text(foodSourceString());
 }
 
 function addDataToGraphs()
@@ -508,20 +560,6 @@ function removeDataFromGraphs()
 {
     g_popChart.removeData();
     g_BRDRChart.removeData();
-}
-
-function evNewYear()
-{
-    if (year() % 100 == 0) {
-
-        // update graphs
-        addDataToGraphs();
-
-        // remove the first points in each data sets        
-        if (year() > -8000) {
-            removeDataFromGraphs();
-        }
-    }
 }
 
 // ----------------------------------------------------------------------------
@@ -558,7 +596,7 @@ function addTechPreview(tech)
 function addTech(tech)
 {
     var percentAdopted = adoptionString(tech);
-    var tooltipString = 'Promote: ' + g_techTree[tech]["promote"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["promote"]["deathrate"] + ' deathrate, Ban: ' + g_techTree[tech]["ban"]["birthrate"] + ' birthrate, ' + g_techTree[tech]["ban"]["deathrate"];
+    var tooltipString = 'Promote: ' + getVFK(g_techTree, tech, "promote", "birthrate") + ' birthrate, ' + getVFK(g_techTree, tech, "promote", "deathrate") + ' deathrate, Ban: ' + getVFK(g_techTree, tech, "ban", "birthrate") + ' birthrate, ' + getVFK(g_techTree, tech, "ban", "deathrate");
 
     $('#' + tech + '-row').html(' \
         <div class="large-8 columns right tech-row"> \
@@ -587,12 +625,12 @@ function addTech(tech)
 
 function shouldUnlockTech(tech)
 {
-    const popThres = g_techTree[tech]["require"]["population"];
-    const yearThres = g_techTree[tech]["require"]["year"];
-    const techThres = g_techTree[tech]["require"]["techs"];
-    const eventThres = g_techTree[tech]["require"]["events"];
+    const popThres = getVFK(g_techTree, tech, "require", "population");
+    const yearThres = getVFK(g_techTree, tech, "require", "year");
+    const techThres = getVFK(g_techTree, tech, "require", "techs");
+    const eventThres = getVFK(g_techTree, tech, "require", "events");
 
-    if (g_techTree[tech]["unlocked"] == false) {
+    if (getVFK(g_techTree, tech, "unlocked") == false) {
 
         // Check if population & year threshold are reached
         if (g_population >= popThres && g_year >= yearThres) {
@@ -601,8 +639,7 @@ function shouldUnlockTech(tech)
             g_techTree[tech]["unlocked"] = true;        
 
             for (var requiredTech in eventThres) {
-                if (g_techTree[requiredTech]["unlocked"] == false) {
-                    g_techTree[tech]["unlocked"] = false; 
+                if (getVFK(g_techTree, requiredTech, "unlocked") == false) {
                     break;       
                 }
             }
@@ -618,8 +655,8 @@ function updateTech(tech)
 
     if (g_techTree[tech]["unlocked"]) {
 
-        var promoteEnabled =  g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT;
-        var banEnabled = g_techTree[tech]["adoption"] > ZERO_PERCENT;
+        var promoteEnabled =  getVFK(g_techTree, tech, "adoption") < A_HUNDRED_PERCENT;
+        var banEnabled = getVFK(g_techTree, tech, "adoption") > ZERO_PERCENT;
 
         $('#' + tech + '-adoption').css("width", percentAdopted + "%");
         $('#' + tech + '-adoption').html(percentAdopted + "%");
@@ -631,11 +668,10 @@ function updateTech(tech)
 function promoteBanTech(tech, isPromote)
 {
     if (isPromote) {
-        if (g_techTree[tech]["adoption"] < A_HUNDRED_PERCENT) {
+        if (getVFK(g_techTree, tech, "adoption") < A_HUNDRED_PERCENT) {
 
-            var brOffset = g_techTree[tech]["promote"]["birthrate"];
-            var drOffset = g_techTree[tech]["promote"]["deathrate"];
-            var fsOffset = g_techTree[tech]["promote"]["food-source"];
+            var brOffset = getVFK(g_techTree, tech, "promote", "birthrate");
+            var drOffset = getVFK(g_techTree, tech, "promote", "deathrate");
             var shouldUpdateAdoption = false;
             
             // Update birthrate
@@ -654,24 +690,16 @@ function promoteBanTech(tech, isPromote)
                 shouldUpdateAdoption = true;
             }
 
-            // Update food source
-            if ((fsOffset < 0 && g_foodSource != ZERO) ||
-                fsOffset > 0) 
-            {
-                g_foodSource += fsOffset;
-                shouldUpdateAdoption = true;
-            }
-
             // update adoption percentage
             if (shouldUpdateAdoption) {
                 g_techTree[tech]["adoption"]++;
             }
         }
     } else {
-        if (g_techTree[tech]["adoption"] > ZERO_PERCENT) {
+        if (getVFK(g_techTree, tech, "adoption") > ZERO_PERCENT) {
 
-            var brOffset = g_techTree[tech]["ban"]["birthrate"];
-            var drOffset = g_techTree[tech]["ban"]["deathrate"];
+            var brOffset = getVFK(g_techTree, tech, "ban", "birthrate");
+            var drOffset = getVFK(g_techTree, tech, "ban", "deathrate");
             var shouldUpdateAdoption = false;
 
             if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
@@ -697,15 +725,89 @@ function promoteBanTech(tech, isPromote)
 }
 
 // ----------------------------------------------------------------------------
+// Dictionary getter/setter
+// ----------------------------------------------------------------------------
+
+// @function        getVFK
+//
+// @description     Get value from keys.
+//                  Retrieve the value of the keys specified from a dictionary.
+//
+// @note            This is meant to be a variardic function. Intermediate key values will
+//                  be checked against 'undefined'.
+//
+// @return          undefined if value or key doesn't exist.
+//
+
+function getVFK(dict)
+{
+    // Retrieve a property and check for undefined intermediate keys
+
+    var intermediate = dict;
+    for (var i = 1; i < arguments.length; i++) {
+        var key = arguments[i];
+        intermediate = intermediate[key];
+        if (typeof intermediate == 'undefined') {
+            return undefined;
+        }
+    }
+
+    return intermediate;
+}
+
+// @function    setVFK
+//
+// @description Set value for keys.
+//              Set a value for the keys specified for a dictionary.
+//
+// @note        This is meant to be a variardic function.
+//              Does nothing if key doesn't exist.
+//
+
+function setVFK(dict, value)
+{
+    var intermediate = dict;
+    // Loop through all intermediate keys. Starts at arg index 2.
+    for (var i = 2; i < arguments.length-1; i++) {
+        var key = arguments[i];
+        intermediate = intermediate[key];
+        if (typeof intermediate == 'undefined') {
+            return;
+        }
+    }
+
+    // Assign value for the last key specified
+    var key = arguments[arguments.length-1];
+    intermediate[key] = value;
+}
+
+// ----------------------------------------------------------------------------
 // World events
 // ----------------------------------------------------------------------------
+
+function evNewYear()
+{
+    if (year() % 100 == 0) {
+
+        // update graphs
+        addDataToGraphs();
+
+        // remove the first points in each data sets        
+        if (year() > -8000) {
+            removeDataFromGraphs();
+        }
+    }
+
+    // Earth resources should grow back a bit
+    g_foodSource *= 1.1;
+}
 
 function checkForWorldEvents()
 {
     // Generic world events
     for (var ev in g_genericWorldEvents) {
-        if (g_genericWorldEvents[ev]["conditions"]["year"] == year()) {
-            logging(g_genericWorldEvents[ev]["message"], true, "warning");
+        if (getVFK(g_genericWorldEvents, ev, "conditions", "year") == year()) {
+            logging(getVFK(g_genericWorldEvents, ev, "message"), true, "warning");
 
             // Set condition to a year that has passed to prevent
             // this event to trigger again
@@ -715,9 +817,9 @@ function checkForWorldEvents()
 
     // Natural disasters
     for (var natDis in g_naturalDisasters) {
-        if (g_naturalDisasters[natDis]["conditions"]["year"] == year()) {
-            logging(g_naturalDisasters[natDis]["message"], true, 'warning');
-            g_population -= g_naturalDisasters[natDis]["effects"]["death"];
+        if (getVFK(g_naturalDisasters, natDis, "conditions", "year") == year()) {
+            logging(getVFK(g_naturalDisasters, natDis, "message"), true, 'warning');
+            g_population -= getVFK(g_naturalDisasters, natDis, "effects", "death");
             if (g_population < 0) {
                 g_population = 0;
             }
@@ -790,7 +892,7 @@ function gameSpeedString() {
     return "X" + g_gameSpeed;
 }
 
-function foodString() {
+function foodSourceString() {
     return numberStringUnit(g_foodSource);
 }
 
@@ -813,7 +915,7 @@ function numberStringUnit(number)
     // thousands
     else 
     {
-        string = number;
+        string = Math.ceil(number);
     }
 
     return string;
