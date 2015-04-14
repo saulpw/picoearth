@@ -7,18 +7,11 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.001
-        },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.001
-        },
         "per-year": {
-            "food-source": -0.001
+            "death-per-thousand": -0.001,
+            "food-source": -0.00001
         },
-        "adoption": 20
+        "adopt-percent": 20
     },
     "Fire": {
         "unlocked": false,
@@ -28,15 +21,10 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.005
+        "per-year": {
+            "death-per-thousand": -0.005
         },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.005
-        },
-        "adoption": 21
+        "adopt-percent": 21
     },
     "Cave-shelters": {
         "unlocked": false,
@@ -46,15 +34,10 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.002
+        "per-year": {
+            "death-per-thousand": -0.002
         },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.002
-        },
-        "adoption": 32
+        "adopt-percent": 32
     },
     "Cave-drawing": {
         "unlocked": false,
@@ -64,15 +47,11 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0.001,
-            "deathrate": -0.001
+        "per-year": {
+            "birth-per-thousand": 0.001,
+            "death-per-thousand": -0.001
         },
-        "ban": {
-            "birthrate": -0.001,
-            "deathrate": 0.001
-        },
-        "adoption": 12
+        "adopt-percent": 12
     },
     "Domestication": {
         "unlocked": false,
@@ -82,15 +61,10 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.001
+        "per-year": {
+            "death-per-thousand": -0.001
         },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.001
-        },
-        "adoption": 4
+        "adopt-percent": 4
     },
     "Cooking": {
         "unlocked": false,
@@ -102,15 +76,11 @@ var g_techTree = {
             ],
             "events": []
         },
-        "promote": {
-            "birthrate": 0.001,
-            "deathrate": -0.002
+        "per-year": {
+            "birth-per-thousand": 0.001,
+            "death-per-thousand": -0.002
         },
-        "ban": {
-            "birthrate": -0.001,
-            "deathrate": 0.002
-        },
-        "adoption": 26
+        "adopt-percent": 26
     },
     "Clothing": {
         "unlocked": false,
@@ -120,15 +90,10 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.002
+        "per-year": {
+            "death-per-thousand": -0.002
         },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.002
-        },
-        "adoption": 34
+        "adopt-percent": 34
     },
     "Cultivation": {
         "unlocked": false,
@@ -138,15 +103,12 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0.002,
-            "deathrate": -0.001
+        "per-year": {
+            "birth-per-thousand": 0.002,
+            "death-per-thousand": -0.001,
+            "food-source": .005
         },
-        "ban": {
-            "birthrate": -0.001,
-            "deathrate": 0.002
-        },
-        "adoption": 13
+        "adopt-percent": 13
     },
     "Writing": {
         "unlocked": false,
@@ -156,15 +118,11 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0.002,
-            "deathrate": -0.001
+        "per-year": {
+            "birth-per-thousand": 0.002,
+            "death-per-thousand": -0.001
         },
-        "ban": {
-            "birthrate": -0.002,
-            "deathrate": 0.001
-        },
-        "adoption": 2
+        "adopt-percent": 2
     },
     "Stone tools": {
         "unlocked": false,
@@ -174,14 +132,9 @@ var g_techTree = {
             "techs": [],
             "events": []
         },
-        "promote": {
-            "birthrate": 0,
-            "deathrate": -0.002
+        "per-year": {
+            "death-per-thousand": -0.002
         },
-        "ban": {
-            "birthrate": 0,
-            "deathrate": 0.002
-        },
-        "adoption": 23
+        "adopt-percent": 23
     }
 }

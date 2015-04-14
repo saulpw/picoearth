@@ -211,15 +211,19 @@ function updatePopulation(incr)
 
 function updateFoodSource(incr)
 {
+    // Gather all tech that can effect food source per year
     var newFs = 0;
     for (var tech in g_techTree) {
-        var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
-        var techAdoptionPercentage = getVFK(g_techTree, tech, "adoption");
-        
-        if (typeof fsOffset != 'undefined') {
 
-            // If there's a food source offset, apply it
-            newFs += (fsOffset * (techAdoptionPercentage / 100) * g_population);    
+        if (getVFK(g_techTree, tech, "unlocked")) {
+            var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
+            var techAdoptionPercentage = getVFK(g_techTree, tech, "adopt-percent");
+            
+            if (isDefined(fsOffset)) {
+
+                // If there's a food source offset, apply it
+                newFs += (fsOffset * (techAdoptionPercentage / 100) * g_population);  
+            }
         }
     }
 
@@ -288,7 +292,23 @@ function addTechPreview(tech)
 function addTech(tech)
 {
     var percentAdopted = adoptionString(tech);
-    var tooltipString = 'Promote: ' + getVFK(g_techTree, tech, "promote", "birthrate") + ' birthrate, ' + getVFK(g_techTree, tech, "promote", "deathrate") + ' deathrate, Ban: ' + getVFK(g_techTree, tech, "ban", "birthrate") + ' birthrate, ' + getVFK(g_techTree, tech, "ban", "deathrate");
+    var tooltipString = "";
+    
+    // Display per-year effects
+    var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
+    if (isDefined(brOffset)) {
+        tooltipString += brOffset + " birth/thousand/year\n";
+    }
+
+    var drOffset = getVFK(g_techTree, tech, "per-year", "death-per-thousand");
+    if (isDefined(drOffset)) {
+        tooltipString += drOffset + " death/thousand/year\n";
+    }
+
+    var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
+    if (isDefined(fsOffset)) {
+        tooltipString += fsOffset + " food/year\n";
+    }
 
     $('#' + tech + '-row').html(' \
         <div class="large-8 columns right tech-row"> \
@@ -352,8 +372,8 @@ function updateTech(tech)
 
     if (g_techTree[tech]["unlocked"]) {
 
-        var promoteEnabled =  getVFK(g_techTree, tech, "adoption") < A_HUNDRED_PERCENT;
-        var banEnabled = getVFK(g_techTree, tech, "adoption") > ZERO_PERCENT;
+        var promoteEnabled =  getVFK(g_techTree, tech, "adopt-percent") < A_HUNDRED_PERCENT;
+        var banEnabled = getVFK(g_techTree, tech, "adopt-percent") > ZERO_PERCENT;
 
         $('#' + tech + '-adoption').css("width", percentAdopted + "%");
         $('#' + tech + '-adoption').html(percentAdopted + "%");
@@ -364,59 +384,37 @@ function updateTech(tech)
 
 function promoteBanTech(tech, isPromote)
 {
-    if (isPromote) {
-        if (getVFK(g_techTree, tech, "adoption") < A_HUNDRED_PERCENT) {
+    var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
+    var drOffset = getVFK(g_techTree, tech, "per-year", "death-per-thousand");
+    var shouldUpdateAdoption = false;
 
-            var brOffset = getVFK(g_techTree, tech, "promote", "birthrate");
-            var drOffset = getVFK(g_techTree, tech, "promote", "deathrate");
-            var shouldUpdateAdoption = false;
-            
-            // Update birthrate
-            if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
-                brOffset > 0 && g_birthrate != BIRTHRATE_MAX)
-            {
-                g_birthrate += brOffset;
-                shouldUpdateAdoption = true;
-            }
-            
-            // Update death rate
-            if ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
-                drOffset > 0 && g_deathrate != DEATHRATE_MAX)
-            {
-                g_deathrate += drOffset;
-                shouldUpdateAdoption = true;
-            }
+    // Update birthrate
+    if (isDefined(brOffset) &&
+        ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
+        (brOffset > 0 && g_birthrate != BIRTHRATE_MAX)))
+    {
+        g_birthrate += brOffset;
+        shouldUpdateAdoption = true;
+    }
 
-            // update adoption percentage
-            if (shouldUpdateAdoption) {
-                g_techTree[tech]["adoption"]++;
-            }
-        }
-    } else {
-        if (getVFK(g_techTree, tech, "adoption") > ZERO_PERCENT) {
+    // Update death rate
+    if (isDefined(drOffset) &&
+        ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
+        (drOffset > 0 && g_deathrate != DEATHRATE_MAX)))
+    {
+        g_deathrate += drOffset;
+        shouldUpdateAdoption = true;
+    }
 
-            var brOffset = getVFK(g_techTree, tech, "ban", "birthrate");
-            var drOffset = getVFK(g_techTree, tech, "ban", "deathrate");
-            var shouldUpdateAdoption = false;
-
-            if ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
-                brOffset > 0 && g_birthrate != BIRTHRATE_MAX)
-            {
-                g_birthrate += brOffset;
-                shouldUpdateAdoption = true;
-            }
-            if ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
-                drOffset > 0 && g_deathrate != DEATHRATE_MAX)
-            {
-                g_deathrate += drOffset;
-                shouldUpdateAdoption = true;
-            }
-
-            if (shouldUpdateAdoption) {
-                g_techTree[tech]["adoption"]--;
-            }
+    if (shouldUpdateAdoption) {
+        var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
+        if (isPromote) {
+            setVFK(g_techTree, adoptPercent + 1, tech, "adopt-percent");
+        } else {
+            setVFK(g_techTree, adoptPercent - 1, tech, "adopt-percent");
         }
     }
+
     g_birthrate = g_birthrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
     g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
 }
@@ -590,7 +588,7 @@ function yearString() {
 }
 
 function adoptionString(tech) {
-    var adoption = g_techTree[tech]["adoption"];
+    var adoption = g_techTree[tech]["adopt-percent"];
     return Math.round(adoption);
 }
 
