@@ -8,6 +8,7 @@ body {
 
 body {
 	background-color: black;
+	background-image: url("../img/night_sky.jpg");
 }
 
 body, h1, h2, h3, p, button, div, span, .accordion .accordion-navigation > a {
