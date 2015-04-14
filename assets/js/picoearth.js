@@ -1,16 +1,17 @@
-// ----------------------------------------------------------------------------
-// Keep track of basic stats
-// ----------------------------------------------------------------------------
-
 const DEATHRATE_MAX = BIRTHRATE_MAX = 1000;
 const DEATHRATE_MIN = BIRTHRATE_MIN = 0;
 const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
 const ZERO = 0;
 const MATE_INCREASE = 1000;
+const START_YEAR = -10000;
+
+// ----------------------------------------------------------------------------
+// Keep track of basic stats
+// ----------------------------------------------------------------------------
 
 var g_population = 1000000;
-var g_year = -10000;
+var g_year = START_YEAR;
 var g_birthrate = 40.01;
 var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
 var g_foodSource = 1000000;
@@ -20,6 +21,7 @@ var g_foodSource = 1000000;
 // ----------------------------------------------------------------------------
 
 var g_gameSpeed = 1;
+var g_graphs = [];
 
 // ----------------------------------------------------------------------------
 // Game internal states
@@ -71,69 +73,49 @@ $(document).ready( function () {
     for (var tech in g_techTree) {
         addTechPreview(tech);
     }
+
+    addGraph("Population", addDataToPopulationGraph);
 });
 
+function addDataToPopulationGraph(chart)
+{
+    chart.addData([population()], yearString());
+}
 
-// Setup graph area
-var ctx = $('#graph-population').get(0).getContext("2d");
-var g_popGraphData = {
-    labels: [yearString()],
-    datasets: [
-        {
-            label: "Population",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [g_population]
-        }
-    ]
-};
-var g_popChart = new Chart(ctx).Line(g_popGraphData, {
-    pointDot : false,
-    bezierCurve : true,
-    datasetStrokeWidth : 1,
-    scaleFontSize: 8,
-    animation: false,
-    scaleShowHorizontalLines: false,
-});
-
-ctx = $('#graph-BRDR').get(0).getContext("2d");
-var g_BRDRGraphData = {
-    labels: [yearString()],
-    datasets: [
-        {
-            label: "Birthrate",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [g_birthrate]
-        },
-        {
-            label: "Deathrate",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: [g_deathrate]
-        }
-    ]
-};
-var g_BRDRChart = new Chart(ctx).Line(g_BRDRGraphData, {
-    pointDot : false,
-    bezierCurve : true,
-    datasetStrokeWidth : 1,
-    scaleFontSize: 8,
-    animation: false,
-    scaleShowHorizontalLines: false,
-});
+// ctx = $('#graph-BRDR').get(0).getContext("2d");
+// var g_BRDRGraphData = {
+//     labels: [yearString()],
+//     datasets: [
+//         {
+//             label: "Birthrate",
+//             fillColor: "rgba(220,220,220,0.2)",
+//             strokeColor: "rgba(220,220,220,1)",
+//             pointColor: "rgba(220,220,220,1)",
+//             pointStrokeColor: "#fff",
+//             pointHighlightFill: "#fff",
+//             pointHighlightStroke: "rgba(220,220,220,1)",
+//             data: [g_birthrate]
+//         },
+//         {
+//             label: "Deathrate",
+//             fillColor: "rgba(151,187,205,0.2)",
+//             strokeColor: "rgba(151,187,205,1)",
+//             pointColor: "rgba(151,187,205,1)",
+//             pointStrokeColor: "#fff",
+//             pointHighlightFill: "#fff",
+//             pointHighlightStroke: "rgba(151,187,205,1)",
+//             data: [g_deathrate]
+//         }
+//     ]
+// };
+// var g_BRDRChart = new Chart(ctx).Line(g_BRDRGraphData, {
+//     pointDot : false,
+//     bezierCurve : true,
+//     datasetStrokeWidth : 1,
+//     scaleFontSize: 8,
+//     animation: false,
+//     scaleShowHorizontalLines: false,
+// });
 
 // ----------------------------------------------------------------------------
 // Game functions
@@ -244,18 +226,6 @@ function updateUIStats() {
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
     $('#food').text(foodSourceString());
-}
-
-function addDataToGraphs()
-{
-    g_popChart.addData([population()], yearString());
-    g_BRDRChart.addData([g_birthrate, g_deathrate], yearString());    
-}
-
-function removeDataFromGraphs()
-{
-    g_popChart.removeData();
-    g_BRDRChart.removeData();
 }
 
 // ----------------------------------------------------------------------------
@@ -482,15 +452,8 @@ function setVFK(dict, value)
 
 function evNewYear()
 {
-    if (year() % 100 == 0) {
-
-        // update graphs
-        addDataToGraphs();
-
-        // remove the first points in each data sets        
-        if (year() > -8000) {
-            removeDataFromGraphs();
-        }
+    if (year() % 10 == 0) {
+        updateGraphs();    
     }
 
     // @todo: Earth resources should grow back a bit
@@ -731,6 +694,64 @@ function forwardGame()
             break;
     }
 }
+
+// ----------------------------------------------------------------------------
+// Graph functions
+// ----------------------------------------------------------------------------
+
+function addGraph(name, addDataFn)
+{
+    $('#graph-area').append('<canvas width="400" height="350" id="graph-' + name + '">');
+    var ctx = $('#graph-' + name).get(0).getContext("2d");
+    var data = {
+        labels: [],
+        datasets: [
+            {
+                label: name,
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: []
+            }
+        ]
+    };
+    
+    var chart = new Chart(ctx).Line(data, {
+        pointDot : false,
+        bezierCurve : true,
+        datasetStrokeWidth : 1,
+        scaleFontSize: 8,
+        animation: false,
+        scaleShowHorizontalLines: false,
+    });
+
+    var graph = {
+        "chart": chart,
+        "add-data-fn": addDataFn
+    };
+
+    g_graphs.push(graph);
+}
+
+function updateGraphs() 
+{
+    for (var i = 0; i < g_graphs.length; i++) {
+        var graph = g_graphs[i];
+        var chart = graph["chart"];
+
+        // call custom add function
+        graph["add-data-fn"](chart);
+
+        // trim graph
+        if (chart.datasets[0].points.length > 15) {
+            chart.removeData();
+        }
+    }
+}
+
 // ----------------------------------------------------------------------------
 // Math functions
 // ----------------------------------------------------------------------------
@@ -747,6 +768,8 @@ Number.prototype.clamp = function(min, max) {
 // @function    isDefined
 //
 // @return      true if the variable is not 'undefined'
+//
+
 function isDefined(variable)
 {
     return typeof variable != 'undefined';
