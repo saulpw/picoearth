@@ -499,6 +499,12 @@ function evNewYear()
 
 function runWorldEvents()
 {
+    runGenericWorldEvents();
+    runNaturalDisasterEvents();
+}
+
+function runNaturalDisasterEvents()
+{
     for (var natDis in g_worldEvents["natural-disasters"]) {
         if (getVFK(g_worldEvents["natural-disasters"], 
                     natDis, 
@@ -521,7 +527,6 @@ function runWorldEvents()
             g_worldEvents["natural-disasters"][natDis]["conditions"]["year"] = year() - 1;
         }
     }
-
 }
 
 function runGenericWorldEvents()
