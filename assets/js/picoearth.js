@@ -164,7 +164,7 @@ function showGameOver() {
 window.setInterval(function () {
 
     if(!checkGameOver()) {
-        checkForWorldEvents();
+        runWorldEvents();
         updateStats();
         updateTechTree();
     } else {
@@ -495,39 +495,48 @@ function evNewYear()
         }
     }
 
-    // Earth resources should grow back a bit
-    g_foodSource *= 1.1;
+    // @todo: Earth resources should grow back a bit
+    
 }
 
-function checkForWorldEvents()
+function runWorldEvents()
 {
-    // Generic world events
-    for (var ev in g_genericWorldEvents) {
-        if (getVFK(g_genericWorldEvents, ev, "conditions", "year") == year()) {
-            logging(getVFK(g_genericWorldEvents, ev, "message"), true, "warning");
+    for (var natDis in g_worldEvents["natural-disasters"]) {
+        if (getVFK(g_worldEvents["natural-disasters"], 
+                    natDis, 
+                    "conditions", 
+                    "year") == year()) {
 
-            // Set condition to a year that has passed to prevent
-            // this event to trigger again
-            g_genericWorldEvents[ev]["conditions"]["year"] = year() - 1;
-        }
-    }
+            logging(getVFK(g_worldEvents["natural-disasters"], natDis, "message"), true, 'warning');
 
-    // Natural disasters
-    for (var natDis in g_naturalDisasters) {
-        if (getVFK(g_naturalDisasters, natDis, "conditions", "year") == year()) {
-            logging(getVFK(g_naturalDisasters, natDis, "message"), true, 'warning');
-            g_population -= getVFK(g_naturalDisasters, natDis, "effects", "death");
+            // Natural disasters kill people!
+            g_population -= getVFK(g_worldEvents["natural-disasters"], 
+                                    natDis, 
+                                    "effects", 
+                                    "death");
             if (g_population < 0) {
                 g_population = 0;
             }
 
             // Set condition to a year that has passed to prevent
             // this event to trigger again
-            g_naturalDisasters[natDis]["conditions"]["year"] = year() - 1;
+            g_worldEvents["natural-disasters"][natDis]["conditions"]["year"] = year() - 1;
         }
     }
 
-    // Generic events
+}
+
+function runGenericWorldEvents()
+{
+    for (var ev in g_worldEvents["generic"]) {
+        if (getVFK(g_worldEvents["generic"], ev, "conditions", "year") == year()) {
+            logging(getVFK(g_worldEvents["generic"], ev, "message"), true, "warning");
+
+            // Set condition to a year that has passed to prevent
+            // this event to trigger again
+            g_worldEvents["generic"][ev]["conditions"]["year"] = year() - 1;
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -726,3 +735,16 @@ function forwardGame()
 Number.prototype.clamp = function(min, max) {
   return Math.min(Math.max(this, min), max);
 };
+
+// ----------------------------------------------------------------------------
+// Other helpers
+// ----------------------------------------------------------------------------
+
+//
+// @function    isDefined
+//
+// @return      true if the variable is not 'undefined'
+function isDefined(variable)
+{
+    return typeof variable != 'undefined';
+}
