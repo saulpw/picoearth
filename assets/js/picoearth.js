@@ -133,10 +133,9 @@ var g_shownGameOver = false;
 function showGameOver() {
     
     if (g_shownGameOver == false) {
-        alert("Game over");
+        $('#modal-gameover').foundation('reveal', 'open');
         g_shownGameOver = true;
     }
-
 }
 
 // ----------------------------------------------------------------------------
@@ -597,6 +596,16 @@ function numberStringUnit(number)
 // Logging functions
 // ----------------------------------------------------------------------------
 
+function logging(eMsg, popup, level)
+{
+    $('#log').prepend('<div>' + eMsg + '</div>' );
+    
+    popup = typeof popup !== 'undefined' ? popup : false;
+    if (popup) {
+        popupAlert(eMsg, level);        
+    }    
+}
+
 function popupAlert(str, level)
 {
     $('#alert-area').prepend(' \
@@ -609,16 +618,6 @@ function popupAlert(str, level)
             undefined, 
             {speed: "slow", animation: "slideUp", callback: function() {}}
             );
-}
-
-function logging(eMsg, popup, level)
-{
-    $('#log').prepend('<div>' + eMsg + '</div>' );
-    
-    popup = typeof popup !== 'undefined' ? popup : false;
-    if (popup) {
-        popupAlert(eMsg, level);        
-    }    
 }
 
 // ----------------------------------------------------------------------------
