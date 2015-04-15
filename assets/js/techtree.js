@@ -4,8 +4,6 @@ var g_techTree = {
         "require": {
             "population": 1000000,
             "year": -10000,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "death-per-thousand": -0.001,
@@ -18,8 +16,6 @@ var g_techTree = {
         "require": {
             "population": 1005000,
             "year": -10000,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "death-per-thousand": -0.005
@@ -31,8 +27,6 @@ var g_techTree = {
         "require": {
             "population": 1015000,
             "year": -9995,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "death-per-thousand": -0.002
@@ -44,8 +38,6 @@ var g_techTree = {
         "require": {
             "population": 1020000,
             "year": -9990,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "birth-per-thousand": 0.001,
@@ -58,11 +50,10 @@ var g_techTree = {
         "require": {
             "population": 1030000,
             "year": -9980,
-            "techs": [],
-            "events": []
         },
         "per-year": {
-            "death-per-thousand": -0.001
+            "death-per-thousand": -0.001,
+            "food-source": .00005
         },
         "adopt-percent": 4
     },
@@ -73,8 +64,7 @@ var g_techTree = {
             "year": -9990,
             "techs": [
                 "Fire"
-            ],
-            "events": []
+            ]
         },
         "per-year": {
             "birth-per-thousand": 0.001,
@@ -87,8 +77,6 @@ var g_techTree = {
         "require": {
             "population": 1040000,
             "year": -9890,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "death-per-thousand": -0.002
@@ -100,13 +88,11 @@ var g_techTree = {
         "require": {
             "population": 1070000,
             "year": -9800,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "birth-per-thousand": 0.002,
             "death-per-thousand": -0.001,
-            "food-source": .005
+            "food-source": .00005
         },
         "adopt-percent": 13
     },
@@ -115,8 +101,6 @@ var g_techTree = {
         "require": {
             "population": 0,
             "year": -3200,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "birth-per-thousand": 0.002,
@@ -129,8 +113,6 @@ var g_techTree = {
         "require": {
             "population": 2000000,
             "year": -9990,
-            "techs": [],
-            "events": []
         },
         "per-year": {
             "death-per-thousand": -0.002

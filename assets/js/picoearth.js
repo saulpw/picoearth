@@ -71,7 +71,7 @@ $('#log-accordion').on('toggled', function (event, accordion) {
 
 $(document).ready( function () {
     for (var tech in g_techTree) {
-        addTechPreview(tech);
+        previewTech(tech);
     }
 
     addGraph("Population", addDataToPopulationGraph);
@@ -81,41 +81,6 @@ function addDataToPopulationGraph(chart)
 {
     chart.addData([population()], yearString());
 }
-
-// ctx = $('#graph-BRDR').get(0).getContext("2d");
-// var g_BRDRGraphData = {
-//     labels: [yearString()],
-//     datasets: [
-//         {
-//             label: "Birthrate",
-//             fillColor: "rgba(220,220,220,0.2)",
-//             strokeColor: "rgba(220,220,220,1)",
-//             pointColor: "rgba(220,220,220,1)",
-//             pointStrokeColor: "#fff",
-//             pointHighlightFill: "#fff",
-//             pointHighlightStroke: "rgba(220,220,220,1)",
-//             data: [g_birthrate]
-//         },
-//         {
-//             label: "Deathrate",
-//             fillColor: "rgba(151,187,205,0.2)",
-//             strokeColor: "rgba(151,187,205,1)",
-//             pointColor: "rgba(151,187,205,1)",
-//             pointStrokeColor: "#fff",
-//             pointHighlightFill: "#fff",
-//             pointHighlightStroke: "rgba(151,187,205,1)",
-//             data: [g_deathrate]
-//         }
-//     ]
-// };
-// var g_BRDRChart = new Chart(ctx).Line(g_BRDRGraphData, {
-//     pointDot : false,
-//     bezierCurve : true,
-//     datasetStrokeWidth : 1,
-//     scaleFontSize: 8,
-//     animation: false,
-//     scaleShowHorizontalLines: false,
-// });
 
 // ----------------------------------------------------------------------------
 // Game functions
@@ -236,13 +201,13 @@ function updateTechTree()
     for (var tech in g_techTree) {
 
         if (shouldUnlockTech(tech)) {
-            addTech(tech);
+            unlockTech(tech);
         }
         updateTech(tech);
     }
 }
 
-function addTechPreview(tech) 
+function previewTech(tech) 
 {
     $('#tech-tree').append(' \
         <div class="row tech-row" id="' + tech + '-row"> \
@@ -258,7 +223,7 @@ function addTechPreview(tech)
         ');    
 }
 
-function addTech(tech)
+function unlockTech(tech)
 {
     var percentAdopted = adoptionString(tech);
     var tooltipString = "";
@@ -314,7 +279,6 @@ function shouldUnlockTech(tech)
     const popThres = getVFK(g_techTree, tech, "require", "population");
     const yearThres = getVFK(g_techTree, tech, "require", "year");
     const techThres = getVFK(g_techTree, tech, "require", "techs");
-    const eventThres = getVFK(g_techTree, tech, "require", "events");
 
     if (getVFK(g_techTree, tech, "unlocked") == false) {
 
@@ -322,13 +286,17 @@ function shouldUnlockTech(tech)
         if (g_population >= popThres && g_year >= yearThres) {
 
             // Check if required techs are all unlocked
-            g_techTree[tech]["unlocked"] = true;        
-
-            for (var requiredTech in eventThres) {
-                if (getVFK(g_techTree, requiredTech, "unlocked") == false) {
-                    break;       
+            if (isDefined(techThres)) {
+                for (var requiredTech in techThres) {
+                    if (getVFK(g_techTree, requiredTech, "unlocked") == false) {
+                        return false;       
+                    }
                 }
             }
+
+            // Mark this as unlocked now so we don't do it twice
+            g_techTree[tech]["unlocked"] = true;        
+
             return true;
         }
     }
