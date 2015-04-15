@@ -24,7 +24,7 @@
           - stats = {"population" => ["Population", "child"],
                     "birthrate" => ["Annual birth rate", ""],
                     "deathrate" => ["Annual death rate", ""],
-                    "food" => ["Food source", ""]}
+                    "foodsource" => ["Food source", ""]}
 
           - stats.each do |stat, name_icon|
             - name = name_icon[0]
@@ -34,6 +34,7 @@
               %span(id="#{stat}") 
                 0
               %i.fa(class="fa-#{icon}")
+              %span(id="#{stat}-rate" style="font-size: 11px")
 
         / Log events
         %ul#log-accordion.accordion(data-accordion)

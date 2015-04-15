@@ -189,7 +189,34 @@ function updateUIStats() {
     $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
-    $('#food').text(foodSourceString());
+    $('#foodsource').text(foodSourceString());
+}
+
+var g_prevPopulation = g_population;
+var g_prevBR = g_birthrate;
+var g_prevDR = g_deathrate;
+var g_preFS = g_foodSource;
+function updateUIStatsRate()
+{
+    var rate = population() - g_prevPopulation;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    $('#population-rate').text(rate);
+    g_prevPopulation = population();
+
+    rate = g_birthrate - g_prevBR;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    $('#birthrate-rate').text(rate);
+    g_prevBR = g_birthrate;
+
+    rate = g_deathrate - g_prevDR;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    $('#deathrate-rate').text(rate);
+    g_prevDR = g_deathrate;
+
+    rate = g_foodSource - g_preFS;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    $('#foodsource-rate').text(rate);
+    g_preFS = g_foodSource;
 }
 
 // ----------------------------------------------------------------------------
@@ -423,6 +450,8 @@ function evNewYear()
         updateGraphs();    
     }
 
+    updateUIStatsRate();
+
     // @todo: Earth resources should grow back a bit
     
 }
@@ -558,6 +587,15 @@ function numberStringUnit(number)
     }
 
     return string;
+}
+
+function addPlusMinusToNumberString(number)
+{
+    if (number >= 0) {
+        return "+";
+    } else {
+        return "";
+    }
 }
 
 // ----------------------------------------------------------------------------
