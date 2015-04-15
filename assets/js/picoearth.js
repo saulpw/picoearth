@@ -75,6 +75,7 @@ $(document).ready( function () {
     }
 
     addGraph("Population", addDataToPopulationGraph);
+    updateGraphs();
 });
 
 function addDataToPopulationGraph(chart)
