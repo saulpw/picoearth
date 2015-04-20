@@ -7,7 +7,7 @@ var g_techTree = {
         },
         "per-year": {
             "death-per-thousand": -0.001,
-            "food-source": -0.00001
+            "food-source": -0.00005
         },
         "adopt-percent": 20
     },
@@ -53,7 +53,7 @@ var g_techTree = {
         },
         "per-year": {
             "death-per-thousand": -0.001,
-            "food-source": .00005
+            "food-source": .00001
         },
         "adopt-percent": 4
     },
@@ -83,7 +83,7 @@ var g_techTree = {
         },
         "adopt-percent": 34
     },
-    "Cultivation": {
+    "Farming": {
         "unlocked": false,
         "require": {
             "population": 1070000,
@@ -92,7 +92,7 @@ var g_techTree = {
         "per-year": {
             "birth-per-thousand": 0.002,
             "death-per-thousand": -0.001,
-            "food-source": .00005
+            "food-source": .00001
         },
         "adopt-percent": 13
     },

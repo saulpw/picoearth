@@ -38,6 +38,7 @@ var gameUpdateInterval = 10; // ms
 // ---
 $('#mate-button').on('click', mate);
 $('#forward-button').on('click', forwardGame);
+$('#reset-game').on('click', resetGame);
 
 // ---
 // Graph area
@@ -70,13 +71,23 @@ $('#log-accordion').on('toggled', function (event, accordion) {
 // ----------------------------------------------------------------------------
 
 $(document).ready( function () {
+    initGame();
+});
+
+function initGame()
+{
+    loadGame();
+
     for (var tech in g_techTree) {
         previewTech(tech);
+        if (getVFK(g_techTree, tech, "unlocked")) {
+            unlockTech(tech);
+        }
     }
 
     addGraph("Population", addDataToPopulationGraph);
-    updateGraphs();
-});
+    updateGraphs();    
+}
 
 function addDataToPopulationGraph(chart)
 {
@@ -104,6 +115,58 @@ function showGameOver() {
     }
 }
 
+function saveGame()
+{
+    var gameState = {
+        population: g_population,
+        year: g_year,
+        foodSource: g_foodSource,
+        birthrate: g_birthrate,
+        deathrate: g_deathrate,
+        techtree: g_techTree
+    };
+
+    localStorage.setItem("save",JSON.stringify(gameState));
+}
+
+function loadGame()
+{
+    var gameState = JSON.parse(localStorage.getItem("save"));
+
+    if (isDefined(gameState)) {
+        if (isDefined(gameState.population)) {
+            g_population = gameState.population;
+            g_prevPopulation = gameState.population;
+        }
+
+        if (isDefined(gameState.year)) {
+            g_year = gameState.year;
+        }
+
+        if (isDefined(gameState.foodSource)) {
+            g_foodSource = gameState.foodSource;
+        }
+
+        if (isDefined(gameState.birthrate)) {
+            g_birthrate = gameState.birthrate;
+        }
+
+        if (isDefined(gameState.deathrate)) {
+            g_deathrate = gameState.deathrate;
+        }
+
+        if (isDefined(gameState.techtree)) {
+            g_techTree = gameState.techtree;
+        }        
+    }
+
+}
+
+function resetGame()
+{
+    localStorage.removeItem("save");
+    location.reload(true);
+}
 // ----------------------------------------------------------------------------
 // Game loop
 // ----------------------------------------------------------------------------
@@ -452,6 +515,7 @@ function evNewYear()
     }
 
     updateUIStatsRate();
+    saveGame();
 
     // @todo: Earth resources should grow back a bit
     
@@ -778,5 +842,5 @@ Number.prototype.clamp = function(min, max) {
 
 function isDefined(variable)
 {
-    return typeof variable != 'undefined';
+    return variable != null && typeof variable != 'undefined';
 }
