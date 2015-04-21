@@ -263,22 +263,22 @@ var g_preFS = g_foodSource;
 function updateUIStatsRate()
 {
     var rate = population() - g_prevPopulation;
-    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#population-rate').text(rate);
     g_prevPopulation = population();
 
     rate = g_birthrate - g_prevBR;
-    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#birthrate-rate').text(rate);
     g_prevBR = g_birthrate;
 
     rate = g_deathrate - g_prevDR;
-    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#deathrate-rate').text(rate);
     g_prevDR = g_deathrate;
 
     rate = g_foodSource - g_preFS;
-    rate = addPlusMinusToNumberString(rate) + rate.toFixed(3);
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#foodsource-rate').text(rate);
     g_preFS = g_foodSource;
 }
