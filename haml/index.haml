@@ -62,7 +62,7 @@
           .large-4.columns
             %button.alert.round
               %i.fa.fa-refresh
-              %span#reset-game Reset
+              %span.reset-game Reset
 
           .large-4.right.columns
             %button.success.round#forward-button
@@ -92,6 +92,10 @@
     / Game over modal
     #modal-gameover.reveal-modal(data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog")
       %h1(style="text-align: center;") You destroyed Earth. Game over.
+      %button.alert.round.push-5
+        %i.fa.fa-refresh
+        %span.reset-game Reset
+
 
     /
     / Load scripts

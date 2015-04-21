@@ -38,7 +38,7 @@ var gameUpdateInterval = 10; // ms
 // ---
 $('#mate-button').on('click', mate);
 $('#forward-button').on('click', forwardGame);
-$('#reset-game').on('click', resetGame);
+$('.reset-game').on('click', resetGame);
 
 // ---
 // Graph area
