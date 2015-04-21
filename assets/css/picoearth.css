@@ -16,61 +16,64 @@ body, h1, h2, h3, p, button, div, span, .accordion .accordion-navigation > a {
 	font-family: 'Share Tech', sans-serif;
 }
 
-.panel {
-	height: 100%;
+/* navigation css */
+#top-nav {
+	margin-top: 20px;
 }
 
-.row {
-	height: 100%;
-	width: 100%;
-  	margin-left: auto;
-  	margin-right: auto;
-   	max-width: initial;
- }
+/* Tech tree css */
+.tech-name {
+	border-radius: 5px;
+	height: 40px;
+	padding-top: 5px;
+}
+
+.tech-name-preview {
+	border-radius: 5px;
+	height: 40px;
+	margin-bottom: 0px;
+}
+
+.tech-button-group {
+	transition: all .1s ease-in-out;
+	height: 0px;
+	margin-left: 10px;
+	margin-top: -20px;
+}
+
+.tech-name:hover + .tech-button-group, .tech-button-group:hover {
+	height: 30px;
+}
 
 .tech-button {
 	width: 120px;
+	height: 30px;
 }
 
 .percent-adoption {
 	font-size: .8em;
 	vertical-align: middle;
+	margin-top: 5px;
+	width: 100px;
 }
 
-.tech-row {
-	margin-bottom: 2px;
-	margin-top: 2px;
-	height: 40px;
-}
-
-.accordion {
-	margin: 0px;
-}
-
-.small-font {
-	font-size: 9px;
-}
-
-.full-height {
-	height: 100%;
-}
-
-#top-nav {
-	margin-top: 20px;
-}
-
-#stats-panel {
-
+/* Alert box css */
+.alert-box {
+	position: absolute;
+	bottom: -20px;
+	width: 350px;
+	font-size: 11px;
 }
 
 #alert-area {
 	margin-right: auto;
 	margin-left: auto;
-	width: 300px;
+	width: 350px;
 	height: 50px;
 	margin-bottom: 20px;
 }
 
+/* Mate area css */
 #mate-button {
   	margin-left: auto;
   	margin-right: auto;  	
@@ -79,7 +82,33 @@ body, h1, h2, h3, p, button, div, span, .accordion .accordion-navigation > a {
 	height: 55px;
 }
 
+/* Log area css */
 #log {
 	font-size: .8em;
 	color: gray;
+}
+
+/* Override foundation */
+
+.panel {
+	height: 100%;
+}
+
+.row {
+	margin-left: auto;
+  	margin-right: auto;
+   	max-width: initial;
+ }
+
+.accordion {
+	margin: 0px;
+}
+
+/* style helpers */
+.small-font {
+	font-size: 9px;
+}
+
+.full-height {
+	height: 100%;
 }

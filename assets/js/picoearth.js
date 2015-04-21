@@ -293,6 +293,14 @@ function updateTechTree()
 
         if (shouldUnlockTech(tech)) {
             unlockTech(tech);
+
+            // First promote
+            promoteBanTech(tech, true);
+
+            // Log event
+            var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
+            logging(eventMessage, true);
+
         }
         updateTech(tech);
     }
@@ -301,14 +309,9 @@ function updateTechTree()
 function previewTech(tech) 
 {
     $('#tech-tree').append(' \
-        <div class="row tech-row" id="' + tech + '-row"> \
-            <div class="large-8 columns right tech-row"> \
-                <ul class="button-group round"> \
-                    <li><button class="tiny tech-button secondary disabled" id="' + tech +'-promote"> ???? </button> \
-                    </li> \
-                    <li><button class="tiny tech-button secondary disabled" id="' + tech +'-ban"> ???? </button> \
-                    </li> \
-                </ul> \
+        <div class="row" id="' + tech + '-row"> \
+            <div class="push-2 large-8 columns"> \
+                <div class="tech-name-preview panel">???</div> \
             </div> \
         </div> \
         ');    
@@ -336,33 +339,24 @@ function unlockTech(tech)
     }
 
     $('#' + tech + '-row').html(' \
-        <div class="large-8 columns right tech-row"> \
-            <ul class="button-group round"> \
-                <li><button class="tiny tech-button success" id="' + tech +'-promote"> + ' + tech + '</button> \
+        <div class="push-2 large-8 columns"> \
+            <div class="tech-name panel"> \
+                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left">' + tech + '</span> \
+                <span class="percent-adoption progress right"> \
+                    <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
+                </span> \
+            </div> \
+            <ul class="button-group tech-button-group"> \
+                <li><button class="tiny tech-button success" id="' + tech +'-promote">Promote</button> \
                 </li> \
-                <li><button class="tiny tech-button alert" id="' + tech +'-ban"> - ' + tech + '</button> \
+                <li><button class="tiny tech-button alert" id="' + tech +'-ban">Ban</button> \
                 </li> \
             </ul> \
         </div> \
-        <div class="large-1 columns tech-row"> \
-            <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left small-font">' + tech + '</span> \
-        </div> \
-        <div class="large-3 columns tech-row"> \
-            <div class="percent-adoption progress"> \
-                <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
-            </div> \
-        </div> \
         ');
-
-    // Log event
-    var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
-    logging(eventMessage, true);
 
     // bind promote/ban buttons events
     bindPromoteBanButonEvents(tech);
-
-    // First promote
-    promoteBanTech(tech, true);
 }
 
 function shouldUnlockTech(tech)
@@ -679,7 +673,7 @@ function logging(eMsg, popup, level)
 
 function popupAlert(str, level)
 {
-    $('#alert-area').prepend(' \
+    $('#alert-area').append(' \
         <div class="alert-box secondary round ' + level + '" data-alert>' +
           str +
           '<a href="#" class="close"> &times; </a> \
@@ -726,6 +720,8 @@ function bindPromoteBanButonEvents(tech)
 */
     promoteButton.bind('mousedown', function(e) {
         promoteBanTech(tech, true);
+
+        $('#' + tech + '-div').slideDown("slow", function(){});
     });
 
     banButton.bind('mousedown', function(e) {
