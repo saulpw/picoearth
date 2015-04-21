@@ -26,6 +26,13 @@ button:focus {
 }
 
 /* Tech tree css */
+#tech-tree {
+	background-color: rgba(1,1,1,.2);
+	border-radius: 20px;
+	border-color: rgba(255,255,255, .5);
+	border-width: 5px;
+}
+
 .tech-name {
 	border-radius: 5px;
 	height: 40px;
@@ -113,6 +120,14 @@ button:focus {
 	font-size: 9px;
 }
 
+.large-font {
+	font-size: 40px;
+}
+
 .full-height {
 	height: 100%;
+}
+
+.white {
+	color: white;
 }
