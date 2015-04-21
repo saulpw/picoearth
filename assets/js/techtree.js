@@ -20,7 +20,7 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.005
         },
-        "adopt-percent": 21
+        "adopt-percent": 20
     },
     "Cave-shelters": {
         "unlocked": false,
@@ -31,7 +31,7 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 32
+        "adopt-percent": 20
     },
     "Cave-drawing": {
         "unlocked": false,
@@ -43,7 +43,7 @@ var g_techTree = {
             "birth-per-thousand": 0.001,
             "death-per-thousand": -0.001
         },
-        "adopt-percent": 12
+        "adopt-percent": 20
     },
     "Domestication": {
         "unlocked": false,
@@ -55,7 +55,7 @@ var g_techTree = {
             "death-per-thousand": -0.001,
             "food-source": .00001
         },
-        "adopt-percent": 4
+        "adopt-percent": 20    
     },
     "Cooking": {
         "unlocked": false,
@@ -70,7 +70,7 @@ var g_techTree = {
             "birth-per-thousand": 0.001,
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 26
+        "adopt-percent": 20
     },
     "Clothing": {
         "unlocked": false,
@@ -81,7 +81,7 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 34
+        "adopt-percent": 20
     },
     "Farming": {
         "unlocked": false,
@@ -94,7 +94,7 @@ var g_techTree = {
             "death-per-thousand": -0.001,
             "food-source": .00001
         },
-        "adopt-percent": 13
+        "adopt-percent": 20
     },
     "Writing": {
         "unlocked": false,
@@ -106,8 +106,7 @@ var g_techTree = {
             "birth-per-thousand": 0.002,
             "death-per-thousand": -0.001
         },
-        "adopt-percent": 2
-    },
+        "adopt-percent": 20    },
     "Stone tools": {
         "unlocked": false,
         "require": {
@@ -117,6 +116,6 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 23
+        "adopt-percent": 20
     }
 }

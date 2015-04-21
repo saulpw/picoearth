@@ -431,9 +431,9 @@ function promoteBanTech(tech, isPromote)
     if (shouldUpdateAdoption) {
         var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
         if (isPromote) {
-            setVFK(g_techTree, adoptPercent + 1, tech, "adopt-percent");
+            setVFK(g_techTree, adoptPercent + 5, tech, "adopt-percent");
         } else {
-            setVFK(g_techTree, adoptPercent - 1, tech, "adopt-percent");
+            setVFK(g_techTree, adoptPercent - 5, tech, "adopt-percent");
         }
     }
 
