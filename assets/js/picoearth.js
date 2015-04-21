@@ -320,7 +320,7 @@ function previewTech(tech)
 function unlockTech(tech)
 {
     var percentAdopted = adoptionString(tech);
-    var tooltipString = "";
+    var tooltipString = "Each %: ";
     
     // Display per-year effects
     var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
