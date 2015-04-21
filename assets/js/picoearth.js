@@ -753,8 +753,10 @@ function forwardGame()
             g_gameSpeed = 32;
             break;
         case 32:
-            g_gameSpeed = 1;
+            g_gameSpeed = 100;
             break;
+        case 100:
+            g_gameSpeed = 1;
         default:
             g_gameSpeed = 1;
             break;
