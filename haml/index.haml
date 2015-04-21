@@ -36,7 +36,16 @@
               %i.fa(class="fa-#{icon}")
               %span(id="#{stat}-rate" style="font-size: 11px")
 
-        / Log events
+        / Graph area
+        %ul#graph-accordion.accordion(data-accordion)
+          %li.accordion-navigation
+            %a#graph-banner(href="#graph-area") 
+              Graph
+              %i.fa.fa-arrow-up.right
+
+            #graph-area.content.active
+              
+        / Log area
         %ul#log-accordion.accordion(data-accordion)
           %li.accordion-navigation
             %a#log-banner(href="#log") 
@@ -44,15 +53,6 @@
               %i.fa.fa-arrow-up.right
             #log.content.active
         
-        %ul#graph-accordion.accordion(data-accordion)
-          %li.accordion-navigation
-            %a#graph-banner(href="#graph-area") 
-              Graph
-              %i.fa.fa-arrow-up.right
-
-            / Graph area
-            #graph-area.content.active
-              
 
       .large-4.columns(data-equalizer-watch)
         

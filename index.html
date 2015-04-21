@@ -52,7 +52,17 @@
             <span id='foodsource-rate' style='font-size: 11px'></span>
           </div>
         </div>
-        <!-- Log events -->
+        <!-- Graph area -->
+        <ul class='accordion' data-accordion id='graph-accordion'>
+          <li class='accordion-navigation'>
+            <a href='#graph-area' id='graph-banner'>
+              Graph
+              <i class='fa fa-arrow-up right'></i>
+            </a>
+            <div class='content active' id='graph-area'></div>
+          </li>
+        </ul>
+        <!-- Log area -->
         <ul class='accordion' data-accordion id='log-accordion'>
           <li class='accordion-navigation'>
             <a href='#log' id='log-banner'>
@@ -60,16 +70,6 @@
               <i class='fa fa-arrow-up right'></i>
             </a>
             <div class='content active' id='log'></div>
-          </li>
-        </ul>
-        <ul class='accordion' data-accordion id='graph-accordion'>
-          <li class='accordion-navigation'>
-            <a href='#graph-area' id='graph-banner'>
-              Graph
-              <i class='fa fa-arrow-up right'></i>
-            </a>
-            <!-- Graph area -->
-            <div class='content active' id='graph-area'></div>
           </li>
         </ul>
       </div>
