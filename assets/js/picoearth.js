@@ -22,6 +22,7 @@ var g_foodSource = 1000000;
 
 var g_gameSpeed = 1;
 var g_graphs = [];
+var g_log = "";
 
 // ----------------------------------------------------------------------------
 // Game internal states
@@ -87,6 +88,8 @@ function initGame()
 
     addGraph("Population", addDataToPopulationGraph);
     updateGraphs(); 
+
+    $('#log').text(g_log);
 }
 
 function addDataToPopulationGraph(chart)
@@ -123,7 +126,8 @@ function saveGame()
         foodSource: g_foodSource,
         birthrate: g_birthrate,
         deathrate: g_deathrate,
-        techtree: g_techTree
+        techtree: g_techTree,
+        log: g_log
     };
 
     localStorage.setItem("save",JSON.stringify(gameState));
@@ -158,6 +162,10 @@ function loadGame()
         if (isDefined(gameState.techtree)) {
             g_techTree = gameState.techtree;
         }        
+
+        if (isDefined(gameState.log)) {
+            g_log = gameState.log;
+        }
     }
 
 }
@@ -663,9 +671,11 @@ function addPlusMinusToNumberString(number)
 
 function logging(eMsg, popup, level)
 {
-    $('#log').prepend('<div>' + eMsg + '</div>' );
+    g_log = eMsg + '\n' + g_log;
+    $('#log').text(g_log);
+
     
-    popup = typeof popup !== 'undefined' ? popup : false;
+    popup = isDefined(popup) ? popup : false;
     if (popup) {
         popupAlert(eMsg, level);        
     }    

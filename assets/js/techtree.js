@@ -107,7 +107,7 @@ var g_techTree = {
             "death-per-thousand": -0.001
         },
         "adopt-percent": 20    },
-    "Stone tools": {
+    "Stone-tools": {
         "unlocked": false,
         "require": {
             "population": 2000000,
