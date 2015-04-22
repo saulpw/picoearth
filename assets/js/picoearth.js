@@ -86,12 +86,12 @@ function initGame()
     }
 
     addGraph("Population", addDataToPopulationGraph);
-    updateGraphs();    
+    updateGraphs(); 
 }
 
 function addDataToPopulationGraph(chart)
 {
-    chart.addData([population()], yearString());
+    chart.addData([population()], "");
 }
 
 // ----------------------------------------------------------------------------
@@ -769,7 +769,7 @@ function forwardGame()
 
 function addGraph(name, addDataFn)
 {
-    $('#graph-area').append('<canvas width="400" height="350" id="graph-' + name + '">');
+    $('#graph-area').append('<canvas width="400" height="200" id="graph-' + name + '">');
     var ctx = $('#graph-' + name).get(0).getContext("2d");
     var data = {
         labels: [],
@@ -777,7 +777,7 @@ function addGraph(name, addDataFn)
             {
                 label: name,
                 fillColor: "rgba(154,185,227,1)",
-                strokeColor: "rgba(320,320,320,1)",
+                strokeColor: "rgba(154,185,227,1)",
                 pointColor: "rgba(220,220,220,1)",
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
@@ -788,18 +788,26 @@ function addGraph(name, addDataFn)
     };
     
     var chart = new Chart(ctx).Line(data, {
+        showTooltips: false,        
+        scaleShowGridLines: false,
         pointDot : false,
-        bezierCurve : true,
-        datasetStrokeWidth : 1,
+        bezierCurve : false,
+        datasetStroke: true,
+        datasetFill: false,
         scaleFontSize: 8,
         animation: false,
         scaleShowHorizontalLines: false,
+        scaleShowVerticalLines: false,
     });
+
+    // Initial data for all charts
+    chart.addData([0], "10000BC");
 
     var graph = {
         "chart": chart,
         "add-data-fn": addDataFn
     };
+
 
     g_graphs.push(graph);
 }
@@ -812,11 +820,6 @@ function updateGraphs()
 
         // call custom add function
         graph["add-data-fn"](chart);
-
-        // trim graph
-        if (chart.datasets[0].points.length > 15) {
-            chart.removeData();
-        }
     }
 }
 
