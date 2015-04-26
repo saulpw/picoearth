@@ -23,6 +23,7 @@ var g_foodSource = 1000000;
 var g_gameSpeed = 1;
 var g_graphs = [];
 var g_log = "";
+var g_alertQueue = [];
 
 // ----------------------------------------------------------------------------
 // Game internal states
@@ -67,6 +68,20 @@ $('#log-accordion').on('toggled', function (event, accordion) {
     }    
 });
 
+// ---
+// Alert
+// ---
+$(document).on('close.fndtn.alert', function(event) {
+    
+    g_alertQueue.pop();
+
+    // Display the next alert in queue
+    if (g_alertQueue.length > 0) {
+        var str = g_alertQueue.pop();
+        popupAlert(str);
+    }
+});
+
 // ----------------------------------------------------------------------------
 // Initialization
 // ----------------------------------------------------------------------------
@@ -79,6 +94,7 @@ function initGame()
 {
     loadGame();
 
+    // Load tech tree
     for (var tech in g_techTree) {
         previewTech(tech);
         if (getVFK(g_techTree, tech, "unlocked")) {
@@ -86,9 +102,11 @@ function initGame()
         }
     }
 
+    // Load graphs
     addGraph("Population", addDataToPopulationGraph);
     updateGraphs(); 
 
+    // Load log
     $('#log').text(g_log);
 }
 
@@ -541,7 +559,7 @@ function runNaturalDisasterEvents()
                     "conditions", 
                     "year") == year()) {
 
-            logging(getVFK(g_worldEvents["natural-disasters"], natDis, "message"), true, 'warning');
+            logging(getVFK(g_worldEvents["natural-disasters"], natDis, "message"), true);
 
             // Natural disasters kill people!
             g_population -= getVFK(g_worldEvents["natural-disasters"], 
@@ -563,7 +581,7 @@ function runGenericWorldEvents()
 {
     for (var ev in g_worldEvents["generic"]) {
         if (getVFK(g_worldEvents["generic"], ev, "conditions", "year") == year()) {
-            logging(getVFK(g_worldEvents["generic"], ev, "message"), true, "warning");
+            logging(getVFK(g_worldEvents["generic"], ev, "message"), true);
 
             // Set condition to a year that has passed to prevent
             // this event to trigger again
@@ -690,16 +708,18 @@ function logging(eMsg, popup, level)
     
     popup = isDefined(popup) ? popup : false;
     if (popup) {
-        popupAlert(eMsg, level);        
+        popupAlert(eMsg);        
     }    
 }
 
-function popupAlert(str, level)
+function popupAlert(str)
 {
-    $('#alert-area').append(' \
-        <div class="alert-box secondary round ' + level + '" data-alert>' +
+    g_alertQueue.push(str);    
+
+    $('#alert-area').html(' \
+        <div class="alert-box alert-tech-unlocked round" data-alert>' +
           str +
-          '<a href="#" class="close"> &times; </a> \
+          '<a href="#" class="close">&times;</a> \
         </div> \
         ').foundation(
             "alert",

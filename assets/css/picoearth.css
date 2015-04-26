@@ -31,7 +31,7 @@ textarea {
 
 /* Tech tree css */
 #tech-tree {
-	background-color: rgba(1,1,1,.2);
+	background-color: rgba(1,64,64,.2);
 	border-radius: 20px;
 	border-color: rgba(255,255,255, .5);
 	border-width: 5px;
@@ -84,19 +84,28 @@ textarea {
 
 /* Alert box css */
 .alert-box {
-	position: absolute;
-	bottom: -20px;
 	width: 350px;
-	height: 70px;
-	font-size: 11px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.alert-tech-unlocked {
+	background-color: rgba(250,250,250,.1);
+}
+
+.alert-events {
+	background-color: rgba(255,64,64, .2);
+}
+
+.alert-box .close {
+	background-color: rgba(255, 255, 255, 1);
 }
 
 #alert-area {
 	margin-right: auto;
 	margin-left: auto;
 	width: 350px;
-	height: 70px;
-	margin-bottom: 20px;
+	margin-top: 20px;
 }
 
 /* Mate area css */
