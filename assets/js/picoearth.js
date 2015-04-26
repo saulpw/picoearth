@@ -316,10 +316,14 @@ function updateTechTree()
 
 function previewTech(tech) 
 {
+    var year = yearString(getVFK(g_techTree, tech, "require", "year"));
+    var pop = getVFK(g_techTree, tech, "require", "population");
+    var requireString = 'Unlock at year ' + year + ', when population is over ' + pop;
+
     $('#tech-tree').append(' \
         <div class="row" id="' + tech + '-row"> \
             <div class="push-2 large-8 columns"> \
-                <div class="tech-name-preview panel">???</div> \
+                <div class="tech-name-preview panel"><span data-tooltip aria-haspopup="true" class="has-tip" title="' + requireString + '">???</span></div> \
             </div> \
         </div> \
         ');    
@@ -599,17 +603,26 @@ function populationString() {
     return numberStringUnit(pop);
 }
 
-function yearString() {
-    var toString = year();
-    if (g_year < 1000) {
+function yearString(number) {
+    
+    var y;
+    
+    if (isDefined(number)) {
+        y = number;
+    } else {
+        y = year();
+    }
+
+    var toString = y;
+    if (y < 0) {
         toString = -toString + 'BC';
     }
 
-    if (year() < -3500) {
+    if (y < -3500) {
         toString += ' (Prehistoric)';
-    } else if (year() < 500) {
+    } else if (y < 500) {
         toString += ' (Ancient world)';
-    } else if (year() < 1500) {
+    } else if (y < 1500) {
         toString += ' (Medieval world)';
     } else {
         toString += ' (Modern world)';

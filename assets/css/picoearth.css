@@ -41,12 +41,21 @@ textarea {
 	border-radius: 5px;
 	height: 40px;
 	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 .tech-name-preview {
 	border-radius: 5px;
 	height: 40px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	margin-bottom: 0px;
+	font-size: 11px;
+	color: gray;
+}
+
+.tech-button-group::before {
+	z-index: 1;
 }
 
 .tech-button-group {
@@ -54,10 +63,12 @@ textarea {
 	height: 0px;
 	margin-left: 10px;
 	margin-top: -20px;
+	visibility: hidden;
 }
 
 .tech-name:hover + .tech-button-group, .tech-button-group:hover {
 	height: 30px;
+	visibility: visible;
 }
 
 .tech-button {
@@ -68,7 +79,6 @@ textarea {
 .percent-adoption {
 	font-size: .8em;
 	vertical-align: middle;
-	margin-top: 5px;
 	width: 100px;
 }
 
