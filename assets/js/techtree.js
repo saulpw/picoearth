@@ -99,18 +99,19 @@ var g_techTree = {
     "Writing": {
         "unlocked": false,
         "require": {
-            "population": 0,
+            "population": 1000000,
             "year": -3200,
         },
         "per-year": {
             "birth-per-thousand": 0.002,
             "death-per-thousand": -0.001
         },
-        "adopt-percent": 20    },
+        "adopt-percent": 20    
+    },
     "Stone-tools": {
         "unlocked": false,
         "require": {
-            "population": 2000000,
+            "population": 20000000,
             "year": -9990,
         },
         "per-year": {

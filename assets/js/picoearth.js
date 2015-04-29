@@ -120,7 +120,8 @@ function addDataToPopulationGraph(chart)
 // ----------------------------------------------------------------------------
 
 function checkGameOver() {
-    if (g_foodSource == 0) {
+    if (g_foodSource == 0 ||
+        population() == 0) {
         return true;
     }
 
@@ -324,7 +325,7 @@ function updateTechTree()
             promoteBanTech(tech, true);
 
             // Log event
-            var eventMessage = tech + ' is unlocked at year ' + yearString() + '.';
+            var eventMessage = tech + ' is unlocked in year ' + yearString() + '.';
             logging(eventMessage, true);
 
         }
@@ -337,6 +338,14 @@ function previewTech(tech)
     var year = yearString(getVFK(g_techTree, tech, "require", "year"));
     var pop = getVFK(g_techTree, tech, "require", "population");
     var requireString = 'Unlock at year ' + year + ', when population is over ' + pop;
+
+    var rTechs = getVFK(g_techTree, tech, "require", "techs");
+    if (isDefined(rTechs)) {
+        requireString += ". Requires: "
+        for (var i in rTechs) {
+            requireString += rTechs[i] + " ";
+        }
+    }
 
     $('#tech-tree').append(' \
         <div class="row" id="' + tech + '-row"> \
