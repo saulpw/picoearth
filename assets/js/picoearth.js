@@ -408,8 +408,8 @@ function shouldUnlockTech(tech)
 
             // Check if required techs are all unlocked
             if (isDefined(techThres)) {
-                for (var requiredTech in techThres) {
-                    if (getVFK(g_techTree, requiredTech, "unlocked") == false) {
+                for (var i in techThres) {
+                    if (getVFK(g_techTree, techThres[i], "unlocked") == false) {
                         return false;       
                     }
                 }
