@@ -321,9 +321,6 @@ function updateTechTree()
         if (shouldUnlockTech(tech)) {
             unlockTech(tech);
 
-            // First promote
-            promoteBanTech(tech, true);
-
             // Log event
             var eventMessage = tech + ' is unlocked in year ' + yearString() + '.';
             logging(eventMessage, true);
