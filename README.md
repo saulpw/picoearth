@@ -76,3 +76,17 @@ To add a new natural disaster event - an event which affects population (death) 
 	- **"year"**: Supply the year *integer* when the event should be triggered.
 - **effects"**: The effects caused by this event.
 	- **"death"**: Supply the death *integer* that affects population when the event is triggered.
+
+## HOW-TO add a new graph
+To add a new graph, modify `initGame()` in *picoearth.js* by calling `addGraph(name, initXY, yearGap, dataFn)` before the first call to `updateGraphs()`.
+
+The graph will be displayed under the #graph-area div.
+
+**Parameters**
+
+* *name*: Supply the name of the graph.
+* *initXY*: Supply an array that contains the first x (any type) and y (number only). For example, ["1000BC", 123].
+* *yearGap*: The number of year between gaps for each update. This will start counting from 10000BC. For example, a yearGap = 10 will update the graph every 10 years, starting from 10000BC.
+* *dataFn*: Supply a data funtion. This function must return an array containing the new x (any type) and y (number only) for each time updateGraphs() is called. For example: `function dataPopulationGraphFn() { return [yearString(), population()]; }` will add the current year string to the x axis and the current population to the y axis.
+
+

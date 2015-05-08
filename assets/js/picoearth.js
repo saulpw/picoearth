@@ -103,16 +103,18 @@ function initGame()
     }
 
     // Load graphs
-    addGraph("Population", addDataToPopulationGraph);
+    addGraph("Population", ["1000BC", 0], 10, dataPopulationGraphFn);
     updateGraphs(); 
 
     // Load log
     $('#log').text(g_log);
 }
 
-function addDataToPopulationGraph(chart)
+function dataPopulationGraphFn()
 {
-    chart.addData([population()], "");
+    // @todo    not adding yearString() for x value here 
+    //          because the graph got cluttered up
+    return ["", population()];
 }
 
 // ----------------------------------------------------------------------------
@@ -481,6 +483,7 @@ function promoteBanTech(tech, isPromote)
 // Dictionary getter/setter
 // ----------------------------------------------------------------------------
 
+//
 // @function        getVFK
 //
 // @description     Get value from keys.
@@ -540,10 +543,7 @@ function setVFK(dict, value)
 
 function evNewYear()
 {
-    if (year() % 10 == 0) {
-        updateGraphs();    
-    }
-
+    updateGraphs();    
     updateUIStatsRate();
     saveGame();
 
@@ -816,7 +816,22 @@ function forwardGame()
 // Graph functions
 // ----------------------------------------------------------------------------
 
-function addGraph(name, addDataFn)
+//
+// @function        addGraph
+//
+// @description     Add a new graph to the game.
+//                  The graph will be displayed under the #graph-area div.
+//
+// @param name      Supply the name of the graph.
+// @param initXY    Supply an array that contains the first x (any type) and y (number only).
+//                  For example, ["1000BC", 123]
+// @param yearGap   The number of year between gaps for each update. This will start counting from 10000BC.
+// @param dataFn    Supply a data funtion. This function must return an array
+//                  containing the new x (any type) and y (number only) for each time updateGraphs()
+//                  is called. 
+//
+
+function addGraph(name, initXY, yearGap, dataFn)
 {
     $('#graph-area').append('<canvas width="400" height="200" id="graph-' + name + '">');
     var ctx = $('#graph-' + name).get(0).getContext("2d");
@@ -850,10 +865,18 @@ function addGraph(name, addDataFn)
     });
 
     // Initial data for all charts
-    chart.addData([0], "10000BC");
+    chart.addData([initXY[1]], initXY[0]);
+
+    function addDataFn(ch) {
+        var xy = dataFn();
+        var x = xy[0];
+        var y = xy[1];
+        ch.addData([y], x);
+    }
 
     var graph = {
         "chart": chart,
+        "yearGap": yearGap,
         "add-data-fn": addDataFn
     };
 
@@ -865,6 +888,11 @@ function updateGraphs()
 {
     for (var i = 0; i < g_graphs.length; i++) {
         var graph = g_graphs[i];
+        var yearGap = graph["yearGap"];
+        
+        if (year() % yearGap != 0) {
+            continue;
+        }
         var chart = graph["chart"];
 
         // call custom add function
