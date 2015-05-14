@@ -21,10 +21,10 @@
             Year:
             %span#year 1000
 
-          - stats = {"population" => ["Population", "child"],
+          - stats = {"population" => ["Population", "male"],
                     "birthrate" => ["Annual birth rate", ""],
                     "deathrate" => ["Annual death rate", ""],
-                    "foodsource" => ["Food source", ""]}
+                    "foodsource" => ["Food source", "cutlery"]}
 
           - stats.each do |stat, name_icon|
             - name = name_icon[0]
