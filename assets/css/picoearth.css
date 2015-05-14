@@ -53,6 +53,14 @@ textarea {
 	color: gray;
 }
 
+.tech-disabled {
+	color: gray;
+}
+
+.tech-enabled {
+	color: black;
+}
+
 .tech-button-group::before {
 	z-index: 1;
 }
@@ -71,7 +79,7 @@ textarea {
 }
 
 .tech-button {
-	width: 120px;
+	width: 80px;
 	height: 30px;
 }
 

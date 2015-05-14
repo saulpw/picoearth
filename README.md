@@ -9,7 +9,8 @@ Technology can be added or modified by modifying the json object `g_techTree` in
 To add a new tech, append to `g_techTree` the format as specified below:
 
 	"<string (tech-name)>": {
-		"unlock":<boolean>,
+		"unlock": <boolean>,
+		"enabled": <boolean>,
 		"require": {
 			"population": <integer>,
 			"year": <integer>,
@@ -27,6 +28,7 @@ To add a new tech, append to `g_techTree` the format as specified below:
 	
 - Supply the **"tech-name"** string (no space allowed) as the initial key. This string will be used to display the technology's name whenever it's mentioned in the game.
 - **"unlocked"**: Supply the initial "unlocked" *boolean* state of the technology. Typically set as `false`, the value is updated to `true` when the technology is unlocked.
+- **"enabled"**: Supply the initial "enabled" *boolean* state of the technology. Typically set as `true`, the value is updated to `false` when the technology is set at *neutral* state.
 - **"require"**: The requirements to unlock the technology.
 	- **"population"**: Supply the required population *integer* when the technology can be unlocked.
 	- **"year"**: Supply the required year *integer* (negative for BC years) when the technology can be unlocked.
@@ -35,7 +37,7 @@ To add a new tech, append to `g_techTree` the format as specified below:
 	- **"death-per-thousand" (optional)**: Supply the *float* value of death per thousand per percentage per year.
 	- **"birth-per-thousand" (optional)**: Supply the *float* value of death- per-thousand per percentage per year.
 	- **food-source" (optional)**: Supply the *float* value of food source change per year.
-- **"adopt-percent"**: Supply the initial adoption percentage when this technology is unlocked. This value is updated when player promotes/bans the technology.
+- **"adopt-percent"**: Supply the initial adoption percentage when this technology is unlocked. "per-year" stats are calculated as *adoption-percent* x *stat*. This value is updated when player promotes/bans the technology and is disabled when the technology is set to *neutral*.
 
 ## HOW-TO update events tree
 

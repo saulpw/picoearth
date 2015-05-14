@@ -1,6 +1,7 @@
 var g_techTree = {
     "Foraging": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1000000,
             "year": -10000,
@@ -13,6 +14,7 @@ var g_techTree = {
     },
     "Fire": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1005000,
             "year": -10000,
@@ -24,6 +26,7 @@ var g_techTree = {
     },
     "Cave-shelters": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1015000,
             "year": -9995,
@@ -35,6 +38,7 @@ var g_techTree = {
     },
     "Cave-drawing": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1020000,
             "year": -9990,
@@ -47,6 +51,7 @@ var g_techTree = {
     },
     "Domestication": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1030000,
             "year": -9980,
@@ -59,6 +64,7 @@ var g_techTree = {
     },
     "Cooking": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1020000,
             "year": -9990,
@@ -74,6 +80,7 @@ var g_techTree = {
     },
     "Clothing": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1040000,
             "year": -9890,
@@ -85,6 +92,7 @@ var g_techTree = {
     },
     "Farming": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1070000,
             "year": -9800,
@@ -98,6 +106,7 @@ var g_techTree = {
     },
     "Writing": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 1000000,
             "year": -3200,
@@ -110,6 +119,7 @@ var g_techTree = {
     },
     "Stone-tools": {
         "unlocked": false,
+        "enabled": true,
         "require": {
             "population": 20000000,
             "year": -9990,

@@ -1,5 +1,7 @@
 const DEATHRATE_MAX = BIRTHRATE_MAX = 1000;
 const DEATHRATE_MIN = BIRTHRATE_MIN = 0;
+const DEATHRATE_BASE = 40;
+const BIRTHRATE_BASE = 40.1;
 const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
 const ZERO = 0;
@@ -12,8 +14,8 @@ const START_YEAR = -10000;
 
 var g_population = 1000000;
 var g_year = START_YEAR;
-var g_birthrate = 40.01;
-var g_deathrate = 40; // @todo: capture this as infant mortality + lifespan
+var g_birthrate = DEATHRATE_BASE;
+var g_deathrate = BIRTHRATE_BASE; // @todo: capture this as infant mortality + lifespan
 var g_foodSource = 1000000;
 
 // ----------------------------------------------------------------------------
@@ -222,6 +224,8 @@ function updateStats()
     var incr = (g_gameSpeed/1000) * gameUpdateInterval;
 
     updateYear(incr);
+    updateBirthRate();
+    updateDeathRate();
     updatePopulation(incr);
     updateFoodSource(incr);
     updateUIStats();
@@ -246,6 +250,41 @@ function updatePopulation(incr)
     if (g_population + newHumans > 0) {
         g_population += newHumans;
     }
+}
+
+function updateBirthRate()
+{
+    // Birth rate = Base birth rate + each tech's adoption percentage * offset
+    g_birthrate = BIRTHRATE_BASE;
+    for (var tech in g_techTree) {
+        if (getVFK(g_techTree, tech, "unlocked") && 
+            getVFK(g_techTree, tech, "enabled")) {
+            var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
+            if (isDefined(brOffset)) {
+                var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
+                g_birthrate += (brOffset * adoptPercent);
+            }
+        }
+    }
+    g_birthrate = g_birthrate.clamp(BIRTHRATE_MIN, BIRTHRATE_MAX);
+}
+
+function updateDeathRate()
+{
+    // Death rate = Base death rate + each tech's adoption percentage * offset
+    g_deathrate = DEATHRATE_BASE;
+    for (var tech in g_techTree) {
+        if (getVFK(g_techTree, tech, "unlocked") && 
+            getVFK(g_techTree, tech, "enabled")) {
+            var drOffset = getVFK(g_techTree, tech, "per-year", "death-per-thousand");
+            if (isDefined(drOffset)) {
+                var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
+                g_deathrate += (drOffset * adoptPercent);                
+            }
+        }
+    }
+
+    g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
 }
 
 function updateFoodSource(incr)
@@ -289,6 +328,7 @@ var g_prevPopulation = g_population;
 var g_prevBR = g_birthrate;
 var g_prevDR = g_deathrate;
 var g_preFS = g_foodSource;
+
 function updateUIStatsRate()
 {
     var rate = population() - g_prevPopulation;
@@ -328,7 +368,7 @@ function updateTechTree()
             logging(eventMessage, true);
 
         }
-        updateTech(tech);
+        updateTechUI(tech);
     }
 }
 
@@ -379,13 +419,15 @@ function unlockTech(tech)
     $('#' + tech + '-row').html(' \
         <div class="push-2 large-8 columns"> \
             <div class="tech-name panel"> \
-                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip tip-left">' + tech + '</span> \
+                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="' + tech + '-name has-tip tip-left">' + tech + '</span> \
                 <span class="percent-adoption progress right"> \
                     <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
                 </span> \
             </div> \
             <ul class="button-group tech-button-group"> \
                 <li><button class="tiny tech-button success" id="' + tech +'-promote">Promote</button> \
+                </li> \
+                <li><button class="tiny tech-button secondary" id="' + tech +'-neutral">Neutral</button> \
                 </li> \
                 <li><button class="tiny tech-button alert" id="' + tech +'-ban">Ban</button> \
                 </li> \
@@ -426,19 +468,26 @@ function shouldUnlockTech(tech)
     return false;
 }
 
-function updateTech(tech)
+function updateTechUI(tech)
 {
-    var percentAdopted = adoptionString(tech);
-
     if (g_techTree[tech]["unlocked"]) {
 
         var promoteEnabled =  getVFK(g_techTree, tech, "adopt-percent") < A_HUNDRED_PERCENT;
         var banEnabled = getVFK(g_techTree, tech, "adopt-percent") > ZERO_PERCENT;
+        var techEnabled = getVFK(g_techTree, tech, "enabled");
 
+        // If tech not enabled, it's essentially the same as having 0% adoption
+        var percentAdopted = techEnabled ? adoptionString(tech) : 0;
+ 
+        $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
+        $('#' + tech + '-ban').prop('disabled', !banEnabled);
         $('#' + tech + '-adoption').css("width", percentAdopted + "%");
         $('#' + tech + '-adoption').html(percentAdopted + "%");
-        $('#' + tech + '-promote').prop('disabled', !promoteEnabled);    
-        $('#' + tech + '-ban').prop('disabled', !banEnabled);            
+        if (techEnabled) {
+            $('#' + tech + '-adoption').removeClass('tech-disabled').addClass('tech-enabled');
+        } else {
+            $('#' + tech + '-adoption').removeClass('tech-enabled').addClass('tech-disabled');
+        }
     }
 }
 
@@ -453,7 +502,6 @@ function promoteBanTech(tech, isPromote)
         ((brOffset < 0 && g_birthrate != BIRTHRATE_MIN) || 
         (brOffset > 0 && g_birthrate != BIRTHRATE_MAX)))
     {
-        g_birthrate += brOffset;
         shouldUpdateAdoption = true;
     }
 
@@ -462,11 +510,13 @@ function promoteBanTech(tech, isPromote)
         ((drOffset < 0 && g_deathrate != DEATHRATE_MIN) || 
         (drOffset > 0 && g_deathrate != DEATHRATE_MAX)))
     {
-        g_deathrate += drOffset;
         shouldUpdateAdoption = true;
     }
 
     if (shouldUpdateAdoption) {
+
+        // Enable tech if it was neutral
+        setVFK(g_techTree, true, tech, "enabled");
         var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
         if (isPromote) {
             setVFK(g_techTree, adoptPercent + 5, tech, "adopt-percent");
@@ -474,9 +524,11 @@ function promoteBanTech(tech, isPromote)
             setVFK(g_techTree, adoptPercent - 5, tech, "adopt-percent");
         }
     }
+}
 
-    g_birthrate = g_birthrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-    g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
+function neutralizeTech(tech)
+{
+    setVFK(g_techTree, false, tech, "enabled");
 }
 
 // ----------------------------------------------------------------------------
@@ -743,6 +795,7 @@ function bindPromoteBanButonEvents(tech)
     var interval;
     var promoteButton = $('#' + tech + '-promote');
     var banButton = $('#' + tech + '-ban');
+    var neutralButton = $('#' + tech + '-neutral');
 
 /* Uncomment to allow press-hold instead
     promoteButton.bind('mousedown',function(e) {
@@ -769,12 +822,14 @@ function bindPromoteBanButonEvents(tech)
 */
     promoteButton.bind('mousedown', function(e) {
         promoteBanTech(tech, true);
-
-        $('#' + tech + '-div').slideDown("slow", function(){});
     });
 
     banButton.bind('mousedown', function(e) {
         promoteBanTech(tech, false);
+    });
+
+    neutralButton.bind('mousedown', function(e) {
+        neutralizeTech(tech);
     });
 }
 
