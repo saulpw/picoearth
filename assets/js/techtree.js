@@ -1,7 +1,7 @@
 var g_techTree = {
     "Foraging": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1000000,
             "year": -10000,
@@ -10,11 +10,11 @@ var g_techTree = {
             "death-per-thousand": -0.001,
             "food-source": -0.00005
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Fire": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1005000,
             "year": -10000,
@@ -22,11 +22,11 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.005
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Cave-shelters": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1015000,
             "year": -9995,
@@ -34,11 +34,11 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Cave-drawing": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1020000,
             "year": -9990,
@@ -47,11 +47,11 @@ var g_techTree = {
             "birth-per-thousand": 0.001,
             "death-per-thousand": -0.001
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Domestication": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1030000,
             "year": -9980,
@@ -60,11 +60,11 @@ var g_techTree = {
             "death-per-thousand": -0.001,
             "food-source": .00001
         },
-        "adopt-percent": 20    
+        "adopt-percent": 0    
     },
     "Cooking": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1020000,
             "year": -9990,
@@ -76,11 +76,11 @@ var g_techTree = {
             "birth-per-thousand": 0.001,
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Clothing": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1040000,
             "year": -9890,
@@ -88,11 +88,11 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Farming": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1070000,
             "year": -9800,
@@ -102,11 +102,11 @@ var g_techTree = {
             "death-per-thousand": -0.001,
             "food-source": .00001
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     },
     "Writing": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 1000000,
             "year": -3200,
@@ -115,11 +115,11 @@ var g_techTree = {
             "birth-per-thousand": 0.002,
             "death-per-thousand": -0.001
         },
-        "adopt-percent": 20    
+        "adopt-percent": 0    
     },
     "Stone-tools": {
         "unlocked": false,
-        "enabled": true,
+        "state": 0,
         "require": {
             "population": 20000000,
             "year": -9990,
@@ -127,6 +127,6 @@ var g_techTree = {
         "per-year": {
             "death-per-thousand": -0.002
         },
-        "adopt-percent": 20
+        "adopt-percent": 0
     }
 }

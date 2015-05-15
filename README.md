@@ -28,7 +28,7 @@ To add a new tech, append to `g_techTree` the format as specified below:
 	
 - Supply the **"tech-name"** string (no space allowed) as the initial key. This string will be used to display the technology's name whenever it's mentioned in the game.
 - **"unlocked"**: Supply the initial "unlocked" *boolean* state of the technology. Typically set as `false`, the value is updated to `true` when the technology is unlocked.
-- **"enabled"**: Supply the initial "enabled" *boolean* state of the technology. Typically set as `true`, the value is updated to `false` when the technology is set at *neutral* state.
+- **"state"**: Supply the initial state of the tech. 0: neutral, 1: promote, 2: ban. If "neutral", the adoption percentage increases +1%/year; if "promote", +3%/year; if "ban", -5%/year.
 - **"require"**: The requirements to unlock the technology.
 	- **"population"**: Supply the required population *integer* when the technology can be unlocked.
 	- **"year"**: Supply the required year *integer* (negative for BC years) when the technology can be unlocked.
