@@ -23,7 +23,7 @@ var g_population = 1000000;
 var g_year = START_YEAR;
 var g_birthrate = DEATHRATE_BASE;
 var g_deathrate = BIRTHRATE_BASE; // @todo: capture this as infant mortality + lifespan
-var g_foodSource = 1000000;
+var g_foodSource = 10000000;
 
 // ----------------------------------------------------------------------------
 // Internal game stats
@@ -131,8 +131,7 @@ function dataPopulationGraphFn()
 // ----------------------------------------------------------------------------
 
 function checkGameOver() {
-    if (g_foodSource == 0 ||
-        population() == 0) {
+    if (population() == 0) {
         return true;
     }
 
