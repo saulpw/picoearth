@@ -1,12 +1,6 @@
 var g_worldEvents = {
     
     "generic": {
-        "GameBegin": {
-            "message": "The humans are born in the year 10000BC.",
-            "conditions": {
-                "year": -10000
-            },
-        },
         "StoneAge": {
             "message": "Stone Age begins in the year 10000BC.",
             "conditions": {
