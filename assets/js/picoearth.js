@@ -476,7 +476,6 @@ function updatePercentAdoption(tech)
     if (g_techTree[tech]["unlocked"]) {
 
         var techState = getVFK(g_techTree, tech, "state");
-        console.log(tech + " " + techState);
         var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
         var prePA = percentAdopted;
 
