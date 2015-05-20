@@ -12,7 +12,7 @@ body {
 	background-attachment: fixed;
 }
 
-body, h1, h2, h3, p, button, div, span, .accordion .accordion-navigation > a {
+body, h1, h2, h3, p, button, div, span, .label, .accordion .accordion-navigation > a {
 	font-family: 'Share Tech', sans-serif;
 }
 
@@ -29,8 +29,74 @@ textarea {
 	margin-top: 20px;
 }
 
+/* Stat labels */
+
+#health .label, #inspiration .label, #happiness .label{
+	font-size: 13px;
+	width: 80px;
+	float: right;
+}
+
+.lvl-label-green {
+	background-color: rgba(36,146,12, .1);
+}
+
+.lvl-label-green.active {
+	background-color: rgba(36,146,12, .7);
+}
+
+.lvl-label-yellow {
+	background-color: rgba(255,180,0, .1);
+}
+
+.lvl-label-yellow.active {
+	background-color: rgba(255,180,0, 1);
+}
+
+.lvl-label-red {
+	background-color: rgba(224,54,71, .1);
+}
+
+.lvl-label-red.active {
+	background-color: rgba(224,54,71, .7);
+}
+
+.lvl-label-black {
+	background-color: rgba(39,39,39, .1);
+}
+
+.lvl-label-black.active {
+	background-color: rgba(39,39,39, 1);
+}
+
 /* Tech tree css */
+
+#idle-percent {
+	position: relative;
+	width: 70px;
+	top: -20px;
+	bottom: 0px;
+	left: -10px;
+	right: 0px;
+}
+
+#worker-percent {
+	position: relative;
+	width: 100px;
+	top: 0px;
+	bottom: 0px;
+	left: 10px;
+	right: 0px;
+}
+
 #tech-tree {
+	background-color: rgba(1,64,64,.2);
+	border-radius: 20px;
+	border-color: rgba(255,255,255, .5);
+	border-width: 5px;
+}
+
+.tech-age {
 	background-color: rgba(1,64,64,.2);
 	border-radius: 20px;
 	border-color: rgba(255,255,255, .5);
@@ -53,14 +119,6 @@ textarea {
 	color: gray;
 }
 
-.tech-disabled {
-	color: gray;
-}
-
-.tech-enabled {
-	color: black;
-}
-
 .tech-button-group::before {
 	z-index: 1;
 }
@@ -79,7 +137,7 @@ textarea {
 }
 
 .tech-button {
-	width: 80px;
+	width: 120px;
 	height: 30px;
 }
 

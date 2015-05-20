@@ -1,392 +1,232 @@
 var g_techTree = {
-    "Foraging": {
+    "gather-fruit": {
+        "title": "Gather fruits",
+        "description": "Make them find some berries",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": -10000,
+        "enabled": true,
+        "preview": {
+            "year": -10000
         },
-        "per-year": {
-            "death-per-thousand": -0.001,
-            "food-source": -0.00005
+        "require": {
+            "population": 100,
+        },
+        "gain": {
+            "food": 1,
+        },
+        "cost": {
+            "plants": 1,
         },
         "adopt-percent": 0
     },
-    "Clothing": {
+    "get-water": {
+        "title": "Get water",
+        "description": "Gulp! Refreshing",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1005000,
-            "year": -10000,
+        "enabled": true,
+        "preview": {
+            "year": -10000
         },
-        "per-year": {
-            "death-per-thousand": -0.005
+        "require": {
+            "population": 100,
+        },
+        "gain": {
+            "food": 1
+        },
+        "cost": {
+            "water": 1,
         },
         "adopt-percent": 0
     },
-    "Shelters": {
+    "chop-wood": {
+        "title": "Chop woods",
+        "description": "To build tools",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1015000,
-            "year": -9995,
+        "enabled": true,
+        "preview": {
+            "year": -10000
         },
-        "per-year": {
-            "death-per-thousand": -0.002
+        "require": {
+            "population": 200,
+        },
+        "gain": {
+            "wood": 1
+        },
+        "cost": {
+            "trees": 1,
         },
         "adopt-percent": 0
     },
-    "Farming": {
+    "make-tools": {
+        "title": "Make tools",
+        "description": "Tools for hunting",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1020000,
-            "year": -9990,
+        "enabled": true,
+        "preview": {
+            "year": -10000
         },
-        "per-year": {
-            "birth-per-thousand": 0.001,
-            "death-per-thousand": -0.001
+        "require": {
+            "population": 300,
+        },
+        "gain": {
+            "tools": 1
+        },
+        "cost": {
+            "wood": 1,
         },
         "adopt-percent": 0
     },
-    "Fising": {
+    "hunting": {
+        "title": "Hunt animals",
+        "description": "Preys and predators",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -10000
+        },
         "require": {
-            "population": 1030000,
-            "year": -9980,
+            "population": 400,
         },
-        "per-year": {
-            "death-per-thousand": -0.001,
-            "food-source": .00001
+        "gain": {
+            "food": 2
         },
-        "adopt-percent": 0    
-    },
-    "Domestication": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1020000,
-            "year": -9940,
-            "techs": [
-                "Fire"
-            ]
-        },
-        "per-year": {
-            "birth-per-thousand": 0.001,
-            "death-per-thousand": -0.002
+        "cost": {
+            "tools": 1,
+            "animals": 1
         },
         "adopt-percent": 0
     },
-    "Mining": {
+    "build-house": {
+        "title": "Build house",
+        "description": "Build us a shelter",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1040000,
-            "year": -9890,
+        "enabled": true,
+        "preview": {
+            "year": -9900
         },
-        "per-year": {
-            "death-per-thousand": -0.002
+        "require": {
+            "population": 1000,
+        },
+        "gain": {
+            "house": 1
+        },
+        "cost": {
+            "wood": 2,
+            "tools": 1,
         },
         "adopt-percent": 0
     },
-    "War": {
+    "make-clothes": {
+        "title": "Make clothes",
+        "description": "Dress warm for the winter",
         "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1070000,
-            "year": -9800,
+        "enabled": true,
+        "preview": {
+            "year": -10000
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001,
-            "food-source": .00001
+        "require": {
+            "population": 600,
+        },
+        "gain": {
+            "clothes": 1
+        },
+        "cost": {
+            "plants": 1,
         },
         "adopt-percent": 0
     },
-    "Marriage": {
+    "explore": {
+        "title": "Explore",
+        "description": "Let's learn about the world",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -9800
+        },
         "require": {
-            "population": 1000000,
-            "year": -3200,
+            "population": 700,
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
+        "gain": {
+            
         },
-        "adopt-percent": 0    
-    },
-    "Commerce": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 20000000,
-            "year": -2000,
-        },
-        "per-year": {
-            "death-per-thousand": -0.002
+        "cost": {
+            "food": 1,
+            "cloth": 1
         },
         "adopt-percent": 0
     },
-    "Leather": {
+    "dance": {
+        "title": "Dance",
+        "description": "What's happiness without music?",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -9900
+        },
         "require": {
-            "population": 1000000,
-            "year": 500,
+            "population": 700,
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
+        "gain": {
         },
-        "adopt-percent": 0    
+        "cost": {
+            "clothes": 1,
+        },
+        "adopt-percent": 0
     },
-    "Paint": {
+    "raise-animals": {
+        "title": "Raise animals",
+        "description": "We can domesticate the animals",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -10000
+        },
         "require": {
-            "population": 1000000,
-            "year": 800,
+            "population": 600,
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
+        "gain": {
+            "animals": 1
         },
-        "adopt-percent": 0    
+        "cost": {
+            "food": 1,
+        },
+        "adopt-percent": 0
     },
-    "Paper": {
+    "plant-trees": {
+        "title": "Plant trees",
+        "description": "Plant a tree for the future",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -10000
+        },
         "require": {
-            "population": 1000000,
-            "year": 400,
+            "population": 600,
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
+        "gain": {
+            "food": 1
         },
-        "adopt-percent": 0    
+        "cost": {
+            "water": 1,
+        },
+        "adopt-percent": 0
     },
-    "Pesticides": {
+    "worship": {
+        "title": "Worship",
+        "description": "There must be more out there",
         "unlocked": false,
-        "state": 0,
+        "enabled": true,
+        "preview": {
+            "year": -96000
+        },
         "require": {
-            "population": 1000000,
-            "year": 1700,
+            "population": 1200,
         },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
+        "gain": {
         },
-        "adopt-percent": 0    
+        "cost": {
+            "animals": 1,
+            "food": 1
+        },
+        "adopt-percent": 0
     },
-    "Antibiotics": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1900,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Bridges": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 200,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Roads": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 300,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Shipping": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1400,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Electricity": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1910,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Urbanization": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1000,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Aviation": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1940,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Sanitation": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1800,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Packaging": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1800,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Petroleum": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1870,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Tourism": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1860,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Malls": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1920,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Computers": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1970,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "NuclearPower": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 1930,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Space": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 2010,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    },
-    "Nanotechnology": {
-        "unlocked": false,
-        "state": 0,
-        "require": {
-            "population": 1000000,
-            "year": 2015,
-        },
-        "per-year": {
-            "birth-per-thousand": 0.002,
-            "death-per-thousand": -0.001
-        },
-        "adopt-percent": 0    
-    }
 }

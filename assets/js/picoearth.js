@@ -5,25 +5,71 @@ const BIRTHRATE_BASE = 40;
 const A_HUNDRED_PERCENT = 100;
 const ZERO_PERCENT = 0;
 const ZERO = 0;
-const MATE_INCREASE = 1000;
+const MATE_INCREASE = 10;
 const START_YEAR = -10000;
 
-// Enum for tech state
-var TECH_STATE = {
-    NEUTRAL: 0,
-    PROMOTE: 1,
-    BAN: 2,
+// Enum for danger level
+var DANGER_LEVEL = {
+    DEAD: 0,
+    NEAR_DESTROYED: 1,
+    THREATENED: 2,
+    SAFE: 3
+};
+
+// Enum for health level
+var HEALTH_LEVEL = {
+    EXCELLENT: 0,
+    GETTING_BY: 1,
+    SICK: 2,
+    DYING: 3
+};
+
+// Enum for inspiration level
+var INSPIRATION_LEVEL = {
+    PUMPED_UP: 0,
+    BORED: 1,
+    EXHAUSTED: 2,
+    LOST_SOUL: 3
+};
+
+// Enum for happiness level
+var HAPPINESS_LEVEL = {
+    CHEERFUL: 0,
+    INDIFFERENT: 1,
+    SAD: 2,
+    DEVASTATED: 3
 };
 
 // ----------------------------------------------------------------------------
 // Keep track of basic stats
 // ----------------------------------------------------------------------------
 
-var g_population = 1000000;
-var g_year = START_YEAR;
+// Human stats
+var g_humanDanger = DANGER_LEVEL.SAFE;
+var g_population = 100;
 var g_birthrate = DEATHRATE_BASE;
 var g_deathrate = BIRTHRATE_BASE; // @todo: capture this as infant mortality + lifespan
-var g_foodSource = 10000000;
+var g_health = HEALTH_LEVEL.GETTING_BY;
+var g_inspiration = INSPIRATION_LEVEL.PUMPED_UP;
+var g_happiness = HAPPINESS_LEVEL.INDIFFERENT;
+var g_animosity = 0;
+var g_knowledge = 0;
+
+// Human resources
+var g_idle = A_HUNDRED_PERCENT;
+var g_food = g_population * 10;
+var g_wood = 0;
+var g_tools = 0;
+var g_clothes = g_population * 10;
+var g_houses = g_population * 10;
+
+// Earth stats
+var g_earthDanger = DANGER_LEVEL.SAFE;
+var g_year = START_YEAR;
+var g_water = 10000;
+var g_plants = 10000;
+var g_trees = 10000;
+var g_animals = 10000;
 
 // ----------------------------------------------------------------------------
 // Internal game stats
@@ -101,11 +147,14 @@ $(document).ready( function () {
 
 function initGame()
 {
-    loadGame();
+    // loadGame();
+
+    updateWorkingPercent();
 
     // Load tech tree
     for (var tech in g_techTree) {
         previewTech(tech);
+
         if (getVFK(g_techTree, tech, "unlocked")) {
             unlockTech(tech);
         }
@@ -152,7 +201,7 @@ function saveGame()
     var gameState = {
         population: g_population,
         year: g_year,
-        foodSource: g_foodSource,
+        food: g_food,
         birthrate: g_birthrate,
         deathrate: g_deathrate,
         techtree: g_techTree,
@@ -176,8 +225,8 @@ function loadGame()
             g_year = gameState.year;
         }
 
-        if (isDefined(gameState.foodSource)) {
-            g_foodSource = gameState.foodSource;
+        if (isDefined(gameState.food)) {
+            g_food = gameState.food;
         }
 
         if (isDefined(gameState.birthrate)) {
@@ -221,7 +270,7 @@ window.setInterval(function () {
 }, gameUpdateInterval);
 
 // ----------------------------------------------------------------------------
-// Update stats functions
+// Human stats
 // ----------------------------------------------------------------------------
 
 function updateStats()
@@ -230,11 +279,18 @@ function updateStats()
     var incr = (g_gameSpeed/1000) * gameUpdateInterval;
 
     updateYear(incr);
-    updateBirthRate();
-    updateDeathRate();
+    updateBirthDeathRate(incr);
     updatePopulation(incr);
-    updateFoodSource(incr);
-    updateUIStats();
+    updateResources(incr);
+    consumeResources(incr);
+    updateHealth();
+    updateInspiration();
+    updateHappiness();
+    updateKnowledge();
+    updateAnimosity();
+    updateEarthStats(incr);
+    regenerateEarth(incr);
+    updateStatTexts();
 }
 
 function updateYear(incr)
@@ -248,6 +304,17 @@ function updateYear(incr)
     }
 }
 
+// Human stats
+
+function updateWorkingPercent()
+{
+    var workerPercent = A_HUNDRED_PERCENT - g_idle;
+
+    $('#worker-meter').css("width", workerPercent + "%");
+    $('#worker-percent').html(workerPercent + '% working');
+    $('#idle-percent').html(g_idle + '% idle');
+}
+
 function updatePopulation(incr)
 {
     var newHumans = ((g_birthrate - g_deathrate) / 1000) * g_population * incr;
@@ -258,82 +325,358 @@ function updatePopulation(incr)
     }
 }
 
-function updateBirthRate()
+// BR is a function of inspiration, health, and happiness
+function updateBirthDeathRate(incr)
 {
-    // Birth rate = Base birth rate + each tech's adoption percentage * offset
-    g_birthrate = BIRTHRATE_BASE;
-    for (var tech in g_techTree) {
-        if (getVFK(g_techTree, tech, "unlocked")) {
-            var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
-            if (isDefined(brOffset)) {
-                var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
-                g_birthrate += (brOffset * adoptPercent);
-            }
-        }
+    switch (g_health) {
+        case HEALTH_LEVEL.EXCELLENT:
+            g_birthrate += .05 * incr;
+            g_deathrate -= .01 * incr;
+            break;
+
+        case HEALTH_LEVEL.GETTING_BY:
+            g_birthrate += .01 * incr;
+            break;
+
+        case HEALTH_LEVEL.SICK:
+            g_deathrate += .01 * incr;
+            break;
+
+        case HEALTH_LEVEL.DYING:
+            g_birthrate += .01 * incr;
+            g_deathrate += .05 * incr;
+            break;
     }
-    g_birthrate = g_birthrate.clamp(BIRTHRATE_MIN, BIRTHRATE_MAX);
+    switch (g_inspiration) {
+        case INSPIRATION_LEVEL.EXHAUSTED:
+            g_birthrate -= .03 * incr;
+            break;
+
+        case INSPIRATION_LEVEL.PUMPED_UP:
+            g_birthrate += .02 * incr;
+            g_deathrate -= .01 * incr;
+            break;
+
+        case INSPIRATION_LEVEL.BORED:
+            g_birthrate -= .01 * incr;
+            g_deathrate += .01 * incr;
+            break;
+
+        case INSPIRATION_LEVEL.LOST_SOUL:
+            g_deathrate += .03 * incr;
+            break;
+    }
+
+    switch (g_happiness) {
+        case HAPPINESS_LEVEL.CHEERFUL:
+            g_birthrate += .05 * incr;
+            break;
+
+        case HAPPINESS_LEVEL.INDIFFERENT:
+            g_birthrate += .01 * incr;
+            break;
+
+        case HAPPINESS_LEVEL.SAD:
+            g_birthrate -= .01 * incr;
+            break;
+
+        case HAPPINESS_LEVEL.DEVASTATED:
+            g_deathrate += .05 * incr;
+            break;
+    }
+
 }
 
-function updateDeathRate()
+// Health is a function of resources
+function updateHealth()
 {
-    // Death rate = Base death rate + each tech's adoption percentage * offset
-    g_deathrate = DEATHRATE_BASE;
-    for (var tech in g_techTree) {
-        if (getVFK(g_techTree, tech, "unlocked")) {
-            var drOffset = getVFK(g_techTree, tech, "per-year", "death-per-thousand");
-            if (isDefined(drOffset)) {
-                var adoptPercent = getVFK(g_techTree, tech, "adopt-percent");
-                g_deathrate += (drOffset * adoptPercent);                
-            }
-        }
-    }
+    // Person per food
+    var persons_food = g_population / g_food;
 
-    g_deathrate = g_deathrate.clamp(DEATHRATE_MIN, DEATHRATE_MAX);
-}
+    // Person per clothe
+    var persons_clothe = g_population / g_clothes;
 
-function updateFoodSource(incr)
-{
-    // Gather all tech that can effect food source per year
-    var newFs = 0;
-    for (var tech in g_techTree) {
+    // Person per house
+    var persons_house = g_population / g_houses;
 
-        if (getVFK(g_techTree, tech, "unlocked")) {
-            var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
-            var techAdoptionPercentage = getVFK(g_techTree, tech, "adopt-percent");
-            
-            if (isDefined(fsOffset)) {
+    const LEVEL_DYING = 20;
+    const LEVEL_SICK = 10;
+    const LEVEL_GETTING_BY = 5;
 
-                // If there's a food source offset, apply it
-                newFs += (fsOffset * (techAdoptionPercentage / 100) * g_population);  
-            }
-        }
-    }
+    // Reset label .active
+    $('#health .label').removeClass('active');
 
-    newFs *= incr;
+    if (persons_food > LEVEL_DYING || g_food <= 0 ||
+        persons_clothe > LEVEL_DYING || g_clothes <= 0 ||
+        persons_house > LEVEL_DYING || g_houses <= 0) {
+        
+        g_health = HEALTH_LEVEL.DYING;
+        $('#health .lvl-label-black').addClass('active');
+        return;
 
-    // Make sure food source doesn't go negative
-    if (g_foodSource + newFs > 0) {
-        g_foodSource += newFs;
+    } else if (persons_food > LEVEL_SICK || 
+        persons_clothe > LEVEL_SICK || 
+        persons_house > LEVEL_SICK ) {
+        
+        g_health = HEALTH_LEVEL.SICK;
+
+        $('#health .lvl-label-red').addClass('active');
+        return;
+
+    } else if (persons_food > LEVEL_GETTING_BY || 
+        persons_clothe > LEVEL_GETTING_BY || 
+        persons_house > LEVEL_GETTING_BY ) {
+        
+        g_health = HEALTH_LEVEL.GETTING_BY;
+
+        $('#health .lvl-label-yellow').addClass('active');
+        return;
+
     } else {
-        g_foodSource = 0;
+        
+        g_health = HEALTH_LEVEL.EXCELLENT;
+
+        $('#health .lvl-label-green').addClass('active');
+        return;
     }
 }
 
-function updateUIStats() {
+// Happiness is a function of BR - DR
+function updateHappiness()
+{
+    // Reset label .active
+    $('#happiness .label').removeClass('active');
+
+    var births = g_birthrate - g_deathrate;
+    if (births > 3) {
+        g_happiness = HAPPINESS_LEVEL.CHEERFUL;
+        $('#happiness .lvl-label-green').addClass('active');
+    } else if (births > -2) {
+        g_happiness = HAPPINESS_LEVEL.INDIFFERENT;
+        $('#happiness .lvl-label-yellow').addClass('active');
+    } else if (births > -5) {
+        g_happiness = HAPPINESS_LEVEL.SAD;
+        $('#happiness .lvl-label-red').addClass('active');
+    } else {
+        g_happiness = HAPPINESS_LEVEL.DEVASTATED;
+        $('#happiness .lvl-label-black').addClass('active');
+    }
+}
+
+// Inspiration is a function of g_idle
+function updateInspiration()
+{
+    // Reset label .active
+    $('#inspiration .label').removeClass('active');
+
+    if (g_idle < 10) {
+        g_inspiration = INSPIRATION_LEVEL.EXHAUSTED;
+        $('#inspiration .lvl-label-red').addClass('active');
+    } else if (g_idle < 30) {
+        g_inspiration = INSPIRATION_LEVEL.PUMPED_UP;
+        $('#inspiration .lvl-label-green').addClass('active');
+    } else if (g_idle < 70) {
+        g_inspiration = INSPIRATION_LEVEL.BORED;
+        $('#inspiration .lvl-label-yellow').addClass('active');
+    } else {
+        g_inspiration = INSPIRATION_LEVEL.LOST_SOUL;
+        $('#inspiration .lvl-label-black').addClass('active');
+    }
+}
+
+// Knowledge is number of techs unlocked
+function updateKnowledge()
+{
+    g_knowledge = 0;
+    for (var tech in g_techTree) {
+        if (getVFK(g_techTree, tech, "unlocked")) {
+            g_knowledge++;
+        }
+    }
+}
+
+// Is a function of happiness, health, and inspiration
+function updateAnimosity()
+{
+    g_animosity = g_health + g_happiness + g_inspiration;
+    
+    var totalAnim = HEALTH_LEVEL.DYING + HAPPINESS_LEVEL.DEVASTATED + INSPIRATION_LEVEL.LOST_SOUL;    
+    var per = (g_animosity / totalAnim) * 100;
+
+    $('#animosity-meter').css("width", per + "%");
+    $('#animosity').html(animosityString());
+}
+
+function updateResources(incr)
+{
+    for (var tech in g_techTree) {
+        
+        if (techReady(tech)) {
+    
+            var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
+            var workers = population() * percentAdopted / 100;
+
+            // Food
+            var food = techGain(tech, "food");
+            if (isDefined(food)) {
+                g_food += (food * workers) * incr;
+            }
+
+            // Wood
+            var wood = techGain(tech, "wood");
+            if (isDefined(wood)) {
+                g_wood += (wood * workers) * incr;
+            }
+
+            // Tool
+            var tools = techGain(tech, "tools");
+            if (isDefined(tools)) {
+                g_tools += (tools * workers) * incr;
+            }
+
+            // Clothes
+            var clothes = techGain(tech, "clothes");
+            if (isDefined(clothes)) {
+                g_clothes += (clothes * workers) * incr;
+            }
+
+            // Houses
+            var houses = techGain(tech, "houses");
+            if (isDefined(houses)) {
+                g_houses += (houses * workers) * incr;
+            }
+        }
+    }
+}
+
+function consumeResources(incr)
+{
+    // Food
+    var consumed = g_population * incr * .1;
+    var death = 0;
+    if (g_food - consumed > 0) {
+        g_food -= consumed;
+    } else {
+        death = g_population - g_food;
+        g_population -= death;
+        g_food = 0;
+    }
+
+    // Clothes
+    consumed = g_population * incr * .01;
+    death = 0;
+    if (g_clothes - consumed > 0) {
+        g_clothes -= consumed;
+    } else {
+        death = g_population - g_clothes;
+        g_population -= death;
+        g_clothes = 0;
+    }
+
+    // Houses
+    consumed = g_population * incr * .001;
+    death = 0;
+    if (g_houses - consumed > 0) {
+        g_houses -= consumed;
+    } else {
+        death = g_population - g_houses;
+        g_population -= death;
+        g_houses = 0;
+    }
+}
+
+function updateEarthStats(incr)
+{
+    for (var tech in g_techTree) {
+        
+        if (techReady(tech)) {
+    
+            var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
+            var workers = population() * percentAdopted / 100;
+
+            // water
+            var water = techCost(tech, "water");
+            if (isDefined(water)) {
+                g_water -= (water * workers) * incr;
+                g_water = g_water < 0 ? 0 : g_water;
+            }
+
+            // plants
+            var plants = techCost(tech, "plants");
+            if (isDefined(plants)) {
+                g_plants -= (plants * workers) * incr;
+                g_plants = g_plants < 0 ? 0 : g_plants;
+            }
+
+            // trees
+            var trees = techCost(tech, "trees");
+            if (isDefined(trees)) {
+                g_trees -= (trees * workers) * incr;
+                g_trees = g_trees < 0 ? 0 : g_trees;
+            }
+            
+            // animals
+            var animals = techCost(tech, "animals");
+            if (isDefined(animals)) {
+                g_animals -= (animals * workers) * incr;
+                g_animals = g_animals < 0 ? 0 : g_animals;
+            }
+        }
+    }
+}
+
+// Nature stats
+
+function regenerateEarth(incr)
+{
+    // water
+    g_water += 0.1 * incr;
+
+    // plants
+    g_plants += 0.1 * incr;
+
+    // trees
+    g_trees += 0.1 * incr;
+
+    // animals
+    g_animals += 0.1 * incr;
+}
+
+// Display text
+
+function updateStatTexts() {
+    // Game 
     $('#game-speed-label').text(gameSpeedString());
+
+    // Human
+    $('#human-danger-level').text(dangerString(g_humanDanger));
     $('#population').text(populationString());
-    $('#year').text(yearString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
-    $('#foodsource').text(foodSourceString());
+    $('#knowledge').text(knowledgeString(g_knowledge));
+
+    // Resources
+    $('#food').text(foodString());
+    $('#wood').text(woodString());
+    $('#tools').text(toolsString());
+    $('#clothes').text(clothesString());
+    $('#houses').text(housesString());
+
+    // Earth
+    $('#earth-danger-level').text(dangerString(g_earthDanger));
+    $('#year').text(yearString());
+    $('#plants').text(plantsString());
+    $('#water').text(waterString());
+    $('#trees').text(treesString());
+    $('#animals').text(animalsString());
 }
 
 var g_prevPopulation = g_population;
 var g_prevBR = g_birthrate;
 var g_prevDR = g_deathrate;
-var g_preFS = g_foodSource;
+var g_preFS = g_food;
 
-function updateUIStatsRate()
+function updateStatRateTexts()
 {
     var rate = population() - g_prevPopulation;
     rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
@@ -350,10 +693,10 @@ function updateUIStatsRate()
     $('#deathrate-rate').text(rate);
     g_prevDR = g_deathrate;
 
-    rate = g_foodSource - g_preFS;
+    rate = g_food - g_preFS;
     rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#foodsource-rate').text(rate);
-    g_preFS = g_foodSource;
+    g_preFS = g_food;
 }
 
 // ----------------------------------------------------------------------------
@@ -364,6 +707,10 @@ function updateTechTree()
 {
     for (var tech in g_techTree) {
 
+        // Preview
+        previewTech(tech);
+
+        // Unlock
         if (shouldUnlockTech(tech)) {
             unlockTech(tech);
 
@@ -372,67 +719,65 @@ function updateTechTree()
             logging(eventMessage, true);
 
         }
+
+        // Ready tech
+        readyTech(tech);
+
     }
 }
 
 function previewTech(tech) 
 {
-    var year = yearString(getVFK(g_techTree, tech, "require", "year"));
-    var pop = getVFK(g_techTree, tech, "require", "population");
-    var requireString = 'Unlock at year ' + year + ', when population is over ' + pop;
+    const yearThres = getVFK(g_techTree, tech, "preview", "year");
+    if (year() >= yearThres) {
 
-    var rTechs = getVFK(g_techTree, tech, "require", "techs");
-    if (isDefined(rTechs)) {
-        requireString += ". Requires: "
-        for (var i in rTechs) {
-            requireString += rTechs[i] + " ";
+        // Check if tech has been previewed
+        var previewed = getVFK(g_techTree, tech, "previewed");
+        if (isDefined(previewed)) {
+            return;
+        } else {
+            setVFK(g_techTree, true, tech, "previewed");
         }
-    }
 
-    $('#tech-tree').append(' \
-        <div class="row" id="' + tech + '-row"> \
-            <div class="push-2 large-8 columns"> \
-                <div class="tech-name-preview panel"><span data-tooltip aria-haspopup="true" class="has-tip" title="' + requireString + '">???</span></div> \
+        var pop = getVFK(g_techTree, tech, "require", "population");
+        var requireString = 'Unlock when population is over ' + pop;
+
+        var rTechs = getVFK(g_techTree, tech, "require", "techs");
+        if (isDefined(rTechs)) {
+            requireString += ". Requires: "
+            for (var i in rTechs) {
+                requireString += rTechs[i] + " ";
+            }
+        }
+
+        $('#tech-tree').append(' \
+            <div class="row" id="' + tech + '-row"> \
+                <div class="push-2 large-8 columns"> \
+                    <div class="tech-name-preview panel"><span data-tooltip aria-haspopup="true" class="has-tip" title="' + requireString + '">???</span></div> \
+                </div> \
             </div> \
-        </div> \
-        ');    
+            ');
+    }
 }
 
 function unlockTech(tech)
 {
     var percentAdopted = adoptionString(tech);
-    var tooltipString = "Each %: ";
-    
-    // Display per-year effects
-    var brOffset = getVFK(g_techTree, tech, "per-year", "birth-per-thousand");
-    if (isDefined(brOffset)) {
-        tooltipString += brOffset + " birth/thousand/year\n";
-    }
-
-    var drOffset = getVFK(g_techTree, tech, "per-year", "death-per-thousand");
-    if (isDefined(drOffset)) {
-        tooltipString += drOffset + " death/thousand/year\n";
-    }
-
-    var fsOffset = getVFK(g_techTree, tech, "per-year", "food-source");
-    if (isDefined(fsOffset)) {
-        tooltipString += fsOffset + " food/year\n";
-    }
+    var techTitle = getVFK(g_techTree, tech, "title");
+    var tooltipString = buildTechTooltip(tech);
 
     $('#' + tech + '-row').html(' \
         <div class="push-2 large-8 columns"> \
             <div class="tech-name panel"> \
-                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="' + tech + '-name has-tip tip-left">' + tech + '</span> \
-                <span class="percent-adoption progress right"> \
+                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip">' + techTitle + '</span> \
+                <span class="percent-adoption progress right radius round"> \
                     <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
                 </span> \
             </div> \
             <ul class="button-group tech-button-group"> \
-                <li><button class="tiny tech-button success" id="' + tech +'-promote">Promote</button> \
+                <li><button class="tiny tech-button success" id="' + tech +'-promote">Work!</button> \
                 </li> \
-                <li><button class="tiny tech-button secondary" id="' + tech +'-neutral">Neutral</button> \
-                </li> \
-                <li><button class="tiny tech-button alert" id="' + tech +'-ban">Ban</button> \
+                <li><button class="tiny tech-button alert" id="' + tech +'-ban">Stop</button> \
                 </li> \
             </ul> \
         </div> \
@@ -442,85 +787,210 @@ function unlockTech(tech)
     bindPromoteBanButonEvents(tech);
 }
 
+function buildTechTooltip(tech)
+{
+    var str = "";
+    var techDescription = getVFK(g_techTree, tech, "description");
+    str = techDescription + ". Each worker converts ";
+
+    // Display cost
+
+    var cost = techCost(tech, "water");
+    if (isDefined(cost)) {
+        str += cost + " water, ";
+    }
+
+    cost = techCost(tech, "plants");
+    if (isDefined(cost)) {
+        str += cost + " plants, ";
+    }
+
+    cost = techCost(tech, "trees");
+    if (isDefined(cost)) {
+        str += cost + " trees, ";
+    }
+
+    cost = techCost(tech, "animals");
+    if (isDefined(cost)) {
+        str += cost + " animals, ";
+    }
+
+    // Display gain
+    str += "to gain ";
+
+    var gain = techGain(tech, "food");
+    if (isDefined(gain)) {
+        str += gain + " food, ";
+    }
+
+    gain = techGain(tech, "wood");
+    if (isDefined(gain)) {
+        str += gain + " wood, ";
+    }
+
+    gain = techGain(tech, "tools");
+    if (isDefined(gain)) {
+        str += gain + " tools, ";
+    }
+
+    gain = techGain(tech, "clothes");
+    if (isDefined(gain)) {
+        str += gain + " clothes, ";
+    }
+
+    gain = techGain(tech, "houses");
+    if (isDefined(gain)) {
+        str += gain + " houses, ";
+    }
+
+    return str
+}
+
 function shouldUnlockTech(tech)
 {
     const popThres = getVFK(g_techTree, tech, "require", "population");
-    const yearThres = getVFK(g_techTree, tech, "require", "year");
     const techThres = getVFK(g_techTree, tech, "require", "techs");
+    var previewed = getVFK(g_techTree, tech, "previewed");
+    var unlocked = getVFK(g_techTree, tech, "unlocked");
+    
+    // Check if tech has been unlocked or previewed
+    if (!isDefined(previewed) || unlocked) {
+        return false;
+    }
+    
+    // Check if population
+    if (g_population >= popThres) {
 
-    if (getVFK(g_techTree, tech, "unlocked") == false) {
-
-        // Check if population & year threshold are reached
-        if (g_population >= popThres && g_year >= yearThres) {
-
-            // Check if required techs are all unlocked
-            if (isDefined(techThres)) {
-                for (var i in techThres) {
-                    if (getVFK(g_techTree, techThres[i], "unlocked") == false) {
-                        return false;       
-                    }
+        // Check if required techs are all unlocked
+        if (isDefined(techThres)) {
+            for (var i in techThres) {
+                if (getVFK(g_techTree, techThres[i], "unlocked") == false) {
+                    return false;       
                 }
             }
-
-            // Mark this as unlocked now so we don't do it twice
-            g_techTree[tech]["unlocked"] = true;        
-
-            return true;
         }
+
+        // Mark this as unlocked now so we don't do it twice
+        g_techTree[tech]["unlocked"] = true;        
+
+        return true;
     }
+
     return false;
 }
 
-function updatePercentAdoption(tech)
+function readyTech(tech)
 {
-    if (g_techTree[tech]["unlocked"]) {
-
-        var techState = getVFK(g_techTree, tech, "state");
-        var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
-        var prePA = percentAdopted;
-
-        switch(techState) {
-            case TECH_STATE.NEUTRAL:
-                if (percentAdopted + 1 <= A_HUNDRED_PERCENT) {
-                    percentAdopted += 1;    
-                }
-                
-                break;
-
-            case TECH_STATE.PROMOTE:
-                if (percentAdopted + 3 <= A_HUNDRED_PERCENT) {
-                    percentAdopted += 3;    
-                } else {
-                    percentAdopted = A_HUNDRED_PERCENT;
-                }
-
-                break;
-
-            case TECH_STATE.BAN:
-                if (percentAdopted - 5 >= ZERO_PERCENT) {
-                    percentAdopted -= 5;    
-                } else {
-                    percentAdopted = ZERO_PERCENT;
-                }
-
-                break;
+    // Water
+    var cost = techCost(tech, "water");
+    if (isDefined(cost)) {
+        var isEnable = g_water >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
         }
-        var percentChange = percentAdopted - prePA;
-
-        setVFK(g_techTree, percentAdopted, tech, "adopt-percent");
- 
-        $('#' + tech + '-adoption').css("width", percentAdopted + "%");
-        $('#' + tech + '-adoption').html(percentAdopted + 
-                                        '%' + 
-                                        addPlusMinusToNumberString(percentChange) + 
-                                        percentChange
-                                        );
     }
+
+    // Plants
+    cost = techCost(tech, "plants");
+    if (isDefined(cost)) {
+        var isEnable = g_plants >= cost;
+        enableTech(tech, isEnable);
+
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Trees
+    cost = techCost(tech, "trees");
+    if (isDefined(cost)) {
+        var isEnable = g_trees >= cost;
+        enableTech(tech, isEnable);
+
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Animals
+    cost = techCost(tech, "animals");
+    if (isDefined(cost)) {
+        var isEnable = g_animals >= cost;
+        enableTech(tech, isEnable);
+
+        if (isEnable == false) {
+            return;
+        }
+    }
+}
+
+// Promote/Ban tech
+
+function promoteTech(tech)
+{
+    if (techReady(tech)) {
+        adopt(tech, true);    
+    }
+}
+
+function banTech(tech)
+{
+    adopt(tech, false);    
+}
+
+function adopt(tech, isPromote)
+{
+    var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
+    
+    // Adoption shares the same worker pool
+    if (isPromote) {
+        if (g_idle > ZERO_PERCENT) {
+            percentAdopted++;
+            g_idle--;
+        } else {
+            return;
+        }        
+    } else {
+        // Ban
+        if (g_idle < A_HUNDRED_PERCENT && percentAdopted > ZERO_PERCENT) {
+            percentAdopted--;
+            g_idle++;
+        }
+    }
+
+    setVFK(g_techTree, percentAdopted, tech, "adopt-percent");
+ 
+    $('#' + tech + '-adoption').css("width", percentAdopted + "%");
+    $('#' + tech + '-adoption').html(percentAdopted + '%');
+    updateWorkingPercent();
 }
 
 // ----------------------------------------------------------------------------
 // Dictionary getter/setter
 // ----------------------------------------------------------------------------
+
+function techGain(tech, type)
+{
+    return getVFK(g_techTree, tech, "gain", type);
+}   
+
+function techCost(tech, type)
+{
+    return getVFK(g_techTree, tech, "cost", type);
+}
+
+function techReady(tech)
+{
+    return getVFK(g_techTree, tech, "unlocked") && getVFK(g_techTree, tech, "enabled");
+}
+
+function enableTech(tech, isEnable)
+{
+    setVFK(g_techTree, isEnable, tech, "enabled");
+}
 
 //
 // @function        getVFK
@@ -583,16 +1053,9 @@ function setVFK(dict, value)
 function evNewYear()
 {
     updateGraphs();    
-    updateUIStatsRate();
-    
-    for (var tech in g_techTree) {
-        updatePercentAdoption(tech);
-    }
+    updateStatRateTexts();
     
     saveGame();
-
-    // @todo: Earth resources should grow back a bit
-    
 }
 
 function runWorldEvents()
@@ -708,9 +1171,113 @@ function gameSpeedString() {
     return "X" + g_gameSpeed;
 }
 
-function foodSourceString() {
-    return numberStringUnit(g_foodSource);
+function dangerString(level) {
+    switch (level) {
+        case DANGER_LEVEL.THREATENED:
+            return "Threatened";
+        case DANGER_LEVEL.SAFE:
+            return "Safe";
+        case DANGER_LEVEL.NEAR_DESTROYED:
+            return "Near destroyed";
+        case DANGER_LEVEL.DEAD:
+            return "Dead";
+    }
 }
+
+function healthString(hp) {
+    switch (hp) {
+        case HEALTH_LEVEL.EXCELLENT:
+            return "Excellent";
+
+        case HEALTH_LEVEL.GETTING_BY:
+            return "Okay";
+
+        case HEALTH_LEVEL.SICK:
+            return "Sick";
+
+        case HEALTH_LEVEL.DYING:
+            return "Dying";
+    }
+}
+
+function inspirationString(insp) {
+    switch (insp) {
+        case INSPIRATION_LEVEL.EXHAUSTED:
+            return "Exhausted";
+
+        case INSPIRATION_LEVEL.PUMPED_UP:
+            return "Pumped";
+
+        case INSPIRATION_LEVEL.BORED:
+            return "Bored";
+
+        case INSPIRATION_LEVEL.LOST_SOUL:
+            return "Lost soul";
+    }
+}
+
+function happinessString(hap) {
+    switch (hap) {
+        case HAPPINESS_LEVEL.CHEERFUL:
+            return "Cheerful";
+
+        case HAPPINESS_LEVEL.INDIFFERENT:
+            return "Indifferent";
+
+        case HAPPINESS_LEVEL.SAD:
+            return "Sad";
+
+        case HAPPINESS_LEVEL.DEVASTATED:
+            return "Devastated";
+    }
+}
+
+function knowledgeString(kn) {
+    var techTotal = Object.keys(g_techTree).length;
+    return kn + '/' + techTotal + ' of the world known';
+}
+
+function animosityString() {
+    return healthString(g_health) + " health" +
+            " + " + happinessString(g_happiness) + " happiness" +
+            " + " + inspirationString(g_inspiration) + " inspiration";
+}
+
+function foodString() {
+    return numberStringUnit(g_food);
+}
+
+function woodString() {
+    return numberStringUnit(g_wood);
+}
+
+function toolsString() {
+    return numberStringUnit(g_tools);
+}
+
+function clothesString() {
+    return numberStringUnit(g_clothes);   
+}
+
+function housesString() {
+    return numberStringUnit(g_houses);
+}
+
+function waterString() {
+    return numberStringUnit(g_water);
+}
+
+function plantsString() {
+    return numberStringUnit(g_plants);
+}
+
+function treesString() {
+    return numberStringUnit(g_trees);
+}
+
+function animalsString() {
+    return numberStringUnit(g_animals);
+} 
 
 // Returns number string with 'billions/millions/thousands/hundreds'
 function numberStringUnit(number)
@@ -728,10 +1295,9 @@ function numberStringUnit(number)
         string = (number / 1000000).toFixed(3) + " millions"
 
     }
-    // thousands
     else 
     {
-        string = Math.ceil(number);
+        string = Math.floor(number);
     }
 
     return string;
@@ -790,15 +1356,11 @@ function bindPromoteBanButonEvents(tech)
     var neutralButton = $('#' + tech + '-neutral');
 
     promoteButton.bind('mousedown', function(e) {
-        setVFK(g_techTree, TECH_STATE.PROMOTE, tech, "state");
+        promoteTech(tech);
     });
 
     banButton.bind('mousedown', function(e) {
-        setVFK(g_techTree, TECH_STATE.BAN, tech, "state");
-    });
-
-    neutralButton.bind('mousedown', function(e) {
-        setVFK(g_techTree, TECH_STATE.NEUTRAL, tech, "state");
+        banTech(tech);
     });
 }
 

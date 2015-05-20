@@ -13,18 +13,24 @@
     
     #top-nav
     .row
-      .large-4.columns(data-equalizer-watch)
 
-        #stats-panel.panel
-          / Stats
+      .large-4.columns(data-equalizer-watch)
+        .panel
           %h3
             Year:
             %span#year 1000
 
-          - stats = {"population" => ["Population", "male"],
-                    "birthrate" => ["Annual birth rate", ""],
-                    "deathrate" => ["Annual death rate", ""]}
-          - stats.each do |stat, name_icon|
+        .panel
+          / Earth stats
+
+          %h2 Earth stats
+          %h3.right#earth-danger-level
+
+          - eartStats = {"water" => ["Water", ""],
+                    "plants" => ["Plants", ""],
+                    "animals" => ["Animals", ""],
+                    "trees" => ["Trees", ""]}
+          - eartStats.each do |stat, name_icon|
             - name = name_icon[0]
             - icon = name_icon[1]
             %div
@@ -33,6 +39,9 @@
                 0
               %i.fa(class="fa-#{icon}")
               %span(id="#{stat}-rate" style="font-size: 11px")
+
+        / Earth image
+        %img(src="assets/img/seasonal_earth.gif")
 
         / Graph area
         %ul#graph-accordion.accordion(data-accordion)
@@ -50,7 +59,6 @@
               Log
               %i.fa.fa-arrow-up.right
             %textarea#log.content.active(readonly rows="8")
-        
 
       .large-4.columns(data-equalizer-watch)
         
@@ -71,11 +79,86 @@
           .large-12.columns
             %button#mate-button
               %i.fa.fa-venus-mars
-              Mate (+1 thousand humans)
+              Make babies!
 
-        / Earth image
-        %img(src="assets/img/seasonal_earth.gif")
+        .panel
+          / Human stats
 
+          %h2 Human stats
+          %h3.right#human-danger-level
+
+          - humanStats = {"population" => ["Population", "male"],
+                    "birthrate" => ["Annual birth rate", ""],
+                    "deathrate" => ["Annual death rate", ""]}
+          - humanStats.each do |stat, name_icon|
+            - name = name_icon[0]
+            - icon = name_icon[1]
+            %div
+              #{name}:
+              %span(id="#{stat}") 
+                0
+              %i.fa(class="fa-#{icon}")
+              %span(id="#{stat}-rate" style="font-size: 11px")
+
+          / Health
+          #health
+            %span.has-tip(data-tooltip aria-haspopup="true" title="humans need more food, clothes, houses!") Health:
+            %span.label.round.radius.lvl-label-black Dying
+            %span.label.round.radius.lvl-label-red Sick
+            %span.label.round.radius.lvl-label-yellow Okay
+            %span.label.round.radius.lvl-label-green.active Execellent
+
+
+          / Inspiration
+          #inspiration
+            %span.has-tip(data-tooltip aria-haspopup="true" title="don't work too much or too little") Inspiration:
+            %span.label.round.radius.lvl-label-black Lost soul
+            %span.label.round.radius.lvl-label-red Exhausted
+            %span.label.round.radius.lvl-label-yellow Bored
+            %span.label.round.radius.lvl-label-green.active Pumped
+
+          / Happiness
+          #happiness
+            %span.has-tip(data-tooltip aria-haspopup="true" title="humans cry over deaths, and cheer over births") Happiness:
+            %span.label.round.radius.lvl-label-black Devastated
+            %span.label.round.radius.lvl-label-red Sad
+            %span.label.round.radius.lvl-label-yellow Indifferent
+            %span.label.round.radius.lvl-label-green.active Cheerful
+
+          / Animosity
+          %span.has-tip(data-tooltip aria-haspopup="true" title="When animosity reached its maximum, there will be WARS!")
+            Animosity =
+            %span#animosity
+          .progress.alert.radius.round
+            %span#animosity-meter.meter(style="width:10%;")
+
+          / Knowledge
+          %span.has-tip(data-tooltip aria-haspopup="true" title="Knowledge is required to advance to the next age") 
+            Knowledge:
+          %span#knowledge
+
+        .panel
+
+          / Human resources
+
+          %h2 Human resources
+          %span#human-resource-area
+
+          - humanResources = {"food" => ["Food", ""],
+                    "wood" => ["Wood", ""],
+                    "tools" => ["Tools", ""],
+                    "clothes" => ["Clothes", ""],
+                    "houses" => ["Houses", ""]}
+          - humanResources.each do |resource, name_icon|
+            - name = name_icon[0]
+            - icon = name_icon[1]
+            %div
+              #{name}:
+              %span(id="#{resource}") 
+                0
+              %i.fa(class="fa-#{icon}")
+              %span(id="#{resource}-rate" style="font-size: 11px")
+        
         / Alert box area
         #alert-area
 
@@ -84,8 +167,19 @@
 
         .panel.full-height#tech-tree
                     
-          .large-font.white Technology
+          .large-font.white Ancient Age
 
+          .row
+            .push-1.progress.small-10.radius.round
+              %span.left#worker-percent
+              %span#worker-meter.meter(style="width:100%;")
+              %span.small-2.right#idle-percent
+
+        .panel.full-height.tech-age
+          .large-font.white Medieval Age (unlocked when all knowledge of Ancient Age is acquired)
+
+        .panel.full-height.tech-age
+          .large-font.white Modern Age (unlocked when all knowledge of Medieval Age is acquired)
 
     / Game over modal
     #modal-gameover.reveal-modal(data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog")
