@@ -14,14 +14,11 @@
     <div class='row'>
       <div class='large-4 columns' data-equalizer-watch>
         <div class='panel'>
-          <h3>
-            Year:
-            <span id='year'>1000</span>
-          </h3>
-        </div>
-        <div class='panel'>
           <!-- Earth stats -->
-          <h2>Earth stats</h2>
+          <h2>
+            Earth
+            <span id='year'>1000</span>
+          </h2>
           <h3 class='right' id='earth-danger-level'></h3>
           <div>
             Water:
@@ -103,6 +100,27 @@
             </button>
           </div>
         </div>
+        <!-- Alert box area -->
+        <div id='alert-area'></div>
+        <!-- Technology tree -->
+        <div class='panel full-height' id='tech-tree'>
+          <div class='large-font white'>Ancient Age</div>
+          <div class='row'>
+            <div class='push-1 progress small-10 radius round'>
+              <span class='left' id='worker-percent'></span>
+              <span class='meter' id='worker-meter' style='width:100%;'></span>
+              <span class='small-2 right' id='idle-percent'></span>
+            </div>
+          </div>
+        </div>
+        <div class='panel full-height tech-age'>
+          <div class='large-font white'>Medieval Age (unlocked when all knowledge of Ancient Age is acquired)</div>
+        </div>
+        <div class='panel full-height tech-age'>
+          <div class='large-font white'>Modern Age (unlocked when all knowledge of Medieval Age is acquired)</div>
+        </div>
+      </div>
+      <div class='large-4 columns full-height' data-equalizer-watch>
         <div class='panel'>
           <!-- Human stats -->
           <h2>Human stats</h2>
@@ -134,26 +152,26 @@
           <!-- Health -->
           <div id='health'>
             <span aria-haspopup='true' class='has-tip' data-tooltip title='humans need more food, clothes, houses!'>Health:</span>
-            <span class='label round radius lvl-label-black'>Dying</span>
-            <span class='label round radius lvl-label-red'>Sick</span>
-            <span class='label round radius lvl-label-yellow'>Okay</span>
-            <span class='label round radius lvl-label-green active'>Execellent</span>
+            <span class='label round radius lvl-label-black'>Dying (3)</span>
+            <span class='label round radius lvl-label-red'>Sick (2)</span>
+            <span class='label round radius lvl-label-yellow'>Okay (1)</span>
+            <span class='label round radius lvl-label-green active'>Execellent (0)</span>
           </div>
           <!-- Inspiration -->
           <div id='inspiration'>
             <span aria-haspopup='true' class='has-tip' data-tooltip title="don't work too much or too little">Inspiration:</span>
-            <span class='label round radius lvl-label-black'>Lost soul</span>
-            <span class='label round radius lvl-label-red'>Exhausted</span>
-            <span class='label round radius lvl-label-yellow'>Bored</span>
-            <span class='label round radius lvl-label-green active'>Pumped</span>
+            <span class='label round radius lvl-label-black'>Lost soul (3)</span>
+            <span class='label round radius lvl-label-red'>Exhausted (2)</span>
+            <span class='label round radius lvl-label-yellow'>Bored (1)</span>
+            <span class='label round radius lvl-label-green active'>Pumped (0)</span>
           </div>
           <!-- Happiness -->
           <div id='happiness'>
             <span aria-haspopup='true' class='has-tip' data-tooltip title='humans cry over deaths, and cheer over births'>Happiness:</span>
-            <span class='label round radius lvl-label-black'>Devastated</span>
-            <span class='label round radius lvl-label-red'>Sad</span>
-            <span class='label round radius lvl-label-yellow'>Indifferent</span>
-            <span class='label round radius lvl-label-green active'>Cheerful</span>
+            <span class='label round radius lvl-label-black'>Devastated (3)</span>
+            <span class='label round radius lvl-label-red'>Sad (2)</span>
+            <span class='label round radius lvl-label-yellow'>Indifferent (1)</span>
+            <span class='label round radius lvl-label-green active'>Cheerful (0)</span>
           </div>
           <!-- Animosity -->
           <span aria-haspopup='true' class='has-tip' data-tooltip title='When animosity reached its maximum, there will be WARS!'>
@@ -213,27 +231,6 @@
             <i class='fa fa-'></i>
             <span id='houses-rate' style='font-size: 11px'></span>
           </div>
-        </div>
-        <!-- Alert box area -->
-        <div id='alert-area'></div>
-      </div>
-      <!-- Technology tree -->
-      <div class='large-4 columns full-height' data-equalizer-watch>
-        <div class='panel full-height' id='tech-tree'>
-          <div class='large-font white'>Ancient Age</div>
-          <div class='row'>
-            <div class='push-1 progress small-10 radius round'>
-              <span class='left' id='worker-percent'></span>
-              <span class='meter' id='worker-meter' style='width:100%;'></span>
-              <span class='small-2 right' id='idle-percent'></span>
-            </div>
-          </div>
-        </div>
-        <div class='panel full-height tech-age'>
-          <div class='large-font white'>Medieval Age (unlocked when all knowledge of Ancient Age is acquired)</div>
-        </div>
-        <div class='panel full-height tech-age'>
-          <div class='large-font white'>Modern Age (unlocked when all knowledge of Medieval Age is acquired)</div>
         </div>
       </div>
     </div>
