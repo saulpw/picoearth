@@ -349,8 +349,11 @@ function updatePopulation(incr)
         for (var tech in g_techTree) {
             var workers = techWorkers(tech);
             if (workers - deadWorkersPerTech > 0) {
-                setVFK(g_techTree, workers - deadWorkersPerTech, tech, "workers");
-            } 
+                workers -= deadWorkersPerTech;
+            } else {
+                workers = 0;
+            }
+            setVFK(g_techTree, workers - deadWorkersPerTech, tech, "workers");
         }
     }
 }
