@@ -162,7 +162,7 @@ var g_techTree = {
             "year": -10000
         },
         "require": {
-            "population": 600,
+            "population": 700,
         },
         "gain": {
             "animals": 1
@@ -181,7 +181,7 @@ var g_techTree = {
             "year": -10000
         },
         "require": {
-            "population": 600,
+            "population": 800,
         },
         "gain": {
             "trees": 1,

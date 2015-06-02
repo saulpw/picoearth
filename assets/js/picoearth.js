@@ -553,6 +553,7 @@ function updateAnimosity(incr)
     g_animosity += (g_health + g_happiness + g_inspiration - 6) * incr;
     if (g_animosity > A_HUNDRED_PERCENT ) {
         g_animosity = A_HUNDRED_PERCENT;
+        startWar();
     }
 
     $('#animosity-meter').css("width", g_animosity + "%");
@@ -785,13 +786,27 @@ function updateStatTexts() {
     $('#animals').text(animalsString());
 }
 
+// Prev human stats
 var g_prevPopulation = g_population;
 var g_prevBR = g_birthrate;
 var g_prevDR = g_deathrate;
+
+// Prev human resources
 var g_preFS = g_food;
+var g_preW = g_wood;
+var g_preT = g_tools;
+var g_preC = g_clothes;
+var g_preH = g_houses;
+
+// Prev earth resources
+var g_prePlants = g_plants;
+var g_preWater = g_water;
+var g_preTrees =g_trees;
+var g_preAnimals = g_animals;
 
 function updateStatRateTexts()
 {
+    // Stats
     var rate = population() - g_prevPopulation;
     rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
     $('#population-rate').text(rate);
@@ -807,10 +822,53 @@ function updateStatRateTexts()
     $('#deathrate-rate').text(rate);
     g_prevDR = g_deathrate;
 
+    // Human resources
     rate = g_food - g_preFS;
     rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
-    $('#foodsource-rate').text(rate);
+    $('#food-rate').text(rate);
     g_preFS = g_food;
+
+    rate = g_wood - g_preW;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#wood-rate').text(rate);
+    g_preW = g_wood;
+
+    rate = g_tools - g_preT;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#tools-rate').text(rate);
+    g_preT = g_tools;
+
+    rate = g_clothes - g_preC;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#clothes-rate').text(rate);
+    g_preC = g_clothes;
+
+    rate = g_houses - g_preH;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#houses-rate').text(rate);
+    g_preH = g_houses;
+
+    // Earth resources
+    rate = g_water - g_water;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#water-rate').text(rate);
+    g_preWater = g_water;
+
+    rate = g_plants - g_prePlants;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#plants-rate').text(rate);
+    g_prePlants = g_plants;
+
+    rate = g_trees - g_preTrees;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#trees-rate').text(rate);
+    g_preTrees = g_trees;
+
+    rate = g_animals - g_preAnimals;
+    rate = addPlusMinusToNumberString(rate) + rate.toFixed(0);
+    $('#animals-rate').text(rate);
+    g_preAnimals = g_animals;
+
 }
 
 // ----------------------------------------------------------------------------
@@ -908,52 +966,62 @@ function unlockTech(tech)
 
 function buildTechTooltip(tech)
 {
-    var str = "Each worker ";
+    var workers = parseInt(techWorkers(tech));
+    var str = "";
 
     // Display gain
 
     var gain = techGain(tech, "food");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " food, ";
     }
 
     gain = techGain(tech, "wood");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " wood, ";
     }
 
     gain = techGain(tech, "tools");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " tools, ";
     }
 
     gain = techGain(tech, "clothes");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " clothes, ";
     }
 
     gain = techGain(tech, "houses");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " houses, ";
     }
 
     gain = techGain(tech, "water");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " water, ";
     }
 
     gain = techGain(tech, "trees");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " trees, ";
     }
 
     gain = techGain(tech, "plants");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " plants, ";
     }
 
     gain = techGain(tech, "animals");
     if (isDefined(gain)) {
+        gain = parseInt(gain) * workers;
         str += " +" + gain + " animals, ";
     }
 
@@ -961,50 +1029,57 @@ function buildTechTooltip(tech)
 
     var cost = techCost(tech, "water");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " water, ";
     }
 
     cost = techCost(tech, "plants");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " plants, ";
     }
 
     cost = techCost(tech, "trees");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " trees, ";
     }
 
     cost = techCost(tech, "animals");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " animals, ";
     }
 
     cost = techCost(tech, "food");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " food, ";
     }
 
     cost = techCost(tech, "wood");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " wood, ";
     }
 
     cost = techCost(tech, "tools");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " tools, ";
     }
 
     cost = techCost(tech, "clothes");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " clothes, ";
     }
 
     cost = techCost(tech, "houses");
     if (isDefined(cost)) {
+        cost = parseInt(cost) * workers;
         str += " -" + cost + " houses, ";
     }
-
-    str += " per year";
 
     return str
 }
@@ -1112,8 +1187,6 @@ function adopt(tech, isPromote)
     if (isPromote) {
         if (g_workingPercent < A_HUNDRED_PERCENT) {
             workers++;
-        } else {
-            logging("Maximized workers, can't add more", true);
         }
     } else {
         // Ban
@@ -1124,7 +1197,9 @@ function adopt(tech, isPromote)
 
     setVFK(g_techTree, workers, tech, "workers");
  
+    // Update text
     $('#' + tech + '-workers').html(workers +  ' workers');
+    $('#' + tech + '-row .tech-cost-gain').html(buildTechTooltip(tech));
 }
 
 // ----------------------------------------------------------------------------
@@ -1488,6 +1563,13 @@ function popupAlert(str)
             undefined, 
             {speed: "slow", animation: "slideUp", callback: function() {}}
             );
+}
+
+function modalMessage(title, message) 
+{
+    $('#modal-generic-title').text(title);
+    $('#modal-generic-message').text(message);
+    $('#modal-generic').foundation('reveal', 'open');
 }
 
 // ----------------------------------------------------------------------------
