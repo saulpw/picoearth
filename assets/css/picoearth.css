@@ -100,7 +100,7 @@ textarea {
 	border-width: 5px;
 }
 
-.tech-name {
+.tech-name, .tech-name-preview {
 	border-radius: 5px;
 	height: 40px;
 	padding-top: 5px;
@@ -111,13 +111,10 @@ textarea {
 	font-size: 12px;
 }
 
-.tech-name-preview {
-	border-radius: 5px;
-	height: 40px;
-	padding-top: 5px;
-	padding-bottom: 5px;
+.tech-name-preview.panel {
 	margin-bottom: 0px;
 	color: gray;
+	font-size: 15px;
 }
 
 .tech-button-group {

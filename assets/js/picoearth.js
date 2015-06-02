@@ -574,7 +574,7 @@ function consumeResources(incr)
         g_food -= consumed;
     } else {
         death = population() - g_food;
-        population() -= death;
+        g_population -= death;
         g_food = 0;
     }
 
@@ -585,7 +585,7 @@ function consumeResources(incr)
         g_clothes -= consumed;
     } else {
         death = population() - g_clothes;
-        population() -= death;
+        g_population -= death;
         g_clothes = 0;
     }
 
@@ -596,7 +596,7 @@ function consumeResources(incr)
         g_houses -= consumed;
     } else {
         death = population() - g_houses;
-        population() -= death;
+        g_population -= death;
         g_houses = 0;
     }
 }
@@ -857,11 +857,11 @@ function previewTech(tech)
         }
 
         var pop = getVFK(g_techTree, tech, "require", "population");
-        var requireString = 'Unlock when population is over ' + pop;
+        var requireString = 'Requires population ' + pop;
 
         var rTechs = getVFK(g_techTree, tech, "require", "techs");
         if (isDefined(rTechs)) {
-            requireString += ". Requires: "
+            requireString += "and "
             for (var i in rTechs) {
                 requireString += rTechs[i] + " ";
             }
@@ -870,7 +870,9 @@ function previewTech(tech)
         $('#ancient-age').append(' \
             <div class="row" id="' + tech + '-row"> \
                 <div class="push-2 large-8 columns"> \
-                    <div class="tech-name-preview panel"><span data-tooltip aria-haspopup="true" class="has-tip" title="' + requireString + '">???</span></div> \
+                    <div class="tech-name-preview panel"> \
+                        ' + requireString + ' \
+                    </div> \
                 </div> \
             </div> \
             ');
