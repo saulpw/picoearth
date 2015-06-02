@@ -886,9 +886,10 @@ function unlockTech(tech)
     $('#' + tech + '-row').html(' \
         <div class="push-2 large-8 columns"> \
             <div class="tech-name panel"> \
-                <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip">' + techTitle + '</span> \
-                <label id="' + tech + '-workers" class="round label">' + workers + ' workers \
-                </label> \
+                <span>' + techTitle + '</span> \
+                <span id="' + tech + '-workers" class="round label right">' + workers + ' workers \
+                </span> \
+                <div class="tech-cost-gain">' + tooltipString + '</div> \
             </div> \
             <ul class="button-group tech-button-group"> \
                 <li><button class="tiny tech-button success" id="' + tech +'-promote">Work!</button> \
@@ -906,102 +907,99 @@ function unlockTech(tech)
 function buildTechTooltip(tech)
 {
     var str = "";
-    var techDescription = getVFK(g_techTree, tech, "description");
-    str = techDescription + ". Each worker converts ";
+
+    // Display gain
+
+    var gain = techGain(tech, "food");
+    if (isDefined(gain)) {
+        str += " + " + gain + " food, ";
+    }
+
+    gain = techGain(tech, "wood");
+    if (isDefined(gain)) {
+        str += " + " + gain + " wood, ";
+    }
+
+    gain = techGain(tech, "tools");
+    if (isDefined(gain)) {
+        str += " + " + gain + " tools, ";
+    }
+
+    gain = techGain(tech, "clothes");
+    if (isDefined(gain)) {
+        str += " + " + gain + " clothes, ";
+    }
+
+    gain = techGain(tech, "houses");
+    if (isDefined(gain)) {
+        str += " + " + gain + " houses, ";
+    }
+
+    gain = techGain(tech, "water");
+    if (isDefined(gain)) {
+        str += " + " + gain + " water, ";
+    }
+
+    gain = techGain(tech, "trees");
+    if (isDefined(gain)) {
+        str += " + " + gain + " trees, ";
+    }
+
+    gain = techGain(tech, "plants");
+    if (isDefined(gain)) {
+        str += " + " + gain + " plants, ";
+    }
+
+    gain = techGain(tech, "animals");
+    if (isDefined(gain)) {
+        str += " + " + gain + " animals, ";
+    }
 
     // Display cost
 
     var cost = techCost(tech, "water");
     if (isDefined(cost)) {
-        str += cost + " water, ";
+        str += " - " + cost + " water, ";
     }
 
     cost = techCost(tech, "plants");
     if (isDefined(cost)) {
-        str += cost + " plants, ";
+        str += " - " + cost + " plants, ";
     }
 
     cost = techCost(tech, "trees");
     if (isDefined(cost)) {
-        str += cost + " trees, ";
+        str += " - " + cost + " trees, ";
     }
 
     cost = techCost(tech, "animals");
     if (isDefined(cost)) {
-        str += cost + " animals, ";
+        str += " - " + cost + " animals, ";
     }
 
     cost = techCost(tech, "food");
     if (isDefined(cost)) {
-        str += cost + " food, ";
+        str += " - " + cost + " food, ";
     }
 
     cost = techCost(tech, "wood");
     if (isDefined(cost)) {
-        str += cost + " wood, ";
+        str += " - " + cost + " wood, ";
     }
 
     cost = techCost(tech, "tools");
     if (isDefined(cost)) {
-        str += cost + " tools, ";
+        str += " - " + cost + " tools, ";
     }
 
     cost = techCost(tech, "clothes");
     if (isDefined(cost)) {
-        str += cost + " clothes, ";
+        str += " - " + cost + " clothes, ";
     }
 
     cost = techCost(tech, "houses");
     if (isDefined(cost)) {
-        str += cost + " houses, ";
-    }
-
-    // Display gain
-    str += "to gain ";
-
-    var gain = techGain(tech, "food");
-    if (isDefined(gain)) {
-        str += gain + " food, ";
-    }
-
-    gain = techGain(tech, "wood");
-    if (isDefined(gain)) {
-        str += gain + " wood, ";
-    }
-
-    gain = techGain(tech, "tools");
-    if (isDefined(gain)) {
-        str += gain + " tools, ";
-    }
-
-    gain = techGain(tech, "clothes");
-    if (isDefined(gain)) {
-        str += gain + " clothes, ";
-    }
-
-    gain = techGain(tech, "houses");
-    if (isDefined(gain)) {
-        str += gain + " houses, ";
-    }
-
-    gain = techGain(tech, "water");
-    if (isDefined(gain)) {
-        str += gain + " water, ";
-    }
-
-    gain = techGain(tech, "trees");
-    if (isDefined(gain)) {
-        str += gain + " trees, ";
-    }
-
-    gain = techGain(tech, "plants");
-    if (isDefined(gain)) {
-        str += gain + " plants, ";
-    }
-
-    gain = techGain(tech, "animals");
-    if (isDefined(gain)) {
-        str += gain + " animals, ";
+        str += " - " + cost + " houses, ";
     }
 
     return str

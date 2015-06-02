@@ -107,6 +107,10 @@ textarea {
 	padding-bottom: 5px;
 }
 
+.tech-cost-gain {
+	font-size: 12px;
+}
+
 .tech-name-preview {
 	border-radius: 5px;
 	height: 40px;
