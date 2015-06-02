@@ -6,6 +6,7 @@
     %title Picoearth
     %link(rel="stylesheet" href="assets/css/font-awesome.min.css")
     %link(rel="stylesheet" href="assets/css/foundation.css")
+    %link(rel="stylesheet" href="assets/css/Icon-font-7-filled-PIXEDEN-v-1.2.0/pe-icon-7-filled/css/pe-icon-7-filled.css")
     %link(href='http://fonts.googleapis.com/css?family=Share+Tech' rel='stylesheet' type='text/css')    
     %script(src="assets/js/vendor/modernizr.js")
 
@@ -24,9 +25,8 @@
             %span#year 1000
 
           %h3.right#earth-danger-level
-
-          - eartStats = {"water" => ["Water", ""],
-                    "plants" => ["Plants", ""],
+          - eartStats = {"water" => ["Water", "pe-7f-drop"],
+                    "plants" => ["Plants", "pe-7f-leaf"],
                     "animals" => ["Animals", ""],
                     "trees" => ["Trees", ""]}
           - eartStats.each do |stat, name_icon|
@@ -36,7 +36,7 @@
               #{name}:
               %span(id="#{stat}") 
                 0
-              %i.fa(class="fa-#{icon}")
+              %i.fa(class="#{icon}")
               %span(id="#{stat}-rate" style="font-size: 11px")
 
         / Earth image
@@ -59,7 +59,7 @@
               %i.fa.fa-arrow-up.right
             %textarea#log.content.active(readonly rows="8")
 
-      .large-4.columns(data-equalizer-watch)
+      .large-4.columns.full-height
         
         / User interaction area
 
@@ -83,22 +83,23 @@
         / Alert box area
         #alert-area
 
-        / Technology tree
-        .panel.full-height#tech-tree
-                    
-          .large-font.white Ancient Age
+        #tech-treefull-height
+          / Technology tree
+          #ancient-age.panel.tech-age
+                      
+            .large-font.white Ancient Age
 
-          .row
-            .push-1.progress.small-10.radius.round
-              %span.left#worker-percent
-              %span#worker-meter.meter(style="width:100%;")
-              %span.small-2.right#idle-percent
+            .row
+              .push-1.progress.small-10.radius.round
+                %span.left#worker-percent
+                %span#worker-meter.meter(style="width:100%;")
+                %span.small-2.right#idle-percent
 
-        .panel.full-height.tech-age
-          .large-font.white Medieval Age (unlocked when all knowledge of Ancient Age is acquired)
+          .panel.full-height.tech-age
+            .large-font.white Medieval Age (unlocked when all knowledge of Ancient Age is acquired)
 
-        .panel.full-height.tech-age
-          .large-font.white Modern Age (unlocked when all knowledge of Medieval Age is acquired)
+          .panel.full-height.tech-age
+            .large-font.white Modern Age (unlocked when all knowledge of Medieval Age is acquired)
 
       .large-4.columns.full-height(data-equalizer-watch)
 
@@ -124,39 +125,42 @@
           / Health
           #health
             %span.has-tip(data-tooltip aria-haspopup="true" title="humans need more food, clothes, houses!") Health:
-            %span.label.round.radius.lvl-label-black Dying (3)
-            %span.label.round.radius.lvl-label-red Sick (2)
-            %span.label.round.radius.lvl-label-yellow Okay (1)
-            %span.label.round.radius.lvl-label-green.active Execellent (0)
+            %span.label.round.radius.lvl-label-black Dying
+            %span.label.round.radius.lvl-label-red Sick
+            %span.label.round.radius.lvl-label-yellow Okay
+            %span.label.round.radius.lvl-label-green.active Execellent
 
 
           / Inspiration
           #inspiration
             %span.has-tip(data-tooltip aria-haspopup="true" title="don't work too much or too little") Inspiration:
-            %span.label.round.radius.lvl-label-black Lost soul (3)
-            %span.label.round.radius.lvl-label-red Exhausted (2)
-            %span.label.round.radius.lvl-label-yellow Bored (1)
-            %span.label.round.radius.lvl-label-green.active Pumped (0)
+            %span.label.round.radius.lvl-label-black Lost soul
+            %span.label.round.radius.lvl-label-red Exhausted
+            %span.label.round.radius.lvl-label-yellow Bored
+            %span.label.round.radius.lvl-label-green.active Pumped
 
           / Happiness
           #happiness
             %span.has-tip(data-tooltip aria-haspopup="true" title="humans cry over deaths, and cheer over births") Happiness:
-            %span.label.round.radius.lvl-label-black Devastated (3)
-            %span.label.round.radius.lvl-label-red Sad (2)
-            %span.label.round.radius.lvl-label-yellow Indifferent (1)
-            %span.label.round.radius.lvl-label-green.active Cheerful (0)
+            %span.label.round.radius.lvl-label-black Devastated
+            %span.label.round.radius.lvl-label-red Sad
+            %span.label.round.radius.lvl-label-yellow Indifferent
+            %span.label.round.radius.lvl-label-green.active Cheerful
 
           / Animosity
-          %span.has-tip(data-tooltip aria-haspopup="true" title="When animosity reached its maximum, there will be WARS!")
-            Animosity =
-            %span#animosity
-          .progress.alert.radius.round
-            %span#animosity-meter.meter(style="width:10%;")
+          #animosity
+            %span.has-tip(data-tooltip aria-haspopup="true" title="When animosity reached its maximum, there will be WARS!")
+              Animosity:
+            .progress.alert.radius.round(style="height:15px;")
+              %span#animosity-meter.meter(style="width:10%;")
 
           / Knowledge
-          %span.has-tip(data-tooltip aria-haspopup="true" title="Knowledge is required to advance to the next age") 
-            Knowledge:
-          %span#knowledge
+          #knowledge
+            %span.has-tip(data-tooltip aria-haspopup="true" title="Knowledge is required to advance to the next age") 
+              Knowledge:
+            .progress.success.radius.round(style="height:15px;")
+              %span#knowledge-meter.meter(style="width:10%;")
+
 
         .panel
 

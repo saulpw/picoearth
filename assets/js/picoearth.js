@@ -56,7 +56,7 @@ var g_animosity = 0;
 var g_knowledge = 0;
 
 // Human resources
-var g_idle = A_HUNDRED_PERCENT;
+var g_workingPercent = A_HUNDRED_PERCENT;
 var g_food = g_population * 10;
 var g_wood = 0;
 var g_tools = 0;
@@ -281,14 +281,14 @@ function updateStats()
     updateYear(incr);
     updateBirthDeathRate(incr);
     updatePopulation(incr);
-    updateResources(incr);
+    updateTechGains(incr);
     consumeResources(incr);
+    updateWorkingPercent();
     updateHealth();
     updateInspiration();
     updateHappiness();
-    updateKnowledge();
-    updateAnimosity();
-    updateEarthStats(incr);
+    updateAnimosity(incr);
+    updateTechCosts(incr);
     regenerateEarth(incr);
     updateStatTexts();
 }
@@ -308,11 +308,18 @@ function updateYear(incr)
 
 function updateWorkingPercent()
 {
-    var workerPercent = A_HUNDRED_PERCENT - g_idle;
+    g_workingPercent = 0;
+    var workers = 0;
+    for (var tech in g_techTree) {
+        workers += g_techTree[tech]["workers"];
+    }
 
-    $('#worker-meter').css("width", workerPercent + "%");
-    $('#worker-percent').html(workerPercent + '% working');
-    $('#idle-percent').html(g_idle + '% idle');
+    g_workingPercent = Math.round(workers * A_HUNDRED_PERCENT / g_population);
+    var idlePercent = A_HUNDRED_PERCENT - g_workingPercent;
+
+    $('#worker-meter').css("width", g_workingPercent + "%");
+    $('#worker-percent').html(g_workingPercent + '% working');
+    $('#idle-percent').html(idlePercent + '% idle');
 }
 
 function updatePopulation(incr)
@@ -322,6 +329,29 @@ function updatePopulation(incr)
     // Make sure population doesn't go negative
     if (g_population + newHumans > 0) {
         g_population += newHumans;
+    }
+
+    // Kill off workers if there were a lot of deaths
+    // round newHumans
+    newHumans = Math.round(newHumans);
+    if (newHumans < 0) {
+
+        // Counts all unlocked tech with workers
+        var unlockedTechWithWorkers = 0;
+        for (var tech in g_techTree) {
+            if (g_techTree[tech]["unlocked"] && g_techTree[tech]["workers"] > 0) {
+                unlockedTechWithWorkers++;
+            }
+        }
+
+        // Divide evenly the dead workers among tech and substract from the workers per tech
+        var deadWorkersPerTech = Math.floor(newHumans / unlockedTechWithWorkers);
+        for (var tech in g_techTree) {
+            var workers = techWorkers(tech);
+            if (workers - deadWorkersPerTech > 0) {
+                setVFK(g_techTree, workers - deadWorkersPerTech, tech, "workers");
+            } 
+        }
     }
 }
 
@@ -463,19 +493,19 @@ function updateHappiness()
     }
 }
 
-// Inspiration is a function of g_idle
+// Inspiration is a function of g_workingPercent
 function updateInspiration()
 {
     // Reset label .active
     $('#inspiration .label').removeClass('active');
 
-    if (g_idle < 10) {
+    if (g_workingPercent > 90) {
         g_inspiration = INSPIRATION_LEVEL.EXHAUSTED;
         $('#inspiration .lvl-label-red').addClass('active');
-    } else if (g_idle < 30) {
+    } else if (g_workingPercent > 70) {
         g_inspiration = INSPIRATION_LEVEL.PUMPED_UP;
         $('#inspiration .lvl-label-green').addClass('active');
-    } else if (g_idle < 70) {
+    } else if (g_workingPercent > 30) {
         g_inspiration = INSPIRATION_LEVEL.BORED;
         $('#inspiration .lvl-label-yellow').addClass('active');
     } else {
@@ -487,68 +517,38 @@ function updateInspiration()
 // Knowledge is number of techs unlocked
 function updateKnowledge()
 {
+    var techTotal = Object.keys(g_techTree).length;
     g_knowledge = 0;
     for (var tech in g_techTree) {
         if (getVFK(g_techTree, tech, "unlocked")) {
             g_knowledge++;
         }
     }
+
+    g_knowledge = g_knowledge / techTotal * A_HUNDRED_PERCENT;
+
+    $('#knowledge-meter').animate({"width": g_knowledge + "%"});
 }
 
 // Is a function of happiness, health, and inspiration
-function updateAnimosity()
+function updateAnimosity(incr)
 {
-    g_animosity = g_health + g_happiness + g_inspiration;
-    
-    var totalAnim = HEALTH_LEVEL.DYING + HAPPINESS_LEVEL.DEVASTATED + INSPIRATION_LEVEL.LOST_SOUL;    
-    var per = (g_animosity / totalAnim) * 100;
-
-    $('#animosity-meter').css("width", per + "%");
-    $('#animosity').html(animosityString());
-}
-
-function updateResources(incr)
-{
-    for (var tech in g_techTree) {
-        
-        if (techReady(tech)) {
-    
-            var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
-            var workers = population() * percentAdopted / 100;
-
-            // Food
-            var food = techGain(tech, "food");
-            if (isDefined(food)) {
-                g_food += (food * workers) * incr;
-            }
-
-            // Wood
-            var wood = techGain(tech, "wood");
-            if (isDefined(wood)) {
-                g_wood += (wood * workers) * incr;
-            }
-
-            // Tool
-            var tools = techGain(tech, "tools");
-            if (isDefined(tools)) {
-                g_tools += (tools * workers) * incr;
-            }
-
-            // Clothes
-            var clothes = techGain(tech, "clothes");
-            if (isDefined(clothes)) {
-                g_clothes += (clothes * workers) * incr;
-            }
-
-            // Houses
-            var houses = techGain(tech, "houses");
-            if (isDefined(houses)) {
-                g_houses += (houses * workers) * incr;
-            }
-        }
+    g_animosity += (g_health + g_happiness + g_inspiration - 6) * incr;
+    if (g_animosity > A_HUNDRED_PERCENT ) {
+        g_animosity = A_HUNDRED_PERCENT;
     }
+
+    $('#animosity-meter').css("width", g_animosity + "%");
+    logging("WAR BROKE OUT! Animosity between people is too high!", true);
 }
 
+// @todo
+function startWar()
+{
+
+}
+
+// Only consume food, clothes, and houses
 function consumeResources(incr)
 {
     // Food
@@ -585,14 +585,113 @@ function consumeResources(incr)
     }
 }
 
-function updateEarthStats(incr)
+function updateTechGains(incr)
 {
     for (var tech in g_techTree) {
         
         if (techReady(tech)) {
     
-            var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
-            var workers = population() * percentAdopted / 100;
+            var workers = getVFK(g_techTree, tech, "workers");
+
+            // Food
+            var food = techGain(tech, "food");
+            if (isDefined(food)) {
+                g_food += (food * workers) * incr;
+            }
+
+            // Wood
+            var wood = techGain(tech, "wood");
+            if (isDefined(wood)) {
+                g_wood += (wood * workers) * incr;
+            }
+
+            // Tool
+            var tools = techGain(tech, "tools");
+            if (isDefined(tools)) {
+                g_tools += (tools * workers) * incr;
+            }
+
+            // Clothes
+            var clothes = techGain(tech, "clothes");
+            if (isDefined(clothes)) {
+                g_clothes += (clothes * workers) * incr;
+            }
+
+            // Houses
+            var houses = techGain(tech, "houses");
+            if (isDefined(houses)) {
+                g_houses += (houses * workers) * incr;
+            }
+
+            // Water
+            var water = techGain(tech, "water");
+            if (isDefined(water)) {
+                g_water += (water * workers) * incr;
+            }
+
+            // Trees
+            var trees = techGain(tech, "trees");
+            if (isDefined(trees)) {
+                g_trees += (trees * workers) * incr;
+            }
+
+            // Plants
+            var plants = techGain(tech, "plants");
+            if (isDefined(plants)) {
+                g_plants += (plants * workers) * incr;
+            }
+
+            // Animals
+            var animals = techGain(tech, "animals");
+            if (isDefined(animals)) {
+                g_animals += (animals * workers) * incr;
+            }
+        }
+    }
+}
+
+function updateTechCosts(incr)
+{
+    for (var tech in g_techTree) {
+        
+        if (techReady(tech)) {
+    
+            var workers = getVFK(g_techTree, tech, "workers");
+
+            // food
+            var food = techCost(tech, "food");
+            if (isDefined(food)) {
+                g_food -= (food * workers) * incr;
+                g_food = g_food < 0 ? 0 : g_food;
+            }
+
+            // wood
+            var wood = techCost(tech, "wood");
+            if (isDefined(wood)) {
+                g_wood -= (wood * workers) * incr;
+                g_wood = g_wood < 0 ? 0 : g_wood;
+            }
+
+            // tools
+            var tools = techCost(tech, "tools");
+            if (isDefined(tools)) {
+                g_tools -= (tools * workers) * incr;
+                g_tools = g_tools < 0 ? 0 : g_tools;
+            }
+            
+            // clothes
+            var clothes = techCost(tech, "clothes");
+            if (isDefined(clothes)) {
+                g_clothes -= (clothes * workers) * incr;
+                g_clothes = g_clothes < 0 ? 0 : g_clothes;
+            }
+
+            // houses
+            var houses = techCost(tech, "houses");
+            if (isDefined(houses)) {
+                g_houses -= (houses * workers) * incr;
+                g_houses = g_houses < 0 ? 0 : g_houses;
+            }
 
             // water
             var water = techCost(tech, "water");
@@ -653,7 +752,6 @@ function updateStatTexts() {
     $('#population').text(populationString());
     $('#birthrate').text(birthrateString());
     $('#deathrate').text(deathrateString());
-    $('#knowledge').text(knowledgeString(g_knowledge));
 
     // Resources
     $('#food').text(foodString());
@@ -715,7 +813,7 @@ function updateTechTree()
             unlockTech(tech);
 
             // Log event
-            var eventMessage = tech + ' is unlocked in year ' + yearString() + '.';
+            var eventMessage = getVFK(g_techTree, tech, "title") + ' is unlocked in year ' + yearString() + '.';
             logging(eventMessage, true);
 
         }
@@ -750,7 +848,7 @@ function previewTech(tech)
             }
         }
 
-        $('#tech-tree').append(' \
+        $('#ancient-age').append(' \
             <div class="row" id="' + tech + '-row"> \
                 <div class="push-2 large-8 columns"> \
                     <div class="tech-name-preview panel"><span data-tooltip aria-haspopup="true" class="has-tip" title="' + requireString + '">???</span></div> \
@@ -762,7 +860,7 @@ function previewTech(tech)
 
 function unlockTech(tech)
 {
-    var percentAdopted = adoptionString(tech);
+    var workers = techWorkers(tech);
     var techTitle = getVFK(g_techTree, tech, "title");
     var tooltipString = buildTechTooltip(tech);
 
@@ -770,9 +868,8 @@ function unlockTech(tech)
         <div class="push-2 large-8 columns"> \
             <div class="tech-name panel"> \
                 <span data-tooltip aria-haspopup="true" title="' + tooltipString + '" class="has-tip">' + techTitle + '</span> \
-                <span class="percent-adoption progress right radius round"> \
-                    <span id="' + tech +'-adoption" class="meter" style="width:' + percentAdopted + '%;padding-left:10px">' + percentAdopted + '%</span> \
-                </span> \
+                <label id="' + tech + '-workers" class="round label">' + workers + ' workers \
+                </label> \
             </div> \
             <ul class="button-group tech-button-group"> \
                 <li><button class="tiny tech-button success" id="' + tech +'-promote">Work!</button> \
@@ -815,6 +912,31 @@ function buildTechTooltip(tech)
         str += cost + " animals, ";
     }
 
+    cost = techCost(tech, "food");
+    if (isDefined(cost)) {
+        str += cost + " food, ";
+    }
+
+    cost = techCost(tech, "wood");
+    if (isDefined(cost)) {
+        str += cost + " wood, ";
+    }
+
+    cost = techCost(tech, "tools");
+    if (isDefined(cost)) {
+        str += cost + " tools, ";
+    }
+
+    cost = techCost(tech, "clothes");
+    if (isDefined(cost)) {
+        str += cost + " clothes, ";
+    }
+
+    cost = techCost(tech, "houses");
+    if (isDefined(cost)) {
+        str += cost + " houses, ";
+    }
+
     // Display gain
     str += "to gain ";
 
@@ -843,6 +965,26 @@ function buildTechTooltip(tech)
         str += gain + " houses, ";
     }
 
+    gain = techGain(tech, "water");
+    if (isDefined(gain)) {
+        str += gain + " water, ";
+    }
+
+    gain = techGain(tech, "trees");
+    if (isDefined(gain)) {
+        str += gain + " trees, ";
+    }
+
+    gain = techGain(tech, "plants");
+    if (isDefined(gain)) {
+        str += gain + " plants, ";
+    }
+
+    gain = techGain(tech, "animals");
+    if (isDefined(gain)) {
+        str += gain + " animals, ";
+    }
+
     return str
 }
 
@@ -857,7 +999,7 @@ function shouldUnlockTech(tech)
     if (!isDefined(previewed) || unlocked) {
         return false;
     }
-    
+
     // Check if population
     if (g_population >= popThres) {
 
@@ -943,29 +1085,25 @@ function banTech(tech)
 
 function adopt(tech, isPromote)
 {
-    var percentAdopted = getVFK(g_techTree, tech, "adopt-percent");
+    var workers = techWorkers(tech);
     
     // Adoption shares the same worker pool
     if (isPromote) {
-        if (g_idle > ZERO_PERCENT) {
-            percentAdopted++;
-            g_idle--;
+        if (g_workingPercent < A_HUNDRED_PERCENT) {
+            workers++;
         } else {
-            return;
-        }        
+            logging("Maximized workers, can't add more", true);
+        }
     } else {
         // Ban
-        if (g_idle < A_HUNDRED_PERCENT && percentAdopted > ZERO_PERCENT) {
-            percentAdopted--;
-            g_idle++;
+        if (workers > 0) {
+            workers--;
         }
     }
 
-    setVFK(g_techTree, percentAdopted, tech, "adopt-percent");
+    setVFK(g_techTree, workers, tech, "workers");
  
-    $('#' + tech + '-adoption').css("width", percentAdopted + "%");
-    $('#' + tech + '-adoption').html(percentAdopted + '%');
-    updateWorkingPercent();
+    $('#' + tech + '-workers').html(workers +  ' workers');
 }
 
 // ----------------------------------------------------------------------------
@@ -985,6 +1123,11 @@ function techCost(tech, type)
 function techReady(tech)
 {
     return getVFK(g_techTree, tech, "unlocked") && getVFK(g_techTree, tech, "enabled");
+}
+
+function techWorkers(tech) 
+{
+    return Math.round(getVFK(g_techTree, tech, "workers"));
 }
 
 function enableTech(tech, isEnable)
@@ -1054,7 +1197,8 @@ function evNewYear()
 {
     updateGraphs();    
     updateStatRateTexts();
-    
+    updateKnowledge();
+  
     saveGame();
 }
 
@@ -1122,11 +1266,11 @@ function population()
 // ----------------------------------------------------------------------------
 
 function birthrateString() {
-    return g_birthrate.toFixed(3).toString().replace('-','') + ' per thousand';
+    return g_birthrate.toFixed(0).toString().replace('-','') + ' per thousand';
 }
 
 function deathrateString() {
-    return g_deathrate.toFixed(3).toString().replace('-','') + ' per thousand';
+    return g_deathrate.toFixed(0).toString().replace('-','') + ' per thousand';
 }
 
 function populationString() {
@@ -1149,22 +1293,7 @@ function yearString(number) {
         toString = -toString + 'BC';
     }
 
-    if (y < -3500) {
-        toString += ' (Prehistoric)';
-    } else if (y < 500) {
-        toString += ' (Ancient world)';
-    } else if (y < 1500) {
-        toString += ' (Medieval world)';
-    } else {
-        toString += ' (Modern world)';
-    }
-
     return toString;
-}
-
-function adoptionString(tech) {
-    var adoption = g_techTree[tech]["adopt-percent"];
-    return Math.round(adoption);
 }
 
 function gameSpeedString() {
@@ -1233,14 +1362,11 @@ function happinessString(hap) {
 }
 
 function knowledgeString(kn) {
-    var techTotal = Object.keys(g_techTree).length;
-    return kn + '/' + techTotal + ' of the world known';
+    return g_knowledge;
 }
 
 function animosityString() {
-    return healthString(g_health) + " health" +
-            " + " + happinessString(g_happiness) + " happiness" +
-            " + " + inspirationString(g_inspiration) + " inspiration";
+    return g_animosity;
 }
 
 function foodString() {
@@ -1350,10 +1476,8 @@ function popupAlert(str)
 
 function bindPromoteBanButonEvents(tech)
 {
-    var interval;
     var promoteButton = $('#' + tech + '-promote');
     var banButton = $('#' + tech + '-ban');
-    var neutralButton = $('#' + tech + '-neutral');
 
     promoteButton.bind('mousedown', function(e) {
         promoteTech(tech);

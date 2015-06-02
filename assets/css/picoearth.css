@@ -90,10 +90,7 @@ textarea {
 }
 
 #tech-tree {
-	background-color: rgba(1,64,64,.2);
-	border-radius: 20px;
-	border-color: rgba(255,255,255, .5);
-	border-width: 5px;
+	overflow: auto;
 }
 
 .tech-age {
@@ -119,10 +116,6 @@ textarea {
 	color: gray;
 }
 
-.tech-button-group::before {
-	z-index: 1;
-}
-
 .tech-button-group {
 	transition: all .1s ease-in-out;
 	height: 0px;
@@ -141,11 +134,13 @@ textarea {
 	height: 30px;
 }
 
-.percent-adoption {
+#animosity-meter {
+	padding-left: 10px;
 	font-size: .8em;
 	vertical-align: middle;
 	width: 100px;
 }
+
 
 /* Alert box css */
 .alert-box {
@@ -192,6 +187,9 @@ textarea {
 
 .panel {
 	height: 100%;
+	-webkit-box-shadow: 10px 10px 23px -1px rgba(138,138,138,0.52);
+	-moz-box-shadow: 10px 10px 23px -1px rgba(138,138,138,0.52);
+	box-shadow: 10px 10px 23px -1px rgba(138,138,138,0.52);
 }
 
 .row {

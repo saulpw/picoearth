@@ -16,26 +16,7 @@ var g_techTree = {
         "cost": {
             "plants": 1,
         },
-        "adopt-percent": 0
-    },
-    "get-water": {
-        "title": "Get water",
-        "description": "Gulp! Refreshing",
-        "unlocked": false,
-        "enabled": true,
-        "preview": {
-            "year": -10000
-        },
-        "require": {
-            "population": 100,
-        },
-        "gain": {
-            "food": 1
-        },
-        "cost": {
-            "water": 1,
-        },
-        "adopt-percent": 0
+        "workers": 0
     },
     "chop-wood": {
         "title": "Chop woods",
@@ -54,7 +35,7 @@ var g_techTree = {
         "cost": {
             "trees": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "make-tools": {
         "title": "Make tools",
@@ -73,7 +54,7 @@ var g_techTree = {
         "cost": {
             "wood": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "hunting": {
         "title": "Hunt animals",
@@ -93,7 +74,7 @@ var g_techTree = {
             "tools": 1,
             "animals": 1
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "build-house": {
         "title": "Build house",
@@ -113,7 +94,7 @@ var g_techTree = {
             "wood": 2,
             "tools": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "make-clothes": {
         "title": "Make clothes",
@@ -132,7 +113,7 @@ var g_techTree = {
         "cost": {
             "plants": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "explore": {
         "title": "Explore",
@@ -140,7 +121,7 @@ var g_techTree = {
         "unlocked": false,
         "enabled": true,
         "preview": {
-            "year": -9800
+            "year": -9920
         },
         "require": {
             "population": 700,
@@ -152,7 +133,7 @@ var g_techTree = {
             "food": 1,
             "cloth": 1
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "dance": {
         "title": "Dance",
@@ -170,7 +151,7 @@ var g_techTree = {
         "cost": {
             "clothes": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "raise-animals": {
         "title": "Raise animals",
@@ -189,7 +170,7 @@ var g_techTree = {
         "cost": {
             "food": 1,
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "plant-trees": {
         "title": "Plant trees",
@@ -203,12 +184,13 @@ var g_techTree = {
             "population": 600,
         },
         "gain": {
-            "food": 1
+            "trees": 1,
+            "plants": 1
         },
         "cost": {
-            "water": 1,
+
         },
-        "adopt-percent": 0
+        "workers": 0
     },
     "worship": {
         "title": "Worship",
@@ -227,6 +209,6 @@ var g_techTree = {
             "animals": 1,
             "food": 1
         },
-        "adopt-percent": 0
+        "workers": 0
     },
 }
