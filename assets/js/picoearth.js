@@ -314,7 +314,18 @@ function updateWorkingPercent()
         workers += g_techTree[tech]["workers"];
     }
 
-    g_workingPercent = Math.round(workers * A_HUNDRED_PERCENT / g_population);
+    if (workers < population()) {
+        g_workingPercent = Math.round(workers * A_HUNDRED_PERCENT / population());
+    } else if (workers >= g_population) {
+        // Cap percentage
+        g_workingPercent = A_HUNDRED_PERCENT;
+    }
+
+    if (population() == 0) {
+        // No humans left to be workers
+        g_workingPercent = ZERO_PERCENT;
+    }
+
     var idlePercent = A_HUNDRED_PERCENT - g_workingPercent;
 
     $('#worker-meter').css("width", g_workingPercent + "%");
@@ -349,9 +360,11 @@ function updatePopulation(incr)
         var deadWorkersPerTech = Math.floor(newHumans / unlockedTechWithWorkers);
         for (var tech in g_techTree) {
             var workers = techWorkers(tech);
-            if (workers - deadWorkersPerTech > 0) {
+            if (workers - deadWorkersPerTech > 0 && population() != 0) {
                 workers -= deadWorkersPerTech;
             } else {
+
+                // population = 0 will fall here
                 workers = 0;
             }
             setVFK(g_techTree, workers - deadWorkersPerTech, tech, "workers");
@@ -425,13 +438,13 @@ function updateBirthDeathRate(incr)
 function updateHealth()
 {
     // Person per food
-    var persons_food = g_population / g_food;
+    var persons_food = population() / g_food;
 
     // Person per clothe
-    var persons_clothe = g_population / g_clothes;
+    var persons_clothe = population() / g_clothes;
 
     // Person per house
-    var persons_house = g_population / g_houses;
+    var persons_house = population() / g_houses;
 
     const LEVEL_DYING = 20;
     const LEVEL_SICK = 10;
@@ -555,35 +568,35 @@ function startWar()
 function consumeResources(incr)
 {
     // Food
-    var consumed = g_population * incr * .1;
+    var consumed = population() * incr * .1;
     var death = 0;
     if (g_food - consumed > 0) {
         g_food -= consumed;
     } else {
-        death = g_population - g_food;
-        g_population -= death;
+        death = population() - g_food;
+        population() -= death;
         g_food = 0;
     }
 
     // Clothes
-    consumed = g_population * incr * .01;
+    consumed = population() * incr * .01;
     death = 0;
     if (g_clothes - consumed > 0) {
         g_clothes -= consumed;
     } else {
-        death = g_population - g_clothes;
-        g_population -= death;
+        death = population() - g_clothes;
+        population() -= death;
         g_clothes = 0;
     }
 
     // Houses
-    consumed = g_population * incr * .001;
+    consumed = population() * incr * .001;
     death = 0;
     if (g_houses - consumed > 0) {
         g_houses -= consumed;
     } else {
-        death = g_population - g_houses;
-        g_population -= death;
+        death = population() - g_houses;
+        population() -= death;
         g_houses = 0;
     }
 }
@@ -825,6 +838,9 @@ function updateTechTree()
         readyTech(tech);
 
     }
+
+    // Gain knowledge for each tech unlocked
+    updateKnowledge();
 }
 
 function previewTech(tech) 
@@ -1004,7 +1020,7 @@ function shouldUnlockTech(tech)
     }
 
     // Check if population
-    if (g_population >= popThres) {
+    if (population() >= popThres) {
 
         // Check if required techs are all unlocked
         if (isDefined(techThres)) {
@@ -1200,7 +1216,6 @@ function evNewYear()
 {
     updateGraphs();    
     updateStatRateTexts();
-    updateKnowledge();
   
     saveGame();
 }
