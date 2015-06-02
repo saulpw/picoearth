@@ -906,101 +906,103 @@ function unlockTech(tech)
 
 function buildTechTooltip(tech)
 {
-    var str = "";
+    var str = "Each worker ";
 
     // Display gain
 
     var gain = techGain(tech, "food");
     if (isDefined(gain)) {
-        str += " + " + gain + " food, ";
+        str += " +" + gain + " food, ";
     }
 
     gain = techGain(tech, "wood");
     if (isDefined(gain)) {
-        str += " + " + gain + " wood, ";
+        str += " +" + gain + " wood, ";
     }
 
     gain = techGain(tech, "tools");
     if (isDefined(gain)) {
-        str += " + " + gain + " tools, ";
+        str += " +" + gain + " tools, ";
     }
 
     gain = techGain(tech, "clothes");
     if (isDefined(gain)) {
-        str += " + " + gain + " clothes, ";
+        str += " +" + gain + " clothes, ";
     }
 
     gain = techGain(tech, "houses");
     if (isDefined(gain)) {
-        str += " + " + gain + " houses, ";
+        str += " +" + gain + " houses, ";
     }
 
     gain = techGain(tech, "water");
     if (isDefined(gain)) {
-        str += " + " + gain + " water, ";
+        str += " +" + gain + " water, ";
     }
 
     gain = techGain(tech, "trees");
     if (isDefined(gain)) {
-        str += " + " + gain + " trees, ";
+        str += " +" + gain + " trees, ";
     }
 
     gain = techGain(tech, "plants");
     if (isDefined(gain)) {
-        str += " + " + gain + " plants, ";
+        str += " +" + gain + " plants, ";
     }
 
     gain = techGain(tech, "animals");
     if (isDefined(gain)) {
-        str += " + " + gain + " animals, ";
+        str += " +" + gain + " animals, ";
     }
 
     // Display cost
 
     var cost = techCost(tech, "water");
     if (isDefined(cost)) {
-        str += " - " + cost + " water, ";
+        str += " -" + cost + " water, ";
     }
 
     cost = techCost(tech, "plants");
     if (isDefined(cost)) {
-        str += " - " + cost + " plants, ";
+        str += " -" + cost + " plants, ";
     }
 
     cost = techCost(tech, "trees");
     if (isDefined(cost)) {
-        str += " - " + cost + " trees, ";
+        str += " -" + cost + " trees, ";
     }
 
     cost = techCost(tech, "animals");
     if (isDefined(cost)) {
-        str += " - " + cost + " animals, ";
+        str += " -" + cost + " animals, ";
     }
 
     cost = techCost(tech, "food");
     if (isDefined(cost)) {
-        str += " - " + cost + " food, ";
+        str += " -" + cost + " food, ";
     }
 
     cost = techCost(tech, "wood");
     if (isDefined(cost)) {
-        str += " - " + cost + " wood, ";
+        str += " -" + cost + " wood, ";
     }
 
     cost = techCost(tech, "tools");
     if (isDefined(cost)) {
-        str += " - " + cost + " tools, ";
+        str += " -" + cost + " tools, ";
     }
 
     cost = techCost(tech, "clothes");
     if (isDefined(cost)) {
-        str += " - " + cost + " clothes, ";
+        str += " -" + cost + " clothes, ";
     }
 
     cost = techCost(tech, "houses");
     if (isDefined(cost)) {
-        str += " - " + cost + " houses, ";
+        str += " -" + cost + " houses, ";
     }
+
+    str += " per year";
 
     return str
 }
