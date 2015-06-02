@@ -534,17 +534,22 @@ function updateInspiration()
 // Knowledge is number of techs unlocked
 function updateKnowledge()
 {
-    var techTotal = Object.keys(g_techTree).length;
-    g_knowledge = 0;
     for (var tech in g_techTree) {
+
+        var workers = techWorkers(tech);
         if (getVFK(g_techTree, tech, "unlocked")) {
-            g_knowledge++;
+            var knowledge = techGain(tech, "knowledge");
+            if (isDefined(knowledge)) {
+                g_knowledge += parseFloat(knowledge) * workers;    
+            }
         }
     }
 
-    g_knowledge = g_knowledge / techTotal * A_HUNDRED_PERCENT;
+    if (g_knowledge >= A_HUNDRED_PERCENT) {
+        g_knowledge = A_HUNDRED_PERCENT;
+    }
 
-    $('#knowledge-meter').animate({"width": g_knowledge + "%"});
+    $('#knowledge-meter').css("width", g_knowledge + "%");
 }
 
 // Is a function of happiness, health, and inspiration
@@ -973,111 +978,118 @@ function buildTechTooltip(tech)
 
     var gain = techGain(tech, "food");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " food, ";
     }
 
     gain = techGain(tech, "wood");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " wood, ";
     }
 
     gain = techGain(tech, "tools");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " tools, ";
     }
 
     gain = techGain(tech, "clothes");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " clothes, ";
     }
 
     gain = techGain(tech, "houses");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " houses, ";
     }
 
     gain = techGain(tech, "water");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " water, ";
     }
 
     gain = techGain(tech, "trees");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " trees, ";
     }
 
     gain = techGain(tech, "plants");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " plants, ";
     }
 
     gain = techGain(tech, "animals");
     if (isDefined(gain)) {
-        gain = parseInt(gain) * workers;
+        gain = parseFloat(gain) * workers;
         str += " +" + gain + " animals, ";
+    }
+
+    gain = techGain(tech, "knowledge");
+    if (isDefined(gain)) {
+        gain = parseFloat(gain) * workers;
+        gain.toFixed(3);
+        str += " +" + gain + " knowledge, ";
     }
 
     // Display cost
 
     var cost = techCost(tech, "water");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " water, ";
     }
 
     cost = techCost(tech, "plants");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " plants, ";
     }
 
     cost = techCost(tech, "trees");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " trees, ";
     }
 
     cost = techCost(tech, "animals");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " animals, ";
     }
 
     cost = techCost(tech, "food");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " food, ";
     }
 
     cost = techCost(tech, "wood");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " wood, ";
     }
 
     cost = techCost(tech, "tools");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " tools, ";
     }
 
     cost = techCost(tech, "clothes");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " clothes, ";
     }
 
     cost = techCost(tech, "houses");
     if (isDefined(cost)) {
-        cost = parseInt(cost) * workers;
+        cost = parseFloat(cost) * workers;
         str += " -" + cost + " houses, ";
     }
 
@@ -1163,6 +1175,67 @@ function readyTech(tech)
             return;
         }
     }
+
+    // Food
+    var cost = techCost(tech, "food");
+    if (isDefined(cost)) {
+        var isEnable = g_food >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Wood
+    var cost = techCost(tech, "wood");
+    if (isDefined(cost)) {
+        var isEnable = g_wood >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Tools
+    var cost = techCost(tech, "tools");
+    if (isDefined(cost)) {
+        var isEnable = g_tools >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Clothes
+    var cost = techCost(tech, "clothes");
+    if (isDefined(cost)) {
+        var isEnable = g_clothes >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
+        }
+    }
+
+    // Houses
+    var cost = techCost(tech, "houses");
+    if (isDefined(cost)) {
+        var isEnable = g_houses >= cost;
+        enableTech(tech, isEnable);
+        
+        // Only need to have one condition not satisfied to disable the tech
+        if (isEnable == false) {
+            return;
+        }
+    }
+
 }
 
 // Promote/Ban tech

@@ -30,7 +30,7 @@ var g_techTree = {
             "population": 200,
         },
         "gain": {
-            "wood": 1
+            "wood": 1,
         },
         "cost": {
             "trees": 1,
@@ -121,13 +121,13 @@ var g_techTree = {
         "unlocked": false,
         "enabled": true,
         "preview": {
-            "year": -9920
+            "year": -9990
         },
         "require": {
             "population": 700,
         },
         "gain": {
-            
+            "knowledge": .002,  
         },
         "cost": {
             "food": 1,
@@ -147,6 +147,7 @@ var g_techTree = {
             "population": 700,
         },
         "gain": {
+            "knowledge": .001,
         },
         "cost": {
             "clothes": 1,
@@ -165,7 +166,7 @@ var g_techTree = {
             "population": 700,
         },
         "gain": {
-            "animals": 1
+            "animals": 1,
         },
         "cost": {
             "food": 1,
@@ -204,6 +205,7 @@ var g_techTree = {
             "population": 1200,
         },
         "gain": {
+            "knowledge": .003,
         },
         "cost": {
             "animals": 1,
