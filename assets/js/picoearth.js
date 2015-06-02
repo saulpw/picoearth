@@ -345,6 +345,7 @@ function updatePopulation(incr)
         }
 
         // Divide evenly the dead workers among tech and substract from the workers per tech
+        // @note: this is only an estimation, since we probably have rounding errors here
         var deadWorkersPerTech = Math.floor(newHumans / unlockedTechWithWorkers);
         for (var tech in g_techTree) {
             var workers = techWorkers(tech);
@@ -542,7 +543,6 @@ function updateAnimosity(incr)
     }
 
     $('#animosity-meter').css("width", g_animosity + "%");
-    logging("WAR BROKE OUT! Animosity between people is too high!", true);
 }
 
 // @todo
