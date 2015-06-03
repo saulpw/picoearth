@@ -27,8 +27,8 @@
           %h3.right#earth-danger-level
           - eartStats = {"water" => ["Water", "pe-7f-drop"],
                     "plants" => ["Plants", "pe-7f-leaf"],
-                    "animals" => ["Animals", ""],
-                    "trees" => ["Trees", ""]}
+                    "animals" => ["Animals", "fa-paw"],
+                    "trees" => ["Trees", "fa-tree"]}
           - eartStats.each do |stat, name_icon|
             - name = name_icon[0]
             - icon = name_icon[1]
@@ -116,30 +116,137 @@
               %i.fa(class="fa-#{icon}")
               %span(id="#{stat}-rate" style="font-size: 11px")
 
-          / Health
-          #health
-            %span.has-tip(data-tooltip aria-haspopup="true" title="humans need more food, clothes, houses!") Health:
-            %span.label.round.radius.lvl-label-black Dying
-            %span.label.round.radius.lvl-label-red Sick
-            %span.label.round.radius.lvl-label-yellow Okay
-            %span.label.round.radius.lvl-label-green.active Execellent
+          %table
+            %thead
+              %tr
+                %th
+                %th(colspan=2) More animosity and deaths
+                %th(colspan=2) More peace and births
+            %tbody
 
+              / Health
 
-          / Inspiration
-          #inspiration
-            %span.has-tip(data-tooltip aria-haspopup="true" title="don't work too much or too little") Inspiration:
-            %span.label.round.radius.lvl-label-black Lost soul
-            %span.label.round.radius.lvl-label-red Exhausted
-            %span.label.round.radius.lvl-label-yellow Bored
-            %span.label.round.radius.lvl-label-green.active Pumped
+              %tr#health
+                %td 
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="humans need more food, clothes, houses!") Health:
 
-          / Happiness
-          #happiness
-            %span.has-tip(data-tooltip aria-haspopup="true" title="humans cry over deaths, and cheer over births") Happiness:
-            %span.label.round.radius.lvl-label-black Devastated
-            %span.label.round.radius.lvl-label-red Sad
-            %span.label.round.radius.lvl-label-yellow Indifferent
-            %span.label.round.radius.lvl-label-green.active Cheerful
+                %td 
+                  %span.label.round.radius.lvl-label-black Dying
+                %td 
+                  %span.label.round.radius.lvl-label-red Sick
+                %td 
+                  %span.label.round.radius.lvl-label-yellow Okay
+                %td 
+                  %span.label.round.radius.lvl-label-green.active Execellent
+
+              %tr
+                %td
+                %td 
+                  > 20
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="person")
+                    %i.fa.fa-male
+                  per
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="food")
+                    %i.fa.fa-cutlery
+                  or 
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="clothe")
+                    %i.pe-7f-scissors
+                  or
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="house")
+                    %i.fa.fa-home
+
+                %td
+                  20 - 10
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="person")
+                    %i.fa.fa-male
+                  per
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="food")
+                    %i.fa.fa-cutlery
+                  or 
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="clothe")
+                    %i.pe-7f-scissors
+                  or
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="house")
+                    %i.fa.fa-home
+
+                %td
+                  10 - 5
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="person")
+                    %i.fa.fa-male
+                  per
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="food")
+                    %i.fa.fa-cutlery
+                  or 
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="clothe")
+                    %i.pe-7f-scissors
+                  or
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="house")
+                    %i.fa.fa-home
+
+                %td
+                  < 5
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="person")
+                    %i.fa.fa-male
+                  per
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="food")
+                    %i.fa.fa-cutlery
+                  or 
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="clothe")
+                    %i.pe-7f-scissors
+                  or
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="house")
+                    %i.fa.fa-home
+
+              / Inspiration
+    
+              %tr#inspiration
+                %td
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="don't work too much or too little") Inspiration:
+
+                %td
+                  %span.label.round.radius.lvl-label-black Lost soul
+                %td
+                  %span.label.round.radius.lvl-label-red Exhausted
+                %td
+                  %span.label.round.radius.lvl-label-yellow Bored
+                %td
+                  %span.label.round.radius.lvl-label-green.active Pumped
+
+              %tr
+                %td
+                %td
+                  Working % < 30
+                %td
+                  Working % > 90
+                %td
+                  Working % 30 - 70
+                %td
+                  Working % 70 - 90
+
+              / Happiness
+    
+              %tr#happiness
+                %td
+                  %span.has-tip(data-tooltip aria-haspopup="true" title="humans cry over deaths, and cheer over births") Happiness:
+                %td
+                  %span.label.round.radius.lvl-label-black Devastated
+                %td
+                  %span.label.round.radius.lvl-label-red Sad
+                %td
+                  %span.label.round.radius.lvl-label-yellow Indifferent
+                %td
+                  %span.label.round.radius.lvl-label-green.active Cheerful
+
+              %tr
+                %td
+                %td
+                  CBR - CDR < -5
+                %td
+                  CBR - CDR = -5 to -2
+                %td
+                  CBR - CDR = -2 to 3
+                %td
+                  CBR - CDR > 3
 
           / Animosity
           #animosity
@@ -163,11 +270,11 @@
           %h2 Human resources
           %span#human-resource-area
 
-          - humanResources = {"food" => ["Food", ""],
+          - humanResources = {"food" => ["Food", "fa-cutlery"],
                     "wood" => ["Wood", ""],
-                    "tools" => ["Tools", ""],
-                    "clothes" => ["Clothes", ""],
-                    "houses" => ["Houses", ""]}
+                    "tools" => ["Tools", "fa-wrench"],
+                    "clothes" => ["Clothes", "pe-7f-scissors"],
+                    "houses" => ["Houses", "fa-home"]}
           - humanResources.each do |resource, name_icon|
             - name = name_icon[0]
             - icon = name_icon[1]
@@ -175,7 +282,7 @@
               #{name}:
               %span(id="#{resource}") 
                 0
-              %i.fa(class="fa-#{icon}")
+              %i.fa(class="#{icon}")
               %span(id="#{resource}-rate" style="font-size: 11px")
       
 

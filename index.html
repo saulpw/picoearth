@@ -42,7 +42,7 @@
             <span id='animals'>
               0
             </span>
-            <i class='fa'></i>
+            <i class='fa fa-paw'></i>
             <span id='animals-rate' style='font-size: 11px'></span>
           </div>
           <div>
@@ -50,7 +50,7 @@
             <span id='trees'>
               0
             </span>
-            <i class='fa'></i>
+            <i class='fa fa-tree'></i>
             <span id='trees-rate' style='font-size: 11px'></span>
           </div>
         </div>
@@ -146,30 +146,176 @@
             <i class='fa fa-'></i>
             <span id='deathrate-rate' style='font-size: 11px'></span>
           </div>
-          <!-- Health -->
-          <div id='health'>
-            <span aria-haspopup='true' class='has-tip' data-tooltip title='humans need more food, clothes, houses!'>Health:</span>
-            <span class='label round radius lvl-label-black'>Dying</span>
-            <span class='label round radius lvl-label-red'>Sick</span>
-            <span class='label round radius lvl-label-yellow'>Okay</span>
-            <span class='label round radius lvl-label-green active'>Execellent</span>
-          </div>
-          <!-- Inspiration -->
-          <div id='inspiration'>
-            <span aria-haspopup='true' class='has-tip' data-tooltip title="don't work too much or too little">Inspiration:</span>
-            <span class='label round radius lvl-label-black'>Lost soul</span>
-            <span class='label round radius lvl-label-red'>Exhausted</span>
-            <span class='label round radius lvl-label-yellow'>Bored</span>
-            <span class='label round radius lvl-label-green active'>Pumped</span>
-          </div>
-          <!-- Happiness -->
-          <div id='happiness'>
-            <span aria-haspopup='true' class='has-tip' data-tooltip title='humans cry over deaths, and cheer over births'>Happiness:</span>
-            <span class='label round radius lvl-label-black'>Devastated</span>
-            <span class='label round radius lvl-label-red'>Sad</span>
-            <span class='label round radius lvl-label-yellow'>Indifferent</span>
-            <span class='label round radius lvl-label-green active'>Cheerful</span>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th colspan='2'>More animosity and deaths</th>
+                <th colspan='2'>More peace and births</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Health -->
+              <tr id='health'>
+                <td>
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='humans need more food, clothes, houses!'>Health:</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-black'>Dying</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-red'>Sick</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-yellow'>Okay</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-green active'>Execellent</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  > 20
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='person'>
+                    <i class='fa fa-male'></i>
+                  </span>
+                  per
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='food'>
+                    <i class='fa fa-cutlery'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='clothe'>
+                    <i class='pe-7f-scissors'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='house'>
+                    <i class='fa fa-home'></i>
+                  </span>
+                </td>
+                <td>
+                  20 - 10
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='person'>
+                    <i class='fa fa-male'></i>
+                  </span>
+                  per
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='food'>
+                    <i class='fa fa-cutlery'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='clothe'>
+                    <i class='pe-7f-scissors'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='house'>
+                    <i class='fa fa-home'></i>
+                  </span>
+                </td>
+                <td>
+                  10 - 5
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='person'>
+                    <i class='fa fa-male'></i>
+                  </span>
+                  per
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='food'>
+                    <i class='fa fa-cutlery'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='clothe'>
+                    <i class='pe-7f-scissors'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='house'>
+                    <i class='fa fa-home'></i>
+                  </span>
+                </td>
+                <td>
+                  < 5
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='person'>
+                    <i class='fa fa-male'></i>
+                  </span>
+                  per
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='food'>
+                    <i class='fa fa-cutlery'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='clothe'>
+                    <i class='pe-7f-scissors'></i>
+                  </span>
+                  or
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='house'>
+                    <i class='fa fa-home'></i>
+                  </span>
+                </td>
+              </tr>
+              <!-- Inspiration -->
+              <tr id='inspiration'>
+                <td>
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title="don't work too much or too little">Inspiration:</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-black'>Lost soul</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-red'>Exhausted</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-yellow'>Bored</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-green active'>Pumped</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  Working % < 30
+                </td>
+                <td>
+                  Working % > 90
+                </td>
+                <td>
+                  Working % 30 - 70
+                </td>
+                <td>
+                  Working % 70 - 90
+                </td>
+              </tr>
+              <!-- Happiness -->
+              <tr id='happiness'>
+                <td>
+                  <span aria-haspopup='true' class='has-tip' data-tooltip title='humans cry over deaths, and cheer over births'>Happiness:</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-black'>Devastated</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-red'>Sad</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-yellow'>Indifferent</span>
+                </td>
+                <td>
+                  <span class='label round radius lvl-label-green active'>Cheerful</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  CBR - CDR < -5
+                </td>
+                <td>
+                  CBR - CDR = -5 to -2
+                </td>
+                <td>
+                  CBR - CDR = -2 to 3
+                </td>
+                <td>
+                  CBR - CDR > 3
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <!-- Animosity -->
           <div id='animosity'>
             <span aria-haspopup='true' class='has-tip' data-tooltip title='When animosity reached its maximum, there will be WARS!'>
@@ -198,7 +344,7 @@
             <span id='food'>
               0
             </span>
-            <i class='fa fa-'></i>
+            <i class='fa fa-cutlery'></i>
             <span id='food-rate' style='font-size: 11px'></span>
           </div>
           <div>
@@ -206,7 +352,7 @@
             <span id='wood'>
               0
             </span>
-            <i class='fa fa-'></i>
+            <i class='fa'></i>
             <span id='wood-rate' style='font-size: 11px'></span>
           </div>
           <div>
@@ -214,7 +360,7 @@
             <span id='tools'>
               0
             </span>
-            <i class='fa fa-'></i>
+            <i class='fa fa-wrench'></i>
             <span id='tools-rate' style='font-size: 11px'></span>
           </div>
           <div>
@@ -222,7 +368,7 @@
             <span id='clothes'>
               0
             </span>
-            <i class='fa fa-'></i>
+            <i class='fa pe-7f-scissors'></i>
             <span id='clothes-rate' style='font-size: 11px'></span>
           </div>
           <div>
@@ -230,7 +376,7 @@
             <span id='houses'>
               0
             </span>
-            <i class='fa fa-'></i>
+            <i class='fa fa-home'></i>
             <span id='houses-rate' style='font-size: 11px'></span>
           </div>
         </div>

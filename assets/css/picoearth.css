@@ -24,6 +24,11 @@ textarea {
 	resize: none;
 }
 
+table tr td {
+	padding: 10px 5px;
+	font-size: 13px;
+}
+
 /* navigation css */
 #top-nav {
 	margin-top: 20px;
@@ -33,7 +38,7 @@ textarea {
 
 #health .label, #inspiration .label, #happiness .label{
 	font-size: 13px;
-	width: 80px;
+	width: 70px;
 	float: right;
 }
 
