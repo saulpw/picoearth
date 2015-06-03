@@ -574,34 +574,34 @@ function startWar()
 function consumeResources(incr)
 {
     // Food
-    var consumed = population() * incr * .1;
+    var consumed = g_population * incr * .1;
     var death = 0;
     if (g_food - consumed > 0) {
         g_food -= consumed;
     } else {
-        death = population() - g_food;
+        death = g_population - g_food;
         g_population -= death;
         g_food = 0;
     }
 
     // Clothes
-    consumed = population() * incr * .01;
+    consumed = g_population * incr * .01;
     death = 0;
     if (g_clothes - consumed > 0) {
         g_clothes -= consumed;
     } else {
-        death = population() - g_clothes;
+        death = g_population - g_clothes;
         g_population -= death;
         g_clothes = 0;
     }
 
     // Houses
-    consumed = population() * incr * .001;
+    consumed = g_population * incr * .001;
     death = 0;
     if (g_houses - consumed > 0) {
         g_houses -= consumed;
     } else {
-        death = population() - g_houses;
+        death = g_population - g_houses;
         g_population -= death;
         g_houses = 0;
     }
