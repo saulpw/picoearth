@@ -147,7 +147,7 @@ $(document).ready( function () {
 
 function initGame()
 {
-    // loadGame();
+    loadGame();
 
     updateWorkingPercent();
 
@@ -158,6 +158,8 @@ function initGame()
         if (getVFK(g_techTree, tech, "unlocked")) {
             unlockTech(tech);
         }
+
+        readyTech(tech);
     }
 
     // Load graphs
@@ -199,11 +201,32 @@ function showGameOver() {
 function saveGame()
 {
     var gameState = {
-        population: g_population,
+
+        // Earth stats
         year: g_year,
-        food: g_food,
+        water: g_water,
+        plants: g_plants,
+        trees: g_trees,
+        animals: g_animals,
+        
+        // Human stats
+        population: g_population,
         birthrate: g_birthrate,
         deathrate: g_deathrate,
+        happiness: g_happiness,
+        inspiration: g_inspiration,
+        health: g_health,
+        animosity: g_animosity,
+        knowledge: g_knowledge,
+
+        // Human resources
+        food: g_food,
+        wood: g_wood,
+        tools: g_tools,
+        clothes: g_clothes,
+        houses: g_houses,
+
+        // Tech tree
         techtree: g_techTree,
         log: g_log
     };
@@ -216,17 +239,33 @@ function loadGame()
     var gameState = JSON.parse(localStorage.getItem("save"));
 
     if (isDefined(gameState)) {
-        if (isDefined(gameState.population)) {
-            g_population = gameState.population;
-            g_prevPopulation = gameState.population;
-        }
 
+        // Eart stats
         if (isDefined(gameState.year)) {
             g_year = gameState.year;
         }
 
-        if (isDefined(gameState.food)) {
-            g_food = gameState.food;
+        if (isDefined(gameState.water)) {
+            g_water = gameState.water;
+        }
+
+        if (isDefined(gameState.plants)) {
+            g_plants = gameState.plants;
+        }
+
+        if (isDefined(gameState.trees)) {
+            g_trees = gameState.trees;
+        }
+
+        if (isDefined(gameState.animals)) {
+            g_animals = gameState.animals;
+        }
+
+        // Human stats
+        
+        if (isDefined(gameState.population)) {
+            g_population = gameState.population;
+            g_prevPopulation = gameState.population;
         }
 
         if (isDefined(gameState.birthrate)) {
@@ -236,6 +275,50 @@ function loadGame()
         if (isDefined(gameState.deathrate)) {
             g_deathrate = gameState.deathrate;
         }
+
+        if (isDefined(gameState.happiness)) {
+            g_happiness = gameState.happiness;
+        }
+
+        if (isDefined(gameState.inspiration)) {
+            g_inspiration = gameState.inspiration;
+        }
+
+        if (isDefined(gameState.health)) {
+            g_health = gameState.health;
+        }
+
+        if (isDefined(gameState.animosity)) {
+            g_animosity = gameState.animosity;
+        }
+
+        if (isDefined(gameState.knowledge)) {
+            g_knowledge = gameState.knowledge;
+        }
+
+        // Human resources
+
+        if (isDefined(gameState.food)) {
+            g_food = gameState.food;
+        }
+
+        if (isDefined(gameState.wood)) {
+            g_wood = gameState.wood;
+        }
+
+        if (isDefined(gameState.tools)) {
+            g_tools = gameState.tools;
+        }
+
+        if (isDefined(gameState.clothes)) {
+            g_clothes = gameState.clothes;
+        }
+
+        if (isDefined(gameState.houses)) {
+            g_houses = gameState.houses;
+        }
+
+        // Tech tree
 
         if (isDefined(gameState.techtree)) {
             g_techTree = gameState.techtree;
@@ -885,7 +968,9 @@ function updateTechTree()
     for (var tech in g_techTree) {
 
         // Preview
-        previewTech(tech);
+        if (shouldPreviewTech(tech)) {
+            previewTech(tech);
+        }
 
         // Unlock
         if (shouldUnlockTech(tech)) {
@@ -911,14 +996,6 @@ function previewTech(tech)
     const yearThres = getVFK(g_techTree, tech, "preview", "year");
     if (year() >= yearThres) {
 
-        // Check if tech has been previewed
-        var previewed = getVFK(g_techTree, tech, "previewed");
-        if (isDefined(previewed)) {
-            return;
-        } else {
-            setVFK(g_techTree, true, tech, "previewed");
-        }
-
         var pop = getVFK(g_techTree, tech, "require", "population");
         var requireString = 'Requires population ' + pop;
 
@@ -939,6 +1016,19 @@ function previewTech(tech)
                 </div> \
             </div> \
             ');
+
+        setVFK(g_techTree, true, tech, "previewed");
+    }
+}
+
+function shouldPreviewTech(tech)
+{
+    // Check if tech has been previewed
+    var previewed = getVFK(g_techTree, tech, "previewed");
+    if (isDefined(previewed)) {
+        return false;
+    } else {
+        return true;
     }
 }
 
