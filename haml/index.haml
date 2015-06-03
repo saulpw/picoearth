@@ -20,13 +20,13 @@
         .panel
           / Earth stats
 
-          %h2 
+          %h2
+            %i.fa.fa-globe.fa-3x.right
             Earth
             %span#year 1000
 
-          %h3.right#earth-danger-level
           - eartStats = {"water" => ["Water", "pe-7f-drop"],
-                    "plants" => ["Plants", "pe-7f-leaf"],
+                    "plants" => ["Plants", "fa-leaf"],
                     "animals" => ["Animals", "fa-paw"],
                     "trees" => ["Trees", "fa-tree"]}
           - eartStats.each do |stat, name_icon|
@@ -39,6 +39,7 @@
               %i.fa(class="#{icon}")
               %span(id="#{stat}-rate" style="font-size: 11px")
 
+
         / Earth image
         %img(src="assets/img/seasonal_earth.gif")
 
@@ -46,6 +47,7 @@
         %ul#graph-accordion.accordion(data-accordion)
           %li.accordion-navigation
             %a#graph-banner(href="#graph-area") 
+              %i.fa.fa-line-chart
               Graph
               %i.fa.fa-arrow-up.right
 
@@ -100,8 +102,9 @@
         .panel
           / Human stats
 
-          %h2 Human stats
-          %h3.right#human-danger-level
+          %h2 
+            %i.fa.fa-institution.fa-2x.right
+            Human
 
           - humanStats = {"population" => ["Population", "male"],
                     "birthrate" => ["Annual birth rate", ""],
@@ -267,7 +270,8 @@
 
           / Human resources
 
-          %h2 Human resources
+          %h3 
+            Production
           %span#human-resource-area
 
           - humanResources = {"food" => ["Food", "fa-cutlery"],

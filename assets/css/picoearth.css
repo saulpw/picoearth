@@ -25,8 +25,12 @@ textarea {
 }
 
 table tr td {
-	padding: 10px 5px;
+	padding: 5px 5px;
 	font-size: 13px;
+}
+
+table {
+	margin-bottom: 2px;
 }
 
 /* navigation css */
